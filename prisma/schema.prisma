@@ -1,0 +1,278 @@
+// CollectiveMind — PostgreSQL Schema
+// Managed by: packages/database
+// Migrations: prisma/migrations/
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// IDENTITY
+// Synced from Clerk via webhooks.
+// Clerk is the source of truth for auth.
+// This copy exists for relational integrity.
+// ─────────────────────────────────────────
+
+model User {
+  id        String    @id @default(uuid())
+  clerkId   String    @unique
+  email     String    @unique
+  firstName String?
+  lastName  String?
+  avatarUrl String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  memberships OrgMember[]
+  auditLogs   AuditLog[]  @relation("AuditLogActor")
+
+  @@index([clerkId])
+  @@index([email])
+}
+
+model Organization {
+  id        String    @id @default(uuid())
+  clerkId   String    @unique
+  name      String
+  slug      String    @unique
+  logoUrl   String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  members       OrgMember[]
+  subscriptions Subscription[]
+  auditLogs     AuditLog[]     @relation("AuditLogOrg")
+
+  @@index([clerkId])
+  @@index([slug])
+}
+
+model OrgMember {
+  id             String   @id @default(uuid())
+  organizationId String
+  userId         String
+  role           OrgRole  @default(MEMBER)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+enum OrgRole {
+  ADMIN
+  BILLING_MANAGER
+  MEMBER
+}
+
+// ─────────────────────────────────────────
+// PRODUCT CATALOG
+// ─────────────────────────────────────────
+
+model Product {
+  id          String        @id @default(uuid())
+  slug        String        @unique
+  name        String
+  description String?
+  logoUrl     String?
+  status      ProductStatus @default(ACTIVE)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  plans Plan[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+enum ProductStatus {
+  ACTIVE
+  COMING_SOON
+  DEPRECATED
+}
+
+model Plan {
+  id              String          @id @default(uuid())
+  productId       String
+  name            String
+  slug            String          @unique
+  description     String?
+  billingInterval BillingInterval
+  price           Int // in cents
+  currency        String          @default("USD")
+  isPublic        Boolean         @default(true)
+  status          PlanStatus      @default(ACTIVE)
+  sortOrder       Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  product       Product       @relation(fields: [productId], references: [id])
+  features      PlanFeature[]
+  subscriptions Subscription[]
+
+  @@index([productId])
+  @@index([status])
+}
+
+enum BillingInterval {
+  FREE
+  MONTH
+  YEAR
+  ONE_TIME
+}
+
+enum PlanStatus {
+  ACTIVE
+  LEGACY
+  DEPRECATED
+}
+
+model PlanFeature {
+  id        String   @id @default(uuid())
+  planId    String
+  key       String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@unique([planId, key])
+  @@index([planId])
+}
+
+// ─────────────────────────────────────────
+// BILLING
+// ─────────────────────────────────────────
+
+model Subscription {
+  id                     String             @id @default(uuid())
+  organizationId         String
+  planId                 String
+  status                 SubscriptionStatus @default(TRIALING)
+  currentPeriodStart     DateTime
+  currentPeriodEnd       DateTime
+  trialEndsAt            DateTime?
+  cancelAtPeriodEnd      Boolean            @default(false)
+  canceledAt             DateTime?
+  // Payment provider fields — null until live integration
+  providerName           String?
+  providerSubscriptionId String?            @unique
+  providerCustomerId     String?
+  // Internal admin notes
+  notes                  String?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  plan         Plan         @relation(fields: [planId], references: [id])
+  invoices     Invoice[]
+
+  @@index([organizationId])
+  @@index([planId])
+  @@index([status])
+  @@index([providerSubscriptionId])
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELED
+}
+
+model Invoice {
+  id                 String        @id @default(uuid())
+  subscriptionId     String
+  organizationId     String
+  invoiceNumber      String        @unique
+  status             InvoiceStatus @default(DRAFT)
+  amountDue          Int // in cents
+  amountPaid         Int           @default(0)
+  currency           String        @default("USD")
+  periodStart        DateTime
+  periodEnd          DateTime
+  dueDate            DateTime?
+  paidAt             DateTime?
+  providerInvoiceId  String?       @unique
+  providerPaymentUrl String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  subscription Subscription    @relation(fields: [subscriptionId], references: [id])
+  lineItems    InvoiceLineItem[]
+
+  @@index([subscriptionId])
+  @@index([organizationId])
+  @@index([status])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Int // in cents
+  total       Int // quantity * unitPrice
+  createdAt   DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+
+  @@index([invoiceId])
+}
+
+// ─────────────────────────────────────────
+// AUDIT
+// Immutable log of all significant actions.
+// Business record — not a diagnostic log.
+// ─────────────────────────────────────────
+
+model AuditLog {
+  id             String         @id @default(uuid())
+  actorUserId    String?
+  actorType      AuditActorType @default(USER)
+  organizationId String?
+  action         String
+  resourceType   String
+  resourceId     String?
+  metadata       Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime       @default(now())
+
+  actor        User?         @relation("AuditLogActor", fields: [actorUserId], references: [id])
+  organization Organization? @relation("AuditLogOrg", fields: [organizationId], references: [id])
+
+  @@index([actorUserId])
+  @@index([organizationId])
+  @@index([action])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+}
+
+enum AuditActorType {
+  USER
+  SYSTEM
+  ADMIN
+}

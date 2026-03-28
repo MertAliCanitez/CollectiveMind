@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/config/typescript/library",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["vitest/globals", "node"]
+  },
+  "include": ["src/**/*.ts", "vitest.setup.ts"],
+  "exclude": ["node_modules", "dist"]
+}

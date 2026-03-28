@@ -1,0 +1,183 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
+  # Placeholder values — real secrets come from GitHub repo settings
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/collectivemind_test"
+  TEST_DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/collectivemind_test"
+  # Clerk values required for type-check to pass
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_placeholder"
+  CLERK_SECRET_KEY: "sk_test_placeholder"
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # Lint
+  # ─────────────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
+      - name: Lint
+        run: pnpm turbo lint
+
+  # ─────────────────────────────────────────────────────────────
+  # Type Check
+  # ─────────────────────────────────────────────────────────────
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
+      - name: Type check
+        run: pnpm turbo type-check
+
+  # ─────────────────────────────────────────────────────────────
+  # Prisma Schema Validation
+  # ─────────────────────────────────────────────────────────────
+  prisma-validate:
+    name: Prisma Schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate schema
+        run: pnpm --filter @repo/database validate
+
+  # ─────────────────────────────────────────────────────────────
+  # Unit + Integration Tests
+  # ─────────────────────────────────────────────────────────────
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: [lint, type-check, prisma-validate]
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: collectivemind_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
+      - name: Run migrations on test DB
+        run: pnpm db:migrate:deploy
+
+      - name: Run tests
+        run: pnpm turbo test
+
+  # ─────────────────────────────────────────────────────────────
+  # Build (final gate — runs after all checks pass)
+  # ─────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, type-check, prisma-validate]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
+      - name: Build
+        run: pnpm turbo build
+
+      - name: Cache build outputs
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/*/**.next
+            packages/*/dist
+          key: build-${{ github.sha }}

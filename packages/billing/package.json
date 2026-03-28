@@ -1,0 +1,25 @@
+{
+  "name": "@repo/billing",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@repo/database": "workspace:*",
+    "@repo/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@repo/testing": "workspace:*",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

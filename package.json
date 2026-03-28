@@ -1,0 +1,32 @@
+{
+  "name": "collectivemind",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yaml,yml}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yaml,yml}\" --ignore-path .gitignore",
+    "db:generate": "pnpm --filter @repo/database db:generate",
+    "db:migrate": "pnpm --filter @repo/database migrate:dev",
+    "db:migrate:deploy": "pnpm --filter @repo/database migrate:deploy",
+    "db:studio": "pnpm --filter @repo/database studio",
+    "db:seed": "pnpm --filter @repo/database seed",
+    "db:validate": "pnpm --filter @repo/database validate",
+    "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.14.4"
+}
