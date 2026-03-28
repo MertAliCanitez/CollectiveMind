@@ -86,7 +86,7 @@ export async function createTestProduct(overrides: Partial<{
 export async function createTestPlan(params: {
   productId: string
   billingInterval?: BillingInterval
-  price?: number
+  displayPrice?: number
   status?: PlanStatus
   features?: { key: string; value: string }[]
 }) {
@@ -97,7 +97,7 @@ export async function createTestPlan(params: {
       name: `Test Plan ${n}`,
       slug: `test-product-plan-${n}`,
       billingInterval: params.billingInterval ?? "MONTH",
-      price: params.price ?? 4900,
+      displayPrice: params.displayPrice ?? 4900,
       currency: "USD",
       isPublic: true,
       status: params.status ?? "ACTIVE",

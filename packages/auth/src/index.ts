@@ -1,3 +1,5 @@
 export { isOrgAdmin, isOrgBillingManager, isPlatformAdmin, isPlatformStaff } from "./roles.js"
 export { handleClerkWebhook } from "./sync.js"
+export { verifyClerkWebhook } from "./webhook.js"
 export { clerkMiddleware, createRouteMatcher } from "./middleware.js"
+export type { PlatformRole, CustomSessionClaims, ClerkSessionClaims } from "./types.js"

@@ -27,7 +27,7 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider signInUrl="/sign-in" afterSignOutUrl="/sign-in">
       <html lang="en" className={inter.variable}>
         <body className="min-h-screen bg-background font-sans antialiased">
           {children}

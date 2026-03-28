@@ -1,6 +1,11 @@
 /**
  * Role check utilities.
- * Use these instead of inline string comparisons so role names are never scattered.
+ *
+ * Use these functions instead of inline string comparisons so role names
+ * are never scattered across the codebase.
+ *
+ * Clerk org role strings:   "org:admin", "org:billing_manager", "org:member"
+ * Platform role strings:    "super_admin", "support"  (set in Clerk publicMetadata)
  */
 
 /** Returns true if the Clerk org role is admin-level. */

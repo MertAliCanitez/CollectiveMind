@@ -13,7 +13,8 @@
   "dependencies": {
     "@clerk/nextjs": "^6.9.2",
     "@repo/database": "workspace:*",
-    "@repo/shared": "workspace:*"
+    "@repo/shared": "workspace:*",
+    "svix": "^1.45.1"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",
