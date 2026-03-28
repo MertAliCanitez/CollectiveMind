@@ -6,12 +6,15 @@ import reactHooksPlugin from "eslint-plugin-react-hooks"
 import prettierConfig from "eslint-config-prettier"
 
 /**
- * Base ESLint config for all packages (TypeScript + strict)
+ * Base ESLint config for all packages (TypeScript + strict).
+ * Uses `recommended` (not `recommendedTypeChecked`) because type-checked rules
+ * require per-package tsconfig wiring via languageOptions.parserOptions.project.
+ * Add type-checked rules to individual packages once their tsconfigs are ready.
  * @type {import("typescript-eslint").ConfigArray}
  */
 export const base = tseslint.config(
   js.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.recommended,
   prettierConfig,
   {
     rules: {
@@ -24,7 +27,6 @@ export const base = tseslint.config(
         { prefer: "type-imports", fixStyle: "separate-type-imports" },
       ],
       "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-floating-promises": "error",
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
