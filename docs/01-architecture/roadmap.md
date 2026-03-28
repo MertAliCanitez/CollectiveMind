@@ -229,12 +229,12 @@ Prioritized order. Each item is a separate phase.
 
 The modular monolith is the right choice until one of these conditions is true:
 
-| Condition | Response |
-|-----------|----------|
-| Different scaling requirements per domain | Extract that domain to a standalone service |
-| Team size > 8 engineers | Consider domain team ownership with separate deployables |
-| DB write throughput > 5k TPS sustained | Introduce CQRS or read replicas per domain |
-| Billing domain requires 99.99% SLA separate from app | Extract to standalone billing service |
-| Products need independent deploy cadence | Extract product apps from dashboard monolith |
+| Condition                                            | Response                                                 |
+| ---------------------------------------------------- | -------------------------------------------------------- |
+| Different scaling requirements per domain            | Extract that domain to a standalone service              |
+| Team size > 8 engineers                              | Consider domain team ownership with separate deployables |
+| DB write throughput > 5k TPS sustained               | Introduce CQRS or read replicas per domain               |
+| Billing domain requires 99.99% SLA separate from app | Extract to standalone billing service                    |
+| Products need independent deploy cadence             | Extract product apps from dashboard monolith             |
 
 Do not preemptively split. Split when the pain of the monolith exceeds the cost of distribution.

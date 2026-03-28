@@ -17,9 +17,7 @@ export function ProductCard({ product }: ProductCardProps) {
     <div
       className={cn(
         "group relative flex flex-col rounded-2xl border bg-white p-6 shadow-sm transition-shadow sm:p-8",
-        isComingSoon
-          ? "border-slate-200 opacity-75"
-          : "border-slate-200 hover:shadow-md",
+        isComingSoon ? "border-slate-200 opacity-75" : "border-slate-200 hover:shadow-md",
       )}
     >
       {/* Status badge */}
@@ -33,13 +31,10 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="mb-4 flex-1">
         <h3 className="text-xl font-bold text-slate-900">{product.name}</h3>
         {product.content && (
-          <p className="mt-1 text-sm font-medium text-indigo-600">
-            {product.content.tagline}
-          </p>
+          <p className="mt-1 text-sm font-medium text-indigo-600">{product.content.tagline}</p>
         )}
         <p className="mt-3 text-sm leading-relaxed text-slate-500">
-          {product.content?.valueProposition ??
-            "Details coming soon."}
+          {product.content?.valueProposition ?? "Details coming soon."}
         </p>
       </div>
 
@@ -47,21 +42,19 @@ export function ProductCard({ product }: ProductCardProps) {
       {!isComingSoon && planCount > 0 && (
         <div className="mb-5 flex flex-wrap items-baseline gap-2">
           {lowestPlan && lowestPlan.displayPrice === 0 ? (
-            <span className="text-sm font-medium text-slate-600">
-              Free plan available
-            </span>
+            <span className="text-sm font-medium text-slate-600">Free plan available</span>
           ) : lowestPlan ? (
             <span className="text-sm font-medium text-slate-600">
               Starting at{" "}
-              <span className="text-slate-900 font-semibold">
-                {lowestPlan.formattedPrice}
-              </span>
+              <span className="font-semibold text-slate-900">{lowestPlan.formattedPrice}</span>
               <span className="text-slate-400">
                 /{lowestPlan.billingInterval === "MONTH" ? "mo" : "yr"}
               </span>
             </span>
           ) : null}
-          <Badge variant="secondary">{planCount} plan{planCount !== 1 ? "s" : ""}</Badge>
+          <Badge variant="secondary">
+            {planCount} plan{planCount !== 1 ? "s" : ""}
+          </Badge>
         </div>
       )}
 
@@ -72,10 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
           className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
         >
           Learn more
-          <ArrowRight
-            size={14}
-            className="transition-transform group-hover:translate-x-0.5"
-          />
+          <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
         </Link>
       ) : (
         <span className="text-sm text-slate-400">Notify me when available →</span>

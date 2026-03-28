@@ -14,23 +14,23 @@ Docs are not supplementary — they are the system. Claude Code uses docs as wor
 
 ## Source of Truth Map
 
-| Question | Answer lives in |
-|----------|----------------|
-| What is this platform? | `docs/00-product/vision.md` |
-| What ships in v1? | `docs/00-product/mvp-scope.md` |
-| How is the system architected? | `docs/01-architecture/architecture.md` |
-| How does auth work? | `docs/01-architecture/auth.md` |
-| How does billing work? | `docs/01-architecture/billing.md` |
-| What does the DB schema look like? | `docs/01-architecture/data-model.md` |
-| How is the repo structured? | `docs/01-architecture/repo-structure.md` |
-| What are the security rules? | `docs/01-architecture/security.md` |
-| What's the delivery timeline? | `docs/01-architecture/roadmap.md` |
-| What are we building next? | `docs/02-backlog/next-task.md` |
-| What's the full work queue? | `docs/02-backlog/backlog.md` |
-| Why was X decided? | `docs/03-decisions/` |
-| How do I set up locally? | `docs/04-runbooks/local-setup.md` |
-| How do I deploy? | `docs/04-runbooks/deploy.md` |
-| What skills are available? | `docs/05-prompts/skills-overview.md` |
+| Question                           | Answer lives in                          |
+| ---------------------------------- | ---------------------------------------- |
+| What is this platform?             | `docs/00-product/vision.md`              |
+| What ships in v1?                  | `docs/00-product/mvp-scope.md`           |
+| How is the system architected?     | `docs/01-architecture/architecture.md`   |
+| How does auth work?                | `docs/01-architecture/auth.md`           |
+| How does billing work?             | `docs/01-architecture/billing.md`        |
+| What does the DB schema look like? | `docs/01-architecture/data-model.md`     |
+| How is the repo structured?        | `docs/01-architecture/repo-structure.md` |
+| What are the security rules?       | `docs/01-architecture/security.md`       |
+| What's the delivery timeline?      | `docs/01-architecture/roadmap.md`        |
+| What are we building next?         | `docs/02-backlog/next-task.md`           |
+| What's the full work queue?        | `docs/02-backlog/backlog.md`             |
+| Why was X decided?                 | `docs/03-decisions/`                     |
+| How do I set up locally?           | `docs/04-runbooks/local-setup.md`        |
+| How do I deploy?                   | `docs/04-runbooks/deploy.md`             |
+| What skills are available?         | `docs/05-prompts/skills-overview.md`     |
 
 **If two sources conflict, the architecture docs (`docs/01-architecture/`) win over all others.** Update the other source, not the architecture doc, unless you are deliberately making an architectural change (which requires an ADR).
 
@@ -60,20 +60,20 @@ Skills are in `.claude/skills/`. Invoke them with the skill name in your prompt.
 
 ### Available Skills
 
-| Skill | Use for |
-|-------|---------|
-| `/clerk-b2b-auth` | Auth flows, middleware, role checks, webhook handler |
-| `/prisma-migrations` | Schema changes, new models, index additions |
-| `/billing-architecture` | Entitlement checks, subscription logic, provider work |
-| `/admin-crud-patterns` | Admin panel pages, data tables, forms |
-| `/frontend-design` | UI components, layouts, responsive design |
-| `/saas-ux-copy` | B2B copy, CTAs, empty states, error messages |
-| `/landing-page-conversion` | Marketing pages, pricing, hero sections |
-| `/seo-content-structure` | Meta tags, structured data, content organization |
-| `/observability-sentry` | Logging, error tracking, structured events |
-| `/test-strategy` | Vitest tests, test DB setup, factory helpers |
-| `/docs-maintainer` | Updating docs after feature work |
-| `/branch-workflow` | Branch naming, commit messages, PR flow |
+| Skill                      | Use for                                               |
+| -------------------------- | ----------------------------------------------------- |
+| `/clerk-b2b-auth`          | Auth flows, middleware, role checks, webhook handler  |
+| `/prisma-migrations`       | Schema changes, new models, index additions           |
+| `/billing-architecture`    | Entitlement checks, subscription logic, provider work |
+| `/admin-crud-patterns`     | Admin panel pages, data tables, forms                 |
+| `/frontend-design`         | UI components, layouts, responsive design             |
+| `/saas-ux-copy`            | B2B copy, CTAs, empty states, error messages          |
+| `/landing-page-conversion` | Marketing pages, pricing, hero sections               |
+| `/seo-content-structure`   | Meta tags, structured data, content organization      |
+| `/observability-sentry`    | Logging, error tracking, structured events            |
+| `/test-strategy`           | Vitest tests, test DB setup, factory helpers          |
+| `/docs-maintainer`         | Updating docs after feature work                      |
+| `/branch-workflow`         | Branch naming, commit messages, PR flow               |
 
 ### Example: building the webhook handler
 
@@ -93,15 +93,15 @@ Follow the auth architecture in docs/01-architecture/auth.md.
 
 Claude should update:
 
-| What changed | What to update |
-|--------------|----------------|
-| New DB model or migration | `docs/01-architecture/data-model.md` — add model description |
-| New auth pattern or role check | `docs/01-architecture/auth.md` — add pattern |
-| New billing entitlement | `docs/01-architecture/billing.md` — add to domain usage |
-| New env variable | `docs/04-runbooks/local-setup.md` and `docs/04-runbooks/deploy.md` |
-| Feature completed | `docs/02-backlog/backlog.md` — mark `[x]`, advance `next-task.md` |
-| Scope decision changed | `docs/00-product/mvp-scope.md` |
-| Significant architecture decision | New ADR in `docs/03-decisions/` |
+| What changed                      | What to update                                                     |
+| --------------------------------- | ------------------------------------------------------------------ |
+| New DB model or migration         | `docs/01-architecture/data-model.md` — add model description       |
+| New auth pattern or role check    | `docs/01-architecture/auth.md` — add pattern                       |
+| New billing entitlement           | `docs/01-architecture/billing.md` — add to domain usage            |
+| New env variable                  | `docs/04-runbooks/local-setup.md` and `docs/04-runbooks/deploy.md` |
+| Feature completed                 | `docs/02-backlog/backlog.md` — mark `[x]`, advance `next-task.md`  |
+| Scope decision changed            | `docs/00-product/mvp-scope.md`                                     |
+| Significant architecture decision | New ADR in `docs/03-decisions/`                                    |
 
 **When in doubt about whether to update docs:** apply this rule — if a future Claude session working on a related feature would benefit from knowing this, write it down.
 
@@ -123,6 +123,7 @@ This skill knows which files to check and how to keep them consistent.
 ## Architecture Decision Records
 
 Write an ADR when you make a decision that:
+
 - Changes a constraint in `docs/01-architecture/`
 - Introduces a dependency that will be hard to remove
 - Is non-obvious and a future developer might reasonably reverse
@@ -162,6 +163,7 @@ Then commit: `docs: complete [task], advance next-task to [next task]`
 From `docs/01-architecture/repo-structure.md`:
 
 **Branch naming:**
+
 ```
 feature/<scope>-<description>   # new features
 fix/<scope>-<description>        # bug fixes
@@ -170,6 +172,7 @@ chore/<description>              # tooling, deps, config
 ```
 
 **Commit messages (Conventional Commits):**
+
 ```
 feat(auth): implement Clerk webhook handler
 fix(database): resolve prisma generate hoisting
@@ -178,6 +181,7 @@ chore(deps): update next.js to 15.1.0
 ```
 
 Claude should always:
+
 1. Create a feature branch
 2. Commit at logical checkpoints (not one giant commit)
 3. Push and report the branch URL

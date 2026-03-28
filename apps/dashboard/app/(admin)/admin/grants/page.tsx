@@ -35,23 +35,31 @@ export default async function AdminGrantsPage({ searchParams }: Props) {
       <div className="mb-4 flex items-center gap-2 text-xs">
         <Link
           href="/admin/grants"
-          className={filter !== "all" ? "font-semibold text-indigo-600" : "text-slate-500 hover:text-slate-700"}
+          className={
+            filter !== "all"
+              ? "font-semibold text-indigo-600"
+              : "text-slate-500 hover:text-slate-700"
+          }
         >
           Active only
         </Link>
         <span className="text-slate-300">|</span>
         <Link
           href="/admin/grants?filter=all"
-          className={filter === "all" ? "font-semibold text-indigo-600" : "text-slate-500 hover:text-slate-700"}
+          className={
+            filter === "all"
+              ? "font-semibold text-indigo-600"
+              : "text-slate-500 hover:text-slate-700"
+          }
         >
           All grants
         </Link>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
               <th className="px-4 py-3">Organization</th>
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Reason</th>
@@ -80,9 +88,7 @@ export default async function AdminGrantsPage({ searchParams }: Props) {
                     </Link>
                   </td>
                   <td className="px-4 py-3 font-mono text-xs text-slate-600">{g.productSlug}</td>
-                  <td className="px-4 py-3 max-w-xs truncate text-slate-600">
-                    {g.reason ?? "—"}
-                  </td>
+                  <td className="max-w-xs truncate px-4 py-3 text-slate-600">{g.reason ?? "—"}</td>
                   <td className="px-4 py-3 text-xs text-slate-500">
                     {g.expiresAt ? g.expiresAt.toLocaleDateString() : "Never"}
                   </td>

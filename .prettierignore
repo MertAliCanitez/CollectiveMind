@@ -7,3 +7,4 @@ build/
 prisma/migrations/
 *.lock
 pnpm-lock.yaml
+.claude/

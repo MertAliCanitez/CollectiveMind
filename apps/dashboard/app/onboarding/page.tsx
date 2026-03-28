@@ -33,29 +33,26 @@ export default async function OnboardingPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-lg text-center">
-        <h1 className="text-3xl font-bold text-foreground">
+        <h1 className="text-foreground text-3xl font-bold">
           {orgId ? `Welcome to ${orgSlug ?? "your workspace"}` : "Welcome to CollectiveMind"}
         </h1>
 
         {orgId ? (
           <>
-            <p className="mt-4 text-muted-foreground">
+            <p className="text-muted-foreground mt-4">
               Your organization has been created. A member of our team will activate your
               subscription shortly.
             </p>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-2 text-sm">
               You&apos;ll receive an email when your account is ready.
             </p>
-            <Link
-              href="/"
-              className="mt-6 inline-flex items-center text-sm font-medium underline"
-            >
+            <Link href="/" className="mt-6 inline-flex items-center text-sm font-medium underline">
               Go to dashboard →
             </Link>
           </>
         ) : (
           <>
-            <p className="mt-4 text-muted-foreground">
+            <p className="text-muted-foreground mt-4">
               You don&apos;t have an organization yet. Create or join one to continue.
             </p>
             <Link

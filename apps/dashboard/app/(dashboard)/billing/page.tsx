@@ -1,6 +1,10 @@
 import type { Metadata } from "next"
 import { requireBillingAccess } from "../../../lib/auth"
-import { getDashboardBillingStatus, getDashboardCatalog, getDashboardEntitlement } from "../../../lib/billing"
+import {
+  getDashboardBillingStatus,
+  getDashboardCatalog,
+  getDashboardEntitlement,
+} from "../../../lib/billing"
 import { Badge } from "../../../components/ui/badge"
 import { EmptyState } from "../../../components/empty-state"
 import { AlertCircle } from "../../../components/ui/icons"
@@ -90,7 +94,9 @@ export default async function BillingPage() {
               <div key={product.id} className="flex items-center justify-between px-5 py-4">
                 <div>
                   <p className="text-sm font-medium text-slate-900">{product.name}</p>
-                  <p className="text-xs text-slate-500">Granted access — {ent?.plan?.name ?? "all features"}</p>
+                  <p className="text-xs text-slate-500">
+                    Granted access — {ent?.plan?.name ?? "all features"}
+                  </p>
                 </div>
                 <Badge variant="secondary">Granted</Badge>
               </div>
@@ -103,27 +109,31 @@ export default async function BillingPage() {
       {billingStatus?.subscription && (
         <div>
           <h2 className="mb-3 text-sm font-semibold text-slate-700">Subscription Detail</h2>
-          <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 space-y-3">
+          <div className="space-y-3 rounded-xl border border-slate-200 bg-white px-5 py-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Status</span>
-              <Badge variant={billingStatus.subscription.status === "ACTIVE" ? "success" : "warning"}>
+              <Badge
+                variant={billingStatus.subscription.status === "ACTIVE" ? "success" : "warning"}
+              >
                 {billingStatus.subscription.status}
               </Badge>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Plan</span>
-              <span className="font-medium text-slate-900">{billingStatus.subscription.planName}</span>
+              <span className="font-medium text-slate-900">
+                {billingStatus.subscription.planName}
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Price</span>
-              <span className="font-medium text-slate-900">{billingStatus.subscription.displayPrice}</span>
+              <span className="font-medium text-slate-900">
+                {billingStatus.subscription.displayPrice}
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Renews</span>
               <span className="text-slate-700">
-                {billingStatus.subscription.cancelAtPeriodEnd
-                  ? "Cancels on "
-                  : ""}
+                {billingStatus.subscription.cancelAtPeriodEnd ? "Cancels on " : ""}
                 {billingStatus.subscription.currentPeriodEnd.toLocaleDateString()}
               </span>
             </div>

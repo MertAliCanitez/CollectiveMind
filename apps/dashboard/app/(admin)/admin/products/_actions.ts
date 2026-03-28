@@ -4,7 +4,11 @@ import { redirect } from "next/navigation"
 import { z } from "zod"
 import { auth } from "@clerk/nextjs/server"
 import { requirePlatformAdmin } from "../../../../lib/auth"
-import { createProduct, updateProduct, type CreateProductInput } from "../../../../lib/admin/products"
+import {
+  createProduct,
+  updateProduct,
+  type CreateProductInput,
+} from "../../../../lib/admin/products"
 import { resolveDbUserId, writeAdminAuditLog } from "../../../../lib/admin/audit"
 
 const productSchema = z.object({
@@ -49,7 +53,9 @@ export async function createProductAction(formData: FormData): Promise<void> {
     })
     redirect(`/admin/products/${product.id}`)
   } catch {
-    redirect(`/admin/products/new?error=${encodeURIComponent("Failed to create product. Slug may already be taken.")}`)
+    redirect(
+      `/admin/products/new?error=${encodeURIComponent("Failed to create product. Slug may already be taken.")}`,
+    )
   }
 }
 

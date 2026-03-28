@@ -25,7 +25,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description: product.content?.valueProposition,
-    openGraph: { title: `${title} — CollectiveMind`, description: product.content?.valueProposition },
+    openGraph: {
+      title: `${title} — CollectiveMind`,
+      description: product.content?.valueProposition,
+    },
   }
 }
 
@@ -96,7 +99,7 @@ export default async function ProductDetailPage({ params }: Props) {
               <div className="mt-8">
                 <a
                   href="#pricing"
-                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500"
                 >
                   See pricing
                   <ArrowRight size={14} />
@@ -108,7 +111,7 @@ export default async function ProductDetailPage({ params }: Props) {
               <div className="mt-8">
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500"
                 >
                   Get notified when it launches
                   <ArrowRight size={14} />
@@ -121,7 +124,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
       {/* Plans */}
       {!isComingSoon && plans.length > 0 && (
-        <section id="pricing" className="bg-white py-20 sm:py-28 scroll-mt-16">
+        <section id="pricing" className="scroll-mt-16 bg-white py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               eyebrow="Pricing"
@@ -141,9 +144,11 @@ export default async function ProductDetailPage({ params }: Props) {
 
             <div
               className={`mt-12 grid grid-cols-1 gap-6 ${
-                plans.length === 2 ? "sm:grid-cols-2 max-w-2xl mx-auto" :
-                plans.length === 3 ? "sm:grid-cols-3" :
-                "sm:grid-cols-2 lg:grid-cols-4"
+                plans.length === 2
+                  ? "mx-auto max-w-2xl sm:grid-cols-2"
+                  : plans.length === 3
+                    ? "sm:grid-cols-3"
+                    : "sm:grid-cols-2 lg:grid-cols-4"
               }`}
             >
               {plans.map((plan) => (
@@ -186,13 +191,13 @@ export default async function ProductDetailPage({ params }: Props) {
               {product.name} is coming soon
             </h2>
             <p className="mt-4 text-lg text-slate-500">
-              We&apos;re building it now. Contact us to get early access or be
-              notified when it launches.
+              We&apos;re building it now. Contact us to get early access or be notified when it
+              launches.
             </p>
             <div className="mt-8">
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-500"
               >
                 Request early access
                 <ArrowRight size={14} />
@@ -204,9 +209,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
       <CtaBand
         heading={
-          isComingSoon
-            ? "Be the first to know"
-            : `Ready to get started with ${product.name}?`
+          isComingSoon ? "Be the first to know" : `Ready to get started with ${product.name}?`
         }
         subheading={
           isComingSoon
@@ -214,9 +217,7 @@ export default async function ProductDetailPage({ params }: Props) {
             : "Talk to us — we'll find the right plan for your team."
         }
         ctaPrimary={{ label: "Contact us", href: "/contact" }}
-        ctaSecondary={
-          !isComingSoon ? { label: "View all products", href: "/products" } : undefined
-        }
+        ctaSecondary={!isComingSoon ? { label: "View all products", href: "/products" } : undefined}
       />
     </>
   )

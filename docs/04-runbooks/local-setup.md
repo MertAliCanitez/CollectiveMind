@@ -6,14 +6,15 @@ Follow these steps in order. Each section has a verification command — run it 
 
 ## Prerequisites
 
-| Tool | Version | Install |
-|------|---------|---------|
-| Node.js | ≥ 20 | [nodejs.org](https://nodejs.org) or `nvm install 20` |
-| pnpm | ≥ 9 | `npm install -g pnpm@9` |
-| PostgreSQL | ≥ 15 | [postgresql.org](https://www.postgresql.org/download/) or `brew install postgresql@15` |
-| Git | any recent | pre-installed on macOS |
+| Tool       | Version    | Install                                                                                |
+| ---------- | ---------- | -------------------------------------------------------------------------------------- |
+| Node.js    | ≥ 20       | [nodejs.org](https://nodejs.org) or `nvm install 20`                                   |
+| pnpm       | ≥ 9        | `npm install -g pnpm@9`                                                                |
+| PostgreSQL | ≥ 15       | [postgresql.org](https://www.postgresql.org/download/) or `brew install postgresql@15` |
+| Git        | any recent | pre-installed on macOS                                                                 |
 
 **Verify:**
+
 ```bash
 node --version   # v20.x.x
 pnpm --version   # 9.x.x
@@ -31,6 +32,7 @@ pnpm install
 ```
 
 **Verify:**
+
 ```bash
 ls node_modules/@prisma/client   # should exist
 ls node_modules/.bin/eslint       # should exist
@@ -98,6 +100,7 @@ pnpm db:migrate
 This runs `prisma migrate dev` which creates the `migrations/` folder and applies the initial schema.
 
 **Verify:**
+
 ```bash
 psql collectivemind_dev -c "\dt"
 # Should list: User, Organization, OrgMember, Product, Plan, PlanFeature,
@@ -119,6 +122,7 @@ pnpm db:seed
 > If this is your first time, see `docs/02-backlog/next-task.md` for step-by-step Clerk dashboard instructions.
 
 You need:
+
 - A Clerk dev application with Organizations enabled
 - A webhook endpoint pointed at your local tunnel (see below)
 - The three env vars in `.env.local`
@@ -149,13 +153,14 @@ pnpm dev
 
 This runs all apps in parallel via Turborepo:
 
-| App | URL |
-|-----|-----|
-| `apps/web` | http://localhost:3000 |
+| App              | URL                   |
+| ---------------- | --------------------- |
+| `apps/web`       | http://localhost:3000 |
 | `apps/dashboard` | http://localhost:3001 |
-| `apps/admin` | http://localhost:3002 |
+| `apps/admin`     | http://localhost:3002 |
 
 To run a single app:
+
 ```bash
 pnpm --filter @repo/web dev
 pnpm --filter @repo/dashboard dev

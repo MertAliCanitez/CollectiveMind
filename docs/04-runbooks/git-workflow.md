@@ -35,15 +35,15 @@ git checkout -b feature/my-feature
 
 **Naming rules** — see `CONTRIBUTING.md` for the full table:
 
-| Type | Pattern |
-|---|---|
-| New functionality | `feature/<slug>` |
-| Bug fix | `fix/<slug>` |
+| Type                | Pattern           |
+| ------------------- | ----------------- |
+| New functionality   | `feature/<slug>`  |
+| Bug fix             | `fix/<slug>`      |
 | Structural refactor | `refactor/<slug>` |
-| Tests only | `test/<slug>` |
-| Docs only | `docs/<slug>` |
-| Schema change | `db/<slug>` |
-| Tooling / deps | `chore/<slug>` |
+| Tests only          | `test/<slug>`     |
+| Docs only           | `docs/<slug>`     |
+| Schema change       | `db/<slug>`       |
+| Tooling / deps      | `chore/<slug>`    |
 
 ### 2. Work
 
@@ -55,6 +55,7 @@ git commit -m "feat(billing): add cancelAtPeriodEnd flag to cancel flow"
 ```
 
 **Commit format:**
+
 ```
 <type>(<scope>): <imperative summary, ≤72 chars>
 
@@ -65,6 +66,7 @@ git commit -m "feat(billing): add cancelAtPeriodEnd flag to cancel flow"
 ```
 
 Run checks before committing:
+
 ```bash
 pnpm turbo type-check
 pnpm turbo lint
@@ -77,6 +79,7 @@ git push -u origin feature/my-feature
 ```
 
 If you need to update after review feedback:
+
 ```bash
 # Add more commits — do not force-push a shared branch
 git add .
@@ -96,6 +99,7 @@ gh pr create \
 Or use the GitHub UI. The PR template will auto-populate.
 
 **PR checklist before marking ready:**
+
 - [ ] All CI checks pass
 - [ ] PR description is filled in (What / Why / Test plan)
 - [ ] New env vars are in `.env.example`
@@ -134,6 +138,7 @@ git push --force-with-lease origin feature/my-feature
 A hotfix is a `fix/` branch that goes directly from `main` → PR → merge, same as any other change. There is no separate hotfix branch type.
 
 If the fix is urgent:
+
 1. Create `fix/<slug>` from `main`
 2. Implement the minimum fix
 3. Open the PR and mark it as urgent in the description
@@ -145,18 +150,19 @@ If the fix is urgent:
 
 The CI pipeline runs on every PR to `main` and on pushes to `main`. Jobs:
 
-| Job | What it checks | Required |
-|---|---|---|
-| Lint | ESLint across all packages | Yes |
-| Format | Prettier formatting | Yes |
-| Type Check | TypeScript `--noEmit` across all packages | Yes |
-| Prisma Schema | `prisma validate` — schema is internally consistent | Yes |
-| Tests | Unit + integration tests with real Postgres | Yes |
-| Build | Full monorepo build (`turbo build`) | Yes |
+| Job           | What it checks                                      | Required |
+| ------------- | --------------------------------------------------- | -------- |
+| Lint          | ESLint across all packages                          | Yes      |
+| Format        | Prettier formatting                                 | Yes      |
+| Type Check    | TypeScript `--noEmit` across all packages           | Yes      |
+| Prisma Schema | `prisma validate` — schema is internally consistent | Yes      |
+| Tests         | Unit + integration tests with real Postgres         | Yes      |
+| Build         | Full monorepo build (`turbo build`)                 | Yes      |
 
 **If CI fails:** fix it before requesting review. Do not ask reviewers to approve a red PR.
 
 To reproduce CI failures locally:
+
 ```bash
 pnpm turbo lint
 pnpm format:check
@@ -218,6 +224,7 @@ git push -u origin feature/<slug>
 ### Step 6 — Report
 
 Claude Code reports:
+
 - Branch name
 - Summary of what changed and why
 - Any follow-up actions (e.g., env vars to add, migrations to run)
@@ -278,6 +285,7 @@ Branch name pattern: main
 ```
 
 **Why these rules:**
+
 - Required reviews prevent solo merges — at least one other set of eyes
 - Status checks block broken code from reaching production
 - "Up to date" prevents merge races where individual branch CI passed but the combination breaks
@@ -290,10 +298,12 @@ Branch name pattern: main
 Branches that have been merged should be deleted immediately (GitHub can automate this).
 
 For unmerged branches older than 30 days with no activity, either:
+
 - Rebase and revive if the work is still needed
 - Delete if the work has been superseded
 
 Check stale branches:
+
 ```bash
 git fetch --prune
 git branch --merged main | grep -v main

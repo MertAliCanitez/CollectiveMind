@@ -36,23 +36,20 @@ export const base = tseslint.config(
  * Next.js specific config
  * @type {import("typescript-eslint").ConfigArray}
  */
-export const nextjs = tseslint.config(
-  ...base,
-  {
-    plugins: {
-      react: reactPlugin,
-      "react-hooks": reactHooksPlugin,
-    },
-    rules: {
-      ...reactPlugin.configs.recommended.rules,
-      ...reactHooksPlugin.configs.recommended.rules,
-      "react/react-in-jsx-scope": "off",
-      "react/prop-types": "off",
-    },
-    settings: {
-      react: {
-        version: "detect",
-      },
+export const nextjs = tseslint.config(...base, {
+  plugins: {
+    react: reactPlugin,
+    "react-hooks": reactHooksPlugin,
+  },
+  rules: {
+    ...reactPlugin.configs.recommended.rules,
+    ...reactHooksPlugin.configs.recommended.rules,
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+  },
+  settings: {
+    react: {
+      version: "detect",
     },
   },
-)
+})

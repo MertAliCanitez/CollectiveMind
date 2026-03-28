@@ -11,45 +11,45 @@ This document is the authoritative checklist for preparing and executing the fir
 
 ### What is ready for staging
 
-| Area | Status | Notes |
-|---|---|---|
-| Security headers | ✅ Ready | HSTS, X-Frame-Options, CSP on all three apps |
-| Auth middleware | ✅ Ready | Clerk middleware enforces auth on all routes |
-| Webhook signature verification | ✅ Ready | Svix HMAC on Clerk webhook route |
-| Database migrations | ✅ Ready | Single committed init migration, two-phase pattern documented |
-| Structured logging | ✅ Ready | JSON to stdout, PII-safe, deployed on all server-side code |
-| Audit trail | ✅ Ready | Admin mutations and billing events write to `AuditLog` |
-| Auth failure logging | ✅ Ready | `warn` events on all denied/redirected auth checks |
-| Error boundaries | ✅ Ready | `error.tsx` + `global-error.tsx` in dashboard; `error.tsx` in web |
-| CI pipeline | ✅ Ready | Lint, format, type-check, prisma-validate, tests, build on every PR |
-| Health check endpoints | ✅ Ready | `/api/health` on dashboard and admin |
-| Vercel project config | ✅ Ready | `vercel.json` committed in all three app directories |
-| Rate limiting (webhooks) | ✅ Ready | In-memory per-IP 30 req/60s on webhook routes |
-| Branch protection docs | ✅ Ready | `CONTRIBUTING.md` documents required rules to configure |
+| Area                           | Status   | Notes                                                               |
+| ------------------------------ | -------- | ------------------------------------------------------------------- |
+| Security headers               | ✅ Ready | HSTS, X-Frame-Options, CSP on all three apps                        |
+| Auth middleware                | ✅ Ready | Clerk middleware enforces auth on all routes                        |
+| Webhook signature verification | ✅ Ready | Svix HMAC on Clerk webhook route                                    |
+| Database migrations            | ✅ Ready | Single committed init migration, two-phase pattern documented       |
+| Structured logging             | ✅ Ready | JSON to stdout, PII-safe, deployed on all server-side code          |
+| Audit trail                    | ✅ Ready | Admin mutations and billing events write to `AuditLog`              |
+| Auth failure logging           | ✅ Ready | `warn` events on all denied/redirected auth checks                  |
+| Error boundaries               | ✅ Ready | `error.tsx` + `global-error.tsx` in dashboard; `error.tsx` in web   |
+| CI pipeline                    | ✅ Ready | Lint, format, type-check, prisma-validate, tests, build on every PR |
+| Health check endpoints         | ✅ Ready | `/api/health` on dashboard and admin                                |
+| Vercel project config          | ✅ Ready | `vercel.json` committed in all three app directories                |
+| Rate limiting (webhooks)       | ✅ Ready | In-memory per-IP 30 req/60s on webhook routes                       |
+| Branch protection docs         | ✅ Ready | `CONTRIBUTING.md` documents required rules to configure             |
 
 ### What is missing (must fix before staging)
 
-| Item | Effort | Notes |
-|---|---|---|
-| Vercel projects created | 1h | Create `collectivemind-web`, `collectivemind-dashboard`, `collectivemind-admin` in Vercel UI |
-| Clerk staging instance | 30m | Separate Clerk instance for staging. Configure webhook endpoint. |
-| Neon staging database | 30m | Create staging branch in Neon, copy connection string |
-| GitHub secrets configured | 15m | `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, etc. in Vercel UI |
-| Clerk webhook endpoint registered | 15m | Register `https://staging.collectivemind.com/api/webhooks/clerk` in Clerk staging |
-| Domain/URL configuration | 30m | Set `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_DASHBOARD_URL` to staging URLs |
-| Branch protection configured | 15m | Apply rules from `CONTRIBUTING.md` to `main` on GitHub |
+| Item                              | Effort | Notes                                                                                        |
+| --------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
+| Vercel projects created           | 1h     | Create `collectivemind-web`, `collectivemind-dashboard`, `collectivemind-admin` in Vercel UI |
+| Clerk staging instance            | 30m    | Separate Clerk instance for staging. Configure webhook endpoint.                             |
+| Neon staging database             | 30m    | Create staging branch in Neon, copy connection string                                        |
+| GitHub secrets configured         | 15m    | `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, etc. in Vercel UI                   |
+| Clerk webhook endpoint registered | 15m    | Register `https://staging.collectivemind.com/api/webhooks/clerk` in Clerk staging            |
+| Domain/URL configuration          | 30m    | Set `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_DASHBOARD_URL` to staging URLs                       |
+| Branch protection configured      | 15m    | Apply rules from `CONTRIBUTING.md` to `main` on GitHub                                       |
 
 ### What can wait until after staging
 
-| Item | Notes |
-|---|---|
-| Sentry integration | Not needed for staging. Add before first paying customer. See `docs/04-runbooks/observability.md`. |
-| Log aggregation (Datadog, Logtail) | Vercel function logs are sufficient for staging. |
-| Uptime monitoring | Add Checkly or Better Uptime before production go-live. |
-| CI deployment automation | Migrations are run manually for now. Automate when deploying frequently. |
-| Admin app error boundaries | Admin is internal only. Add `error.tsx` / `global-error.tsx` when prioritised. |
-| Env var validation at startup | `validateEnv()` exists in `packages/shared` but isn't called in apps. Wire before production. |
-| Payment provider (Stripe) | `NullPaymentProvider` is correct for staging. Replace when billing is live. |
+| Item                               | Notes                                                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Sentry integration                 | Not needed for staging. Add before first paying customer. See `docs/04-runbooks/observability.md`. |
+| Log aggregation (Datadog, Logtail) | Vercel function logs are sufficient for staging.                                                   |
+| Uptime monitoring                  | Add Checkly or Better Uptime before production go-live.                                            |
+| CI deployment automation           | Migrations are run manually for now. Automate when deploying frequently.                           |
+| Admin app error boundaries         | Admin is internal only. Add `error.tsx` / `global-error.tsx` when prioritised.                     |
+| Env var validation at startup      | `validateEnv()` exists in `packages/shared` but isn't called in apps. Wire before production.      |
+| Payment provider (Stripe)          | `NullPaymentProvider` is correct for staging. Replace when billing is live.                        |
 
 ---
 
@@ -100,6 +100,7 @@ Create three projects in Vercel (one per app). In each:
 - Build and install commands come from `vercel.json` — no manual entry needed
 
 Connect each project to the GitHub repository. Vercel will:
+
 - Build preview deployments for every PR
 - Auto-deploy to production on merge to `main`
 
@@ -109,30 +110,30 @@ Set these in **Vercel → Project → Settings → Environment Variables**. Set 
 
 **All three apps:**
 
-| Variable | Value |
-|---|---|
-| `DATABASE_URL` | Neon staging connection string |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk staging publishable key |
-| `CLERK_SECRET_KEY` | Clerk staging secret key |
+| Variable                            | Value                          |
+| ----------------------------------- | ------------------------------ |
+| `DATABASE_URL`                      | Neon staging connection string |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk staging publishable key  |
+| `CLERK_SECRET_KEY`                  | Clerk staging secret key       |
 
 **`apps/dashboard` only:**
 
-| Variable | Value |
-|---|---|
-| `CLERK_WEBHOOK_SECRET` | Clerk webhook signing secret |
-| `NEXT_PUBLIC_APP_URL` | `https://staging.collectivemind.com` |
+| Variable                    | Value                                          |
+| --------------------------- | ---------------------------------------------- |
+| `CLERK_WEBHOOK_SECRET`      | Clerk webhook signing secret                   |
+| `NEXT_PUBLIC_APP_URL`       | `https://staging.collectivemind.com`           |
 | `NEXT_PUBLIC_DASHBOARD_URL` | `https://staging-dashboard.collectivemind.com` |
 
 **`apps/web` only:**
 
-| Variable | Value |
-|---|---|
+| Variable              | Value                                |
+| --------------------- | ------------------------------------ |
 | `NEXT_PUBLIC_APP_URL` | `https://staging.collectivemind.com` |
 
 **`apps/admin` only:**
 
-| Variable | Value |
-|---|---|
+| Variable              | Value                                      |
+| --------------------- | ------------------------------------------ |
 | `NEXT_PUBLIC_APP_URL` | `https://staging-admin.collectivemind.com` |
 
 > Never commit real secrets to `.env.*` files or `vercel.json`. All secrets live in Vercel's encrypted env var store.
@@ -188,11 +189,13 @@ A `503` response means the app is up but the database is unreachable — check t
 After each staging deployment, verify these paths:
 
 **Public site (`apps/web`)**
+
 - [ ] Homepage loads
 - [ ] `/products` page loads
 - [ ] No 500 errors in Vercel logs
 
 **Dashboard (`apps/dashboard`)**
+
 - [ ] `/sign-in` renders Clerk sign-in form
 - [ ] Sign in with a test account
 - [ ] Dashboard home loads and shows org context
@@ -200,12 +203,14 @@ After each staging deployment, verify these paths:
 - [ ] `/billing` page loads (shows "billing not live" notice — expected)
 
 **Admin (`apps/admin`)**
+
 - [ ] `/admin/products` loads for a `super_admin` user
 - [ ] `/admin/grants` loads
 - [ ] Creating a product works (fills form, saves, visible in list)
 - [ ] Audit log at `/admin/audit` shows the product.created entry
 
 **Webhook**
+
 - [ ] In Clerk dashboard, trigger a test event from Webhooks → your endpoint → Send example
 - [ ] Check Vercel logs for `clerk.webhook.*` log lines
 - [ ] Verify no errors
@@ -228,6 +233,7 @@ vercel logs --output raw | grep '"level":"error"'
 In Vercel → Deployments → find the previous good deployment → "Promote to Production".
 
 The health check will confirm the rollback was successful:
+
 ```bash
 curl https://staging-dashboard.collectivemind.com/api/health
 ```
@@ -248,15 +254,15 @@ See `docs/04-runbooks/prisma-migrations.md` for the full rollback guide.
 
 ## Staging vs production differences
 
-| Aspect | Staging | Production |
-|---|---|---|
-| Clerk instance | Staging (separate) | Production (separate) |
-| Database | Neon staging branch | Neon production branch |
-| URL | staging.collectivemind.com | collectivemind.com |
-| Sentry DSN | Optional (deferred) | Required before launch |
-| Log aggregation | Vercel logs only | Add drain before launch |
-| Payment provider | `NullPaymentProvider` | `NullPaymentProvider` → Stripe when ready |
-| Branch protection | Required | Required |
+| Aspect            | Staging                    | Production                                |
+| ----------------- | -------------------------- | ----------------------------------------- |
+| Clerk instance    | Staging (separate)         | Production (separate)                     |
+| Database          | Neon staging branch        | Neon production branch                    |
+| URL               | staging.collectivemind.com | collectivemind.com                        |
+| Sentry DSN        | Optional (deferred)        | Required before launch                    |
+| Log aggregation   | Vercel logs only           | Add drain before launch                   |
+| Payment provider  | `NullPaymentProvider`      | `NullPaymentProvider` → Stripe when ready |
+| Branch protection | Required                   | Required                                  |
 
 **Never point staging at the production database.** They must always use separate Neon branches.
 

@@ -14,7 +14,7 @@ const sections = [
     id: "introduction",
     title: "1. Introduction",
     content:
-      "CollectiveMind (\"we\", \"us\", \"our\") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.",
+      'CollectiveMind ("we", "us", "our") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.',
   },
   {
     id: "information-we-collect",
@@ -74,7 +74,9 @@ export default function PrivacyPage() {
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-2 text-sm text-slate-400">
-          <Link href="/legal" className="hover:text-slate-600">Legal</Link>
+          <Link href="/legal" className="hover:text-slate-600">
+            Legal
+          </Link>
           <span>/</span>
           <span className="text-slate-600">Privacy policy</span>
         </nav>

@@ -44,7 +44,10 @@ interface PaymentProvider {
   createCheckoutSession(params: CreateCheckoutParams): Promise<CheckoutSession>
 
   // Redirect user to provider's hosted billing portal
-  createBillingPortalSession(params: { providerCustomerId: string; returnUrl: string }): Promise<{ url: string }>
+  createBillingPortalSession(params: {
+    providerCustomerId: string
+    returnUrl: string
+  }): Promise<{ url: string }>
 
   // Verify and parse an inbound webhook POST body
   constructWebhookEvent(payload: string, signature: string): Promise<ProviderWebhookEvent>
@@ -63,10 +66,10 @@ Providers emit different event shapes. The adapter translates them to:
 
 ```typescript
 type ProviderWebhookEvent =
-  | { type: "subscription.created";  data: NormalizedSubscription }
-  | { type: "subscription.updated";  data: NormalizedSubscription }
+  | { type: "subscription.created"; data: NormalizedSubscription }
+  | { type: "subscription.updated"; data: NormalizedSubscription }
   | { type: "subscription.canceled"; data: NormalizedSubscription }
-  | { type: "invoice.paid";          data: NormalizedInvoice }
+  | { type: "invoice.paid"; data: NormalizedInvoice }
   | { type: "invoice.payment_failed"; data: NormalizedInvoice }
 ```
 
@@ -76,13 +79,13 @@ type ProviderWebhookEvent =
 
 `getPaymentProvider()` reads `process.env.PAYMENT_PROVIDER` and returns the corresponding adapter:
 
-| `PAYMENT_PROVIDER` | Adapter |
-|--------------------|---------|
-| (unset / `"null"`) | `NullPaymentProvider` |
-| `"stripe"` | `StripeProvider` (not yet implemented) |
-| `"paddle"` | `PaddleProvider` (not yet implemented) |
-| `"lemon_squeezy"` | `LemonSqueezyProvider` (not yet implemented) |
-| `"iyzico"` | `IyzicoProvider` (not yet implemented) |
+| `PAYMENT_PROVIDER` | Adapter                                      |
+| ------------------ | -------------------------------------------- |
+| (unset / `"null"`) | `NullPaymentProvider`                        |
+| `"stripe"`         | `StripeProvider` (not yet implemented)       |
+| `"paddle"`         | `PaddleProvider` (not yet implemented)       |
+| `"lemon_squeezy"`  | `LemonSqueezyProvider` (not yet implemented) |
+| `"iyzico"`         | `IyzicoProvider` (not yet implemented)       |
 
 ---
 
@@ -91,6 +94,7 @@ type ProviderWebhookEvent =
 The default provider when `PAYMENT_PROVIDER` is not set. It is a production no-op — not a mock.
 
 **Behavior:**
+
 - `createCheckoutSession` — redirects to `cancelUrl?notice=payment_not_configured`
 - `createBillingPortalSession` — redirects to `returnUrl?notice=payment_not_configured`
 - `constructWebhookEvent` — always throws (no webhooks in null mode)
@@ -139,6 +143,7 @@ neither      → hasAccess: false, plan: null, source: "none"
 ### AccessGrant
 
 `AccessGrant` is the manual override path. Use it for:
+
 - Beta/early-access accounts
 - Comped accounts (partnerships, press, internal)
 - Accounts transitioning from a different billing model
@@ -187,6 +192,7 @@ Return `200` even for skipped events — returning `4xx` causes providers to ret
 ### Idempotency
 
 All handlers use `upsert` or `updateMany` patterns:
+
 - Subscription upsert is keyed on `providerSubscriptionId`
 - Invoice upsert is keyed on `providerInvoiceId`
 - Calling the same handler twice for the same event is safe
@@ -198,6 +204,7 @@ All handlers use `upsert` or `updateMany` patterns:
 Invoices are numbered sequentially per calendar year: `INV-2026-0001`, `INV-2026-0002`, etc.
 
 `generateInvoiceNumber()` in `webhooks.ts` counts invoices created in the current year and uses `count + 1`. This is not perfectly atomic under concurrent load, but:
+
 - Invoice creation is low-frequency (one per billing period per customer)
 - Duplicates are caught by the `@@unique([invoiceNumber])` DB constraint
 - On constraint violation, the caller can retry
@@ -213,6 +220,7 @@ Plan ─── Price (providerPriceId, billingInterval)
 ```
 
 When a provider webhook arrives with a `providerPriceId`, `webhooks.ts` looks up the `Price` record to resolve the `Plan`. This means:
+
 - A single plan can have multiple provider prices (e.g. monthly and annual)
 - Changing providers requires only adding new `Price` rows — the Plan model is provider-agnostic
 
@@ -229,6 +237,7 @@ Follow these steps to wire in a payment provider (e.g. Stripe).
 Create `packages/billing/src/providers/stripe/index.ts` implementing `PaymentProvider`.
 
 Key responsibilities:
+
 - `constructWebhookEvent`: use the provider SDK's signature verification (never skip this)
 - Normalize provider-specific subscription/invoice fields to `NormalizedSubscription` / `NormalizedInvoice`
 - Map provider status strings to the normalized status enum
@@ -242,10 +251,10 @@ case "stripe":
 
 ### Step 3 — Add environment variables
 
-| Variable | Description |
-|----------|-------------|
-| `PAYMENT_PROVIDER` | Set to `"stripe"` (or other provider key) |
-| `STRIPE_SECRET_KEY` | Provider secret key |
+| Variable                | Description                                    |
+| ----------------------- | ---------------------------------------------- |
+| `PAYMENT_PROVIDER`      | Set to `"stripe"` (or other provider key)      |
+| `STRIPE_SECRET_KEY`     | Provider secret key                            |
 | `STRIPE_WEBHOOK_SECRET` | Webhook signing secret from provider dashboard |
 
 ### Step 4 — Create Price records
@@ -272,6 +281,7 @@ https://<your-domain>/api/webhooks/billing
 ```
 
 Subscribe to at minimum:
+
 - `customer.subscription.created`
 - `customer.subscription.updated`
 - `customer.subscription.deleted`
@@ -340,6 +350,7 @@ Cache at request scope with React's `cache()`.
 ### Webhook returns "No organization found for customer"
 
 The `providerCustomerId` on the inbound event doesn't match any `Subscription.providerCustomerId` in the DB. This happens when:
+
 - The subscription was created outside the normal flow (provider dashboard)
 - The customer ID wasn't stored during checkout
 

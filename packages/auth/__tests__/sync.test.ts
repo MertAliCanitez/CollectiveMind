@@ -9,12 +9,7 @@
  */
 import { describe, it, expect, beforeEach, afterAll } from "vitest"
 import { handleClerkWebhook } from "../src/sync.js"
-import {
-  testDb,
-  cleanDatabase,
-  createTestUser,
-  createTestOrg,
-} from "@repo/testing"
+import { testDb, cleanDatabase, createTestUser, createTestOrg } from "@repo/testing"
 
 beforeEach(cleanDatabase)
 

@@ -44,9 +44,8 @@ export default function ContactPage() {
               Let&apos;s talk
             </h1>
             <p className="mt-5 text-lg leading-relaxed text-slate-500">
-              Whether you want a product demo, have a question about pricing, or
-              just want to understand if CollectiveMind is a good fit for your
-              team — we&apos;re happy to help.
+              Whether you want a product demo, have a question about pricing, or just want to
+              understand if CollectiveMind is a good fit for your team — we&apos;re happy to help.
             </p>
 
             <div className="mt-10 space-y-6">
@@ -65,13 +64,10 @@ export default function ContactPage() {
 
             {/* During early access note */}
             <div className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5">
-              <p className="text-sm font-semibold text-slate-700">
-                Early access period
-              </p>
+              <p className="text-sm font-semibold text-slate-700">Early access period</p>
               <p className="mt-1 text-sm text-slate-500">
-                CollectiveMind is currently in early access. All plans are
-                available — reach out and we&apos;ll get you set up directly.
-                No credit card required.
+                CollectiveMind is currently in early access. All plans are available — reach out and
+                we&apos;ll get you set up directly. No credit card required.
               </p>
             </div>
           </div>

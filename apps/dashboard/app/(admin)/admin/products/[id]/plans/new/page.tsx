@@ -78,13 +78,7 @@ export default async function NewPlanPage({ params, searchParams }: Props) {
               required
               description="e.g. 4900 = $49.00"
             >
-              <Input
-                id="displayPrice"
-                name="displayPrice"
-                type="number"
-                min={0}
-                defaultValue={0}
-              />
+              <Input id="displayPrice" name="displayPrice" type="number" min={0} defaultValue={0} />
             </FormField>
           </div>
 
@@ -111,7 +105,10 @@ export default async function NewPlanPage({ params, searchParams }: Props) {
 
           <div className="flex items-center gap-3 pt-2">
             <Button type="submit">Create plan</Button>
-            <a href={`/admin/products/${id}`} className="text-sm text-slate-500 hover:text-slate-700">
+            <a
+              href={`/admin/products/${id}`}
+              className="text-sm text-slate-500 hover:text-slate-700"
+            >
               Cancel
             </a>
           </div>

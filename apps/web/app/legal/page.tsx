@@ -3,7 +3,8 @@ import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Legal",
-  description: "Legal documents for CollectiveMind — privacy policy, terms of service, and cookie policy.",
+  description:
+    "Legal documents for CollectiveMind — privacy policy, terms of service, and cookie policy.",
 }
 
 const documents = [
@@ -28,9 +29,7 @@ export default function LegalIndexPage() {
   return (
     <section className="bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Legal
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Legal</h1>
         <p className="mt-4 text-slate-500">
           Important documents about how CollectiveMind operates and your rights as a user.
         </p>
@@ -40,7 +39,7 @@ export default function LegalIndexPage() {
             <Link
               key={doc.href}
               href={doc.href}
-              className="flex items-center justify-between gap-6 px-6 py-5 transition-colors hover:bg-slate-50 first:rounded-t-2xl last:rounded-b-2xl"
+              className="flex items-center justify-between gap-6 px-6 py-5 transition-colors first:rounded-t-2xl last:rounded-b-2xl hover:bg-slate-50"
             >
               <div>
                 <p className="text-sm font-semibold text-slate-900">{doc.title}</p>

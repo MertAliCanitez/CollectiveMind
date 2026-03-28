@@ -9,17 +9,18 @@ It applies to human contributors and to Claude Code-driven development equally.
 
 Every change lives on a branch. Direct commits to `main` are blocked.
 
-| Pattern | When to use | Example |
-|---|---|---|
-| `feature/<slug>` | New functionality | `feature/webhook-payment-provider` |
-| `fix/<slug>` | Bug fix | `fix/grant-expiry-check` |
+| Pattern           | When to use                                | Example                            |
+| ----------------- | ------------------------------------------ | ---------------------------------- |
+| `feature/<slug>`  | New functionality                          | `feature/webhook-payment-provider` |
+| `fix/<slug>`      | Bug fix                                    | `fix/grant-expiry-check`           |
 | `refactor/<slug>` | Structural change with no behaviour change | `refactor/auth-middleware-extract` |
-| `chore/<slug>` | Dependency updates, config, tooling | `chore/upgrade-clerk-v7` |
-| `docs/<slug>` | Documentation only | `docs/billing-runbook-update` |
-| `test/<slug>` | Tests only | `test/entitlement-edge-cases` |
-| `db/<slug>` | Schema migrations | `db/add-invoice-pdf-url` |
+| `chore/<slug>`    | Dependency updates, config, tooling        | `chore/upgrade-clerk-v7`           |
+| `docs/<slug>`     | Documentation only                         | `docs/billing-runbook-update`      |
+| `test/<slug>`     | Tests only                                 | `test/entitlement-edge-cases`      |
+| `db/<slug>`       | Schema migrations                          | `db/add-invoice-pdf-url`           |
 
 **Rules:**
+
 - Slug is lowercase, hyphen-separated, ≤ 40 characters
 - Branch off `main`
 - One concern per branch — do not bundle unrelated changes
@@ -40,21 +41,22 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
 **Types:**
 
-| Type | Use for |
-|---|---|
-| `feat` | New feature or behaviour |
-| `fix` | Bug fix |
+| Type       | Use for                                         |
+| ---------- | ----------------------------------------------- |
+| `feat`     | New feature or behaviour                        |
+| `fix`      | Bug fix                                         |
 | `refactor` | Code change that is neither a fix nor a feature |
-| `test` | Adding or updating tests |
-| `docs` | Documentation only |
-| `chore` | Tooling, dependencies, config |
-| `db` | Prisma schema or migration changes |
-| `perf` | Performance improvement |
-| `ci` | CI/CD workflow changes |
+| `test`     | Adding or updating tests                        |
+| `docs`     | Documentation only                              |
+| `chore`    | Tooling, dependencies, config                   |
+| `db`       | Prisma schema or migration changes              |
+| `perf`     | Performance improvement                         |
+| `ci`       | CI/CD workflow changes                          |
 
 **Scopes:** `auth`, `billing`, `admin`, `dashboard`, `web`, `db`, `ui`, `shared`, `config`, `ci`, `hardening`, `testing`
 
 **Examples:**
+
 ```
 feat(billing): add cancelAtPeriodEnd to subscription state machine
 fix(auth): redirect to /home instead of / on access denied
@@ -64,8 +66,9 @@ ci: add format check job
 ```
 
 **Rules:**
+
 - Summary is imperative mood, ≤ 72 characters, no trailing period
-- Body explains *why*, not *what* (the diff shows the what)
+- Body explains _why_, not _what_ (the diff shows the what)
 - Reference issues in footer: `Closes #42`
 
 ---
@@ -109,6 +112,7 @@ See `docs/04-runbooks/local-setup.md` for the full setup walkthrough.
 6. Self-review your diff before requesting review
 
 **CI must pass before merge:**
+
 - Lint
 - Format
 - Type Check
@@ -124,6 +128,7 @@ See `docs/04-runbooks/local-setup.md` for the full setup walkthrough.
 - Delete the source branch after merge
 
 **Squash commit message** — edit GitHub's pre-populated message to follow Conventional Commits:
+
 ```
 feat(billing): add Stripe webhook processor (#42)
 ```
@@ -189,15 +194,15 @@ Components install to `packages/ui/src/components/` and are re-exported from `pa
 
 ## Branch protection (GitHub → Settings → Branches → main)
 
-| Rule | Value |
-|---|---|
-| Require pull request before merging | ✓ |
-| Required approving reviews | 1 |
-| Dismiss stale reviews on new push | ✓ |
-| Require status checks to pass | ✓ |
-| Required checks | Lint, Format, Type Check, Prisma Schema, Tests, Build |
-| Require branches up to date before merging | ✓ |
-| Restrict pushes to main | Admins only |
+| Rule                                       | Value                                                 |
+| ------------------------------------------ | ----------------------------------------------------- |
+| Require pull request before merging        | ✓                                                     |
+| Required approving reviews                 | 1                                                     |
+| Dismiss stale reviews on new push          | ✓                                                     |
+| Require status checks to pass              | ✓                                                     |
+| Required checks                            | Lint, Format, Type Check, Prisma Schema, Tests, Build |
+| Require branches up to date before merging | ✓                                                     |
+| Restrict pushes to main                    | Admins only                                           |
 
 ---
 
@@ -206,6 +211,7 @@ Components install to `packages/ui/src/components/` and are re-exported from `pa
 See `docs/04-runbooks/git-workflow.md` for the complete Claude Code branch/commit/PR protocol.
 
 **Short version:**
+
 1. Branch off `main` with the correct prefix
 2. Implement, then `pnpm turbo type-check`
 3. Commit with Conventional Commits + `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`

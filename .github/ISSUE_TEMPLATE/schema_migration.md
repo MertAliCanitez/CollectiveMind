@@ -13,8 +13,8 @@ assignees: ""
 ## Affected models
 
 | Model | Change |
-|---|---|
-|  |  |
+| ----- | ------ |
+|       |        |
 
 ## Migration notes
 

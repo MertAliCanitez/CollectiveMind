@@ -10,14 +10,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  default:
-    "bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-500 shadow-sm",
+  default: "bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-500 shadow-sm",
   outline:
     "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400 focus-visible:ring-slate-500",
-  ghost:
-    "text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-500",
-  secondary:
-    "bg-slate-100 text-slate-800 hover:bg-slate-200 focus-visible:ring-slate-500",
+  ghost: "text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-500",
+  secondary: "bg-slate-100 text-slate-800 hover:bg-slate-200 focus-visible:ring-slate-500",
   link: "text-indigo-600 hover:text-indigo-700 underline-offset-4 hover:underline p-0 h-auto",
 }
 

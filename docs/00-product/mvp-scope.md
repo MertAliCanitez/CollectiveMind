@@ -13,6 +13,7 @@ This file is the authoritative list of what is and is not in scope for the v1 pr
 ## In Scope
 
 ### Foundation (Phase 0)
+
 - [x] Turborepo + pnpm monorepo with all packages scaffolded
 - [x] TypeScript strict mode across all packages
 - [x] ESLint + Prettier configured and enforced in CI
@@ -23,6 +24,7 @@ This file is the authoritative list of what is and is not in scope for the v1 pr
 - [ ] Environment variables set in Vercel and local `.env.local`
 
 ### Auth & Organizations (Phase 1)
+
 - [ ] Clerk dev instance configured (Organizations enabled, custom roles added)
 - [ ] Clerk webhook handler in `apps/dashboard` (user + org + membership events)
 - [ ] DB sync: User, Organization, OrgMember upserted on every relevant webhook
@@ -34,6 +36,7 @@ This file is the authoritative list of what is and is not in scope for the v1 pr
 - [ ] Admin panel: list orgs, view org members, view subscriptions
 
 ### Product Catalog & Billing Foundation (Phase 2)
+
 - [ ] Products and Plans seeded in DB (`prisma/seed.ts`)
 - [ ] `checkEntitlement({ orgId, productSlug })` enforced at product domain boundaries
 - [ ] Subscription created manually by staff in admin panel
@@ -43,6 +46,7 @@ This file is the authoritative list of what is and is not in scope for the v1 pr
 - [ ] AuditLog written for every subscription create/update
 
 ### Marketing Site (Phase 3)
+
 - [ ] Homepage with value proposition and CTA
 - [ ] Product pages (one per Product in DB)
 - [ ] Pricing page
@@ -51,6 +55,7 @@ This file is the authoritative list of what is and is not in scope for the v1 pr
 - [ ] `apps/web` deployed to production Vercel
 
 ### Production Hardening (Phase 4)
+
 - [ ] Staging environment (separate Clerk instance, separate DB)
 - [ ] Structured logger (`packages/shared/src/logger.ts`) used in all server actions and API routes
 - [ ] Sentry error monitoring wired in `apps/dashboard` and `apps/admin`
@@ -66,16 +71,16 @@ This file is the authoritative list of what is and is not in scope for the v1 pr
 
 These are explicit decisions — they will not be built until post-MVP prioritization:
 
-| Feature | Why Deferred |
-|---------|-------------|
-| Live payment (Stripe) | NullPaymentProvider covers launch; payment complexity deferred |
-| Transactional email | Clerk handles auth emails; no other triggers needed at v1 |
-| Customer-facing developer API | No demand yet; scope risk high |
-| SAML SSO | Clerk supports it; enable per-org when a customer needs it |
-| Usage-based billing | No metering infrastructure; flat subscriptions sufficient |
-| Internationalization | Single market at launch |
-| Mobile apps | Web-only at v1 |
-| `apps/dashboard` product features beyond access gate | Product-specific features are post-MVP per-product scope |
+| Feature                                              | Why Deferred                                                   |
+| ---------------------------------------------------- | -------------------------------------------------------------- |
+| Live payment (Stripe)                                | NullPaymentProvider covers launch; payment complexity deferred |
+| Transactional email                                  | Clerk handles auth emails; no other triggers needed at v1      |
+| Customer-facing developer API                        | No demand yet; scope risk high                                 |
+| SAML SSO                                             | Clerk supports it; enable per-org when a customer needs it     |
+| Usage-based billing                                  | No metering infrastructure; flat subscriptions sufficient      |
+| Internationalization                                 | Single market at launch                                        |
+| Mobile apps                                          | Web-only at v1                                                 |
+| `apps/dashboard` product features beyond access gate | Product-specific features are post-MVP per-product scope       |
 
 ---
 
@@ -90,6 +95,7 @@ _None currently open._
 ## How to Update This File
 
 When scope changes:
+
 1. Move items between sections with a short rationale note.
 2. For significant scope additions, create an ADR in `docs/03-decisions/`.
 3. Update `docs/02-backlog/backlog.md` to reflect the change.

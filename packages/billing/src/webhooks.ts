@@ -28,7 +28,11 @@
  */
 import { db } from "@repo/database"
 import { logger } from "@repo/shared"
-import type { ProviderWebhookEvent, NormalizedSubscription, NormalizedInvoice } from "./providers/interface.js"
+import type {
+  ProviderWebhookEvent,
+  NormalizedSubscription,
+  NormalizedInvoice,
+} from "./providers/interface.js"
 import type { WebhookProcessingResult } from "./types.js"
 
 // ─── Main dispatcher ──────────────────────────────────────────────────────────
@@ -215,9 +219,7 @@ async function handleSubscriptionCanceled(
  * Handles invoice.paid events.
  * Creates or updates the Invoice record and marks it PAID.
  */
-async function handleInvoicePaid(
-  data: NormalizedInvoice,
-): Promise<WebhookProcessingResult> {
+async function handleInvoicePaid(data: NormalizedInvoice): Promise<WebhookProcessingResult> {
   const subscription = await db.subscription.findFirst({
     where: { providerSubscriptionId: data.providerSubscriptionId },
     select: { id: true, organizationId: true },

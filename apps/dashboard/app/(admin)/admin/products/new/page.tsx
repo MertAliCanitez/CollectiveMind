@@ -22,10 +22,7 @@ export default async function NewProductPage({ searchParams }: Props) {
     <div>
       <PageHeader
         title="New Product"
-        breadcrumbs={[
-          { label: "Products", href: "/admin/products" },
-          { label: "New" },
-        ]}
+        breadcrumbs={[{ label: "Products", href: "/admin/products" }, { label: "New" }]}
       />
 
       <div className="max-w-xl rounded-xl border border-slate-200 bg-white p-6">

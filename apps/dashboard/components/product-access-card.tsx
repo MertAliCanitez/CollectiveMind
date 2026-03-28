@@ -25,18 +25,18 @@ export function ProductAccessCard({ product, entitlement }: ProductAccessCardPro
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-slate-900 truncate">{product.name}</h3>
+            <h3 className="truncate text-sm font-semibold text-slate-900">{product.name}</h3>
             {isComingSoon && <Badge variant="secondary">Coming soon</Badge>}
             {hasAccess && !isComingSoon && <Badge variant="success">Active</Badge>}
           </div>
-          <p className="mt-1 text-sm text-slate-500 line-clamp-2">{product.content?.tagline}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-slate-500">{product.content?.tagline}</p>
         </div>
         {hasAccess && !isComingSoon && (
           <ChevronRight
             size={16}
-            className="mt-0.5 shrink-0 text-slate-400 group-hover:text-slate-600 transition-colors"
+            className="mt-0.5 shrink-0 text-slate-400 transition-colors group-hover:text-slate-600"
           />
         )}
       </div>
@@ -44,7 +44,7 @@ export function ProductAccessCard({ product, entitlement }: ProductAccessCardPro
       <div className="mt-4 flex items-center gap-2">
         {hasAccess && planName ? (
           <>
-            <Check size={14} className="text-emerald-500 shrink-0" />
+            <Check size={14} className="shrink-0 text-emerald-500" />
             <span className="text-xs text-slate-600">
               {planName} plan
               {entitlement?.source === "grant" && (
@@ -56,7 +56,7 @@ export function ProductAccessCard({ product, entitlement }: ProductAccessCardPro
           <span className="text-xs text-slate-500">Not yet available</span>
         ) : (
           <>
-            <AlertCircle size={14} className="text-slate-400 shrink-0" />
+            <AlertCircle size={14} className="shrink-0 text-slate-400" />
             <span className="text-xs text-slate-500">No active subscription</span>
           </>
         )}

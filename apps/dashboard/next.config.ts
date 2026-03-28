@@ -1,13 +1,7 @@
 import type { NextConfig } from "next"
 
 const config: NextConfig = {
-  transpilePackages: [
-    "@repo/ui",
-    "@repo/shared",
-    "@repo/auth",
-    "@repo/billing",
-    "@repo/database",
-  ],
+  transpilePackages: ["@repo/ui", "@repo/shared", "@repo/auth", "@repo/billing", "@repo/database"],
 
   async headers() {
     return [

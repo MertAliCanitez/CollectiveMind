@@ -20,9 +20,7 @@ export async function getProductCatalog(): Promise<ProductCatalog | null> {
   }
 }
 
-export async function getCatalogProduct(
-  slug: string,
-): Promise<CatalogProduct | null> {
+export async function getCatalogProduct(slug: string): Promise<CatalogProduct | null> {
   try {
     return await _getCatalogProduct(slug)
   } catch {

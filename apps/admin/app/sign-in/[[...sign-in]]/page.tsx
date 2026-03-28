@@ -14,7 +14,7 @@ export default function AdminSignInPage() {
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <p className="text-sm text-muted-foreground">Internal staff access only</p>
+          <p className="text-muted-foreground text-sm">Internal staff access only</p>
         </div>
         <SignIn afterSignInUrl="/" />
       </div>

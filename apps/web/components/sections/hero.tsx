@@ -24,9 +24,7 @@ export function Hero({
     <section
       className={cn(
         "relative overflow-hidden",
-        dark
-          ? "bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950"
-          : "bg-white",
+        dark ? "bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" : "bg-white",
       )}
     >
       {/* Subtle grid pattern for dark hero */}
@@ -43,7 +41,7 @@ export function Hero({
 
       {/* Indigo glow behind hero text */}
       {dark && (
-        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[900px] rounded-full bg-indigo-600 opacity-[0.07] blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-600 opacity-[0.07] blur-3xl" />
       )}
 
       <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
@@ -95,7 +93,7 @@ export function Hero({
                 asChild
                 className={
                   dark
-                    ? "border-slate-700 bg-transparent text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600"
+                    ? "border-slate-700 bg-transparent text-slate-300 hover:border-slate-600 hover:bg-slate-800 hover:text-white"
                     : undefined
                 }
               >

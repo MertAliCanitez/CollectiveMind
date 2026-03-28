@@ -8,11 +8,7 @@
  * Requires TEST_DATABASE_URL to be set.
  */
 import { describe, it, expect, beforeEach, afterAll } from "vitest"
-import {
-  createSubscription,
-  cancelSubscription,
-  updateSubscription,
-} from "../src/subscriptions.js"
+import { createSubscription, cancelSubscription, updateSubscription } from "../src/subscriptions.js"
 import {
   testDb,
   cleanDatabase,
@@ -115,10 +111,7 @@ describe("createSubscription", () => {
       data: { clerkId: "aud_actor", email: "actor@test.invalid" },
     })
 
-    const sub = await createSubscription(
-      { organizationId: org.id, planId: plan.id },
-      actor.id,
-    )
+    const sub = await createSubscription({ organizationId: org.id, planId: plan.id }, actor.id)
 
     const log = await testDb.auditLog.findFirst({
       where: { resourceId: sub.id, action: "subscription.created" },

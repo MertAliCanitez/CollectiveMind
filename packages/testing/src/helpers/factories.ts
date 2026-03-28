@@ -4,24 +4,21 @@
  * Generated IDs are deterministic when a seed is provided so tests are reproducible.
  */
 import { testDb } from "./database.js"
-import type {
-  BillingInterval,
-  PlanStatus,
-  SubscriptionStatus,
-  OrgRole,
-} from "@repo/database"
+import type { BillingInterval, PlanStatus, SubscriptionStatus, OrgRole } from "@repo/database"
 
 let seq = 0
 function nextSeq(): number {
   return ++seq
 }
 
-export async function createTestUser(overrides: Partial<{
-  clerkId: string
-  email: string
-  firstName: string
-  role: OrgRole
-}> = {}) {
+export async function createTestUser(
+  overrides: Partial<{
+    clerkId: string
+    email: string
+    firstName: string
+    role: OrgRole
+  }> = {},
+) {
   const n = nextSeq()
   return testDb.user.create({
     data: {
@@ -33,11 +30,13 @@ export async function createTestUser(overrides: Partial<{
   })
 }
 
-export async function createTestOrg(overrides: Partial<{
-  clerkId: string
-  name: string
-  slug: string
-}> = {}) {
+export async function createTestOrg(
+  overrides: Partial<{
+    clerkId: string
+    name: string
+    slug: string
+  }> = {},
+) {
   const n = nextSeq()
   return testDb.organization.create({
     data: {
@@ -48,10 +47,7 @@ export async function createTestOrg(overrides: Partial<{
   })
 }
 
-export async function createTestOrgWithAdmin(overrides?: {
-  orgSlug?: string
-  orgName?: string
-}) {
+export async function createTestOrgWithAdmin(overrides?: { orgSlug?: string; orgName?: string }) {
   const org = await createTestOrg({
     name: overrides?.orgName,
     slug: overrides?.orgSlug,
@@ -69,10 +65,12 @@ export async function createTestOrgWithAdmin(overrides?: {
   return { org, user }
 }
 
-export async function createTestProduct(overrides: Partial<{
-  slug: string
-  name: string
-}> = {}) {
+export async function createTestProduct(
+  overrides: Partial<{
+    slug: string
+    name: string
+  }> = {},
+) {
   const n = nextSeq()
   return testDb.product.create({
     data: {
@@ -101,9 +99,7 @@ export async function createTestPlan(params: {
       currency: "USD",
       isPublic: true,
       status: params.status ?? "ACTIVE",
-      features: params.features
-        ? { create: params.features }
-        : undefined,
+      features: params.features ? { create: params.features } : undefined,
     },
     include: { features: true },
   })

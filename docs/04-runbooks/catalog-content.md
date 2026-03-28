@@ -20,12 +20,14 @@ UI (apps/web pricing page, apps/dashboard billing settings)
 ```
 
 **DB layer** (`Product`, `Plan`, `PlanFeature`) is the source of truth for:
+
 - Which products exist and which are active
 - What plans are available and at what price
 - What features/entitlements each plan grants (key/value pairs)
 - Subscription and access control logic
 
 **Content layer** (`product-content.ts`) is the source of truth for:
+
 - Product taglines and value propositions
 - Plan card taglines, badges, and highlight bullets
 - Feature key → human-readable label mappings (comparison table rows)
@@ -35,12 +37,12 @@ UI (apps/web pricing page, apps/dashboard billing settings)
 
 ## File Map
 
-| File | Purpose |
-|------|---------|
-| `packages/billing/src/product-content.ts` | All marketing copy |
-| `packages/billing/src/catalog.ts` | Query layer — merges DB + content |
-| `prisma/seed.ts` | Development DB seed |
-| `prisma/schema.prisma` | Product/Plan/PlanFeature schema |
+| File                                      | Purpose                           |
+| ----------------------------------------- | --------------------------------- |
+| `packages/billing/src/product-content.ts` | All marketing copy                |
+| `packages/billing/src/catalog.ts`         | Query layer — merges DB + content |
+| `prisma/seed.ts`                          | Development DB seed               |
+| `prisma/schema.prisma`                    | Product/Plan/PlanFeature schema   |
 
 ---
 
@@ -48,11 +50,11 @@ UI (apps/web pricing page, apps/dashboard billing settings)
 
 ### Current product catalog
 
-| Slug | Name | Status | DB Sort |
-|------|------|--------|---------|
-| `insights` | Insights | ACTIVE | 1 |
-| `connect` | Connect | ACTIVE | 2 |
-| `workspace` | Workspace | COMING_SOON | 3 |
+| Slug        | Name      | Status      | DB Sort |
+| ----------- | --------- | ----------- | ------- |
+| `insights`  | Insights  | ACTIVE      | 1       |
+| `connect`   | Connect   | ACTIVE      | 2       |
+| `workspace` | Workspace | COMING_SOON | 3       |
 
 ### Adding a new product
 
@@ -69,7 +71,7 @@ const myProduct = await db.product.upsert({
     name: "My Product",
     description: "One sentence for admin/internal use.",
     status: ProductStatus.ACTIVE,
-    sortOrder: 4,  // next after existing products
+    sortOrder: 4, // next after existing products
   },
 })
 ```
@@ -129,11 +131,11 @@ const myPlan = await db.plan.upsert({
     slug: "insights:teams",
     description: "For mid-size teams who need more than Pro.",
     billingInterval: BillingInterval.MONTH,
-    displayPrice: 14900,  // $149.00/month — in cents
+    displayPrice: 14900, // $149.00/month — in cents
     currency: "USD",
     isPublic: true,
     status: PlanStatus.ACTIVE,
-    sortOrder: 3,  // between Pro (2) and Enterprise (4)
+    sortOrder: 3, // between Pro (2) and Enterprise (4)
     features: {
       create: [
         { key: "max_seats", value: "100" },
@@ -215,9 +217,7 @@ The UI should handle this:
 const { products, billing } = await getProductCatalog()
 
 // On the pricing card CTA:
-const ctaLabel = billing.isLive
-  ? plan.content?.ctaLabel ?? "Get started"
-  : "Contact us"
+const ctaLabel = billing.isLive ? (plan.content?.ctaLabel ?? "Get started") : "Contact us"
 ```
 
 Plan prices (`formattedPrice`) are always returned regardless of billing configuration — they are display values from the DB, not live provider prices. This lets you show a pricing page even before payment is wired in.
@@ -246,6 +246,7 @@ const rows = product.comparisonConfig.map((config) => ({
 ```
 
 Format semantics:
+
 - `"boolean"`: `"true"` → checkmark icon, `"false"` → dash icon
 - `"text"`: render as-is (`"unlimited"`, `"custom"`, `"30"`)
 - `"number"`: render as-is (numeric string — format with locale if needed)
@@ -256,11 +257,11 @@ Format semantics:
 
 `PlanBadge` values and their intended use:
 
-| Badge | Use case |
-|-------|---------|
-| `most_popular` | Highlight the tier most customers choose. Use on at most one plan per product. |
-| `best_value` | Highlight the tier with the best per-unit economics. Typically the annual/higher tier. |
-| `enterprise` | Signal that this plan requires a sales conversation. Usually the top tier. |
+| Badge          | Use case                                                                               |
+| -------------- | -------------------------------------------------------------------------------------- |
+| `most_popular` | Highlight the tier most customers choose. Use on at most one plan per product.         |
+| `best_value`   | Highlight the tier with the best per-unit economics. Typically the annual/higher tier. |
+| `enterprise`   | Signal that this plan requires a sales conversation. Usually the top tier.             |
 
 Only one plan per product should carry a badge. Having two plans badged dilutes the signal.
 
@@ -269,11 +270,13 @@ Only one plan per product should carry a badge. Having two plans badged dilutes 
 ## Plan Content Guidelines
 
 ### Taglines
+
 - 3–7 words
 - Describe the customer, not the feature: "For growing teams" not "25 seats included"
 - Present tense, no punctuation
 
 ### Highlight bullets
+
 - 3–5 bullets per plan
 - Sentence fragments (noun phrases or short verb phrases)
 - Lead with the most important differentiator from the tier below
@@ -281,12 +284,14 @@ Only one plan per product should carry a badge. Having two plans badged dilutes 
 - Do not repeat what's already communicated by the price
 
 ### Value propositions
+
 - 2–3 sentences
 - Structure: [what it does] → [who it's for] → [key differentiation]
 - Avoid superlatives ("best", "most powerful") and vague claims ("world-class")
 - Write for a skeptical reader who has seen many SaaS pitches
 
 ### CTA labels
+
 - Free tier: "Get started free" or "Start for free"
 - Paid tier with trial: "Start free trial"
 - Paid tier without trial: "Get started"
@@ -299,12 +304,14 @@ Only one plan per product should carry a badge. Having two plans badged dilutes 
 ### `getCatalogProduct` returns `null`
 
 The product either doesn't exist in the DB or has `status !== "ACTIVE"`. Check:
+
 - `db.product.findFirst({ where: { slug: "..." } })` — does the row exist?
 - Is `status` set to `ACTIVE`? COMING_SOON products are excluded from `getProductCatalog` and `getCatalogProduct`.
 
 ### Plan missing from catalog
 
 `getProductCatalog()` filters on `isPublic: true` and `status: "ACTIVE"`. If a plan is not appearing:
+
 - Check `isPublic` — set to `false` for internal/legacy plans
 - Check `status` — `LEGACY` and `DEPRECATED` plans are excluded
 
@@ -315,6 +322,7 @@ The plan slug in `PRODUCT_CONTENT[productSlug].plans` must exactly match `Plan.s
 ### Feature not appearing in comparison table
 
 The feature key must be present in both:
+
 1. `PlanFeature` rows in the DB for all plans in the product
 2. `featureDisplayConfig` array in `PRODUCT_CONTENT` for the product
 

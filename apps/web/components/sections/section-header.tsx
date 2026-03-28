@@ -16,24 +16,14 @@ export function SectionHeader({
   className,
 }: SectionHeaderProps) {
   return (
-    <div
-      className={cn(
-        "max-w-3xl",
-        align === "center" && "mx-auto text-center",
-        className,
-      )}
-    >
+    <div className={cn("max-w-3xl", align === "center" && "mx-auto text-center", className)}>
       {eyebrow && (
         <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-indigo-600">
           {eyebrow}
         </p>
       )}
-      <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-        {heading}
-      </h2>
-      {subheading && (
-        <p className="mt-4 text-lg leading-relaxed text-slate-600">{subheading}</p>
-      )}
+      <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{heading}</h2>
+      {subheading && <p className="mt-4 text-lg leading-relaxed text-slate-600">{subheading}</p>}
     </div>
   )
 }

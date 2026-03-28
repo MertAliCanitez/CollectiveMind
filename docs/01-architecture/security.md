@@ -18,6 +18,7 @@ Each section below addresses one or more of these threats.
 ## Authentication Security
 
 Authentication is delegated to **Clerk**. Clerk handles:
+
 - Password hashing (bcrypt, never visible to the application)
 - Session token generation and rotation
 - OAuth flow security
@@ -63,7 +64,7 @@ const subscription = await db.subscription.findUnique({ where: { id: params.id }
 
 // CORRECT — verifies ownership via orgId from JWT
 const subscription = await db.subscription.findFirst({
-  where: { id: params.id, organizationId: orgId }  // orgId from auth()
+  where: { id: params.id, organizationId: orgId }, // orgId from auth()
 })
 ```
 
@@ -86,6 +87,7 @@ Platform role checks happen in middleware and are re-verified in every server co
 Every table that contains customer data has an `organizationId` column that is indexed.
 
 **Query policy:**
+
 - Server components: derive `orgId` from `auth()`, pass to domain functions
 - Domain functions: include `organizationId` in every `where` clause
 - No cross-org queries are permitted outside of the admin domain (which has explicit `super_admin` gate)
@@ -107,18 +109,21 @@ if (!parsed.success) return Response.json({ errors: parsed.error.flatten() }, { 
 ```
 
 Zod schemas live in `packages/types` and are shared between:
+
 - Route Handlers (server-side validation)
 - React Hook Form (client-side validation)
 
 This ensures the same rules apply on both sides without duplication.
 
 **What this prevents:**
+
 - SQL injection: Prisma uses parameterized queries — raw string interpolation is never used. Zod provides an additional layer by rejecting malformed input before it reaches Prisma.
 - XSS: React escapes output by default. `dangerouslySetInnerHTML` is never used. User-supplied content is never rendered unescaped.
 
 ### No Raw SQL
 
 Prisma's query builder is used for all database operations. `$queryRaw` is only acceptable for:
+
 - Queries not expressible in Prisma (complex CTEs, window functions)
 - Must use tagged template literals: `prisma.$queryRaw`\`SELECT ... WHERE id = ${id}\`` (parameterized — Prisma sanitizes the inputs)
 
@@ -163,13 +168,13 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://clerk.collectivemind.com",  // Clerk requires unsafe-inline for its components
+      "script-src 'self' 'unsafe-inline' https://clerk.collectivemind.com", // Clerk requires unsafe-inline for its components
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "connect-src 'self' https://clerk.collectivemind.com",
       "frame-src https://clerk.collectivemind.com",
-    ].join("; ")
-  }
+    ].join("; "),
+  },
 ]
 ```
 
@@ -190,6 +195,7 @@ Next.js App Router's Route Handlers are same-origin by default. All state-mutati
 ## Rate Limiting
 
 At v1, rate limiting is handled at the CDN/Vercel Edge level via Vercel's built-in rate limiting. Post-MVP, implement application-level rate limiting with Upstash Redis on:
+
 - `/api/webhooks/*` — high-frequency provider callbacks
 - Auth endpoints — Clerk already rate-limits, but app-level secondary protection
 - Any public API endpoints

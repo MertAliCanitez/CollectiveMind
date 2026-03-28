@@ -45,8 +45,7 @@ function write(level: LogLevel, message: string, ctx: LogContext = {}): void {
 
   if (process.env.NODE_ENV === "development") {
     const prefix = `[${level.toUpperCase()}]`
-    const method =
-      level === "error" ? console.error : level === "warn" ? console.warn : console.log
+    const method = level === "error" ? console.error : console.warn
     method(prefix, message, Object.keys(safe).length > 0 ? safe : "")
   } else {
     process.stdout.write(JSON.stringify(entry) + "\n")

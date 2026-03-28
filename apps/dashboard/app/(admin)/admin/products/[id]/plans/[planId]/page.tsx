@@ -58,12 +58,21 @@ export default async function EditPlanPage({ params }: Props) {
           </FormField>
 
           <FormField label="Description" htmlFor="description">
-            <Textarea id="description" name="description" rows={2} defaultValue={plan.description ?? ""} />
+            <Textarea
+              id="description"
+              name="description"
+              rows={2}
+              defaultValue={plan.description ?? ""}
+            />
           </FormField>
 
           <div className="grid grid-cols-2 gap-4">
             <FormField label="Billing interval" htmlFor="billingInterval" required>
-              <Select id="billingInterval" name="billingInterval" defaultValue={plan.billingInterval}>
+              <Select
+                id="billingInterval"
+                name="billingInterval"
+                defaultValue={plan.billingInterval}
+              >
                 <option value="FREE">Free</option>
                 <option value="MONTH">Monthly</option>
                 <option value="YEAR">Yearly</option>
@@ -123,10 +132,10 @@ export default async function EditPlanPage({ params }: Props) {
         {plan.features.length === 0 ? (
           <p className="text-sm text-slate-500">No features defined for this plan.</p>
         ) : (
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-4 py-3">Key</th>
                   <th className="px-4 py-3">Value</th>
                 </tr>
@@ -166,10 +175,10 @@ export default async function EditPlanPage({ params }: Props) {
             </Link>
           </div>
         ) : (
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-4 py-3">Nickname</th>
                   <th className="px-4 py-3">Amount (¢)</th>
                   <th className="px-4 py-3">Interval</th>

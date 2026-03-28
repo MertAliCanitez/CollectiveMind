@@ -40,10 +40,7 @@ export default async function EditProductPage({ params }: Props) {
       <PageHeader
         title={product.name}
         description={`Product ID: ${product.id}`}
-        breadcrumbs={[
-          { label: "Products", href: "/admin/products" },
-          { label: product.name },
-        ]}
+        breadcrumbs={[{ label: "Products", href: "/admin/products" }, { label: product.name }]}
       />
 
       {/* Edit form */}
@@ -107,15 +104,18 @@ export default async function EditProductPage({ params }: Props) {
         {plans.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-500">
             No plans yet.{" "}
-            <Link href={`/admin/products/${id}/plans/new`} className="text-indigo-600 hover:underline">
+            <Link
+              href={`/admin/products/${id}/plans/new`}
+              className="text-indigo-600 hover:underline"
+            >
               Create the first plan.
             </Link>
           </div>
         ) : (
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">Slug</th>
                   <th className="px-4 py-3">Interval</th>
@@ -127,7 +127,7 @@ export default async function EditProductPage({ params }: Props) {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {plans.map((plan) => (
-                  <tr key={plan.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={plan.id} className="transition-colors hover:bg-slate-50">
                     <td className="px-4 py-3 font-medium text-slate-900">{plan.name}</td>
                     <td className="px-4 py-3 font-mono text-xs text-slate-500">{plan.slug}</td>
                     <td className="px-4 py-3 text-slate-600">{plan.billingInterval}</td>

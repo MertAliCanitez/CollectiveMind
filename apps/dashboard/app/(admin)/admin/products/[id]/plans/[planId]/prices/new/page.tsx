@@ -72,11 +72,7 @@ export default async function NewPricePage({ params, searchParams }: Props) {
           </div>
 
           <FormField label="Billing interval" htmlFor="billingInterval" required>
-            <Select
-              id="billingInterval"
-              name="billingInterval"
-              defaultValue={plan.billingInterval}
-            >
+            <Select id="billingInterval" name="billingInterval" defaultValue={plan.billingInterval}>
               <option value="FREE">Free</option>
               <option value="MONTH">Monthly</option>
               <option value="YEAR">Yearly</option>

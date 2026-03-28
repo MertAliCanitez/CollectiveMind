@@ -52,8 +52,8 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
   const ctaLabel = billingEnabled
     ? (content?.ctaLabel ?? "Get started")
     : isFree
-    ? "Request free access"
-    : "Contact us"
+      ? "Request free access"
+      : "Contact us"
 
   const ctaHref = billingEnabled && !isFree ? "/contact" : "/contact"
 
@@ -62,8 +62,8 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
       className={cn(
         "relative flex flex-col rounded-2xl p-6 sm:p-8",
         featured
-          ? "bg-slate-900 text-white ring-2 ring-indigo-500 shadow-xl"
-          : "bg-white border border-slate-200 shadow-sm",
+          ? "bg-slate-900 text-white shadow-xl ring-2 ring-indigo-500"
+          : "border border-slate-200 bg-white shadow-sm",
       )}
     >
       {/* Badge */}
@@ -77,21 +77,11 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
 
       {/* Plan name & tagline */}
       <div>
-        <h3
-          className={cn(
-            "text-lg font-bold",
-            featured ? "text-white" : "text-slate-900",
-          )}
-        >
+        <h3 className={cn("text-lg font-bold", featured ? "text-white" : "text-slate-900")}>
           {plan.name}
         </h3>
         {content?.tagline && (
-          <p
-            className={cn(
-              "mt-1 text-sm",
-              featured ? "text-slate-300" : "text-slate-500",
-            )}
-          >
+          <p className={cn("mt-1 text-sm", featured ? "text-slate-300" : "text-slate-500")}>
             {content.tagline}
           </p>
         )}
@@ -109,12 +99,7 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
             >
               $0
             </span>
-            <span
-              className={cn(
-                "ml-2 text-sm",
-                featured ? "text-slate-400" : "text-slate-400",
-              )}
-            >
+            <span className={cn("ml-2 text-sm", featured ? "text-slate-400" : "text-slate-400")}>
               free forever
             </span>
           </div>
@@ -128,12 +113,7 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
             >
               {plan.formattedPrice}
             </span>
-            <span
-              className={cn(
-                "ml-2 text-sm",
-                featured ? "text-slate-400" : "text-slate-400",
-              )}
-            >
+            <span className={cn("ml-2 text-sm", featured ? "text-slate-400" : "text-slate-400")}>
               {formatBillingInterval(plan.billingInterval, plan.displayPrice)}
             </span>
           </div>
@@ -142,12 +122,7 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
 
       {/* Not-yet-live notice */}
       {!billingEnabled && !isFree && (
-        <p
-          className={cn(
-            "mt-2 text-xs",
-            featured ? "text-indigo-300" : "text-indigo-500",
-          )}
-        >
+        <p className={cn("mt-2 text-xs", featured ? "text-indigo-300" : "text-indigo-500")}>
           Payments coming soon — contact us for access
         </p>
       )}
@@ -158,10 +133,7 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
           variant={featured ? "default" : "outline"}
           size="md"
           asChild
-          className={cn(
-            "w-full",
-            featured && "bg-indigo-500 hover:bg-indigo-400 border-0",
-          )}
+          className={cn("w-full", featured && "border-0 bg-indigo-500 hover:bg-indigo-400")}
         >
           <Link href={ctaHref}>{ctaLabel}</Link>
         </Button>
@@ -174,17 +146,9 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
             <li key={h} className="flex items-start gap-2.5">
               <Check
                 size={15}
-                className={cn(
-                  "mt-0.5 shrink-0",
-                  featured ? "text-indigo-400" : "text-indigo-500",
-                )}
+                className={cn("mt-0.5 shrink-0", featured ? "text-indigo-400" : "text-indigo-500")}
               />
-              <span
-                className={cn(
-                  "text-sm",
-                  featured ? "text-slate-300" : "text-slate-600",
-                )}
-              >
+              <span className={cn("text-sm", featured ? "text-slate-300" : "text-slate-600")}>
                 {h}
               </span>
             </li>
@@ -193,31 +157,22 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
       )}
 
       {/* Raw features (when no highlight content) */}
-      {(!content?.highlights || content.highlights.length === 0) &&
-        plan.features.length > 0 && (
-          <ul className="mt-7 space-y-2.5">
-            {plan.features.slice(0, 6).map((f) => (
-              <li key={f.key} className="flex items-center justify-between">
-                <span
-                  className={cn(
-                    "text-sm",
-                    featured ? "text-slate-300" : "text-slate-600",
-                  )}
-                >
-                  {f.label ?? f.key.replace(/_/g, " ")}
-                </span>
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    featured ? "text-white" : "text-slate-900",
-                  )}
-                >
-                  {formatFeatureValue(f.value, f.format)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+      {(!content?.highlights || content.highlights.length === 0) && plan.features.length > 0 && (
+        <ul className="mt-7 space-y-2.5">
+          {plan.features.slice(0, 6).map((f) => (
+            <li key={f.key} className="flex items-center justify-between">
+              <span className={cn("text-sm", featured ? "text-slate-300" : "text-slate-600")}>
+                {f.label ?? f.key.replace(/_/g, " ")}
+              </span>
+              <span
+                className={cn("text-sm font-medium", featured ? "text-white" : "text-slate-900")}
+              >
+                {formatFeatureValue(f.value, f.format)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

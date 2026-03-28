@@ -25,16 +25,14 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col items-center justify-center bg-background px-4 font-sans">
+      <body className="bg-background flex min-h-screen flex-col items-center justify-center px-4 font-sans">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Something went wrong</h1>
           <p className="mt-2 text-sm text-gray-500">
             A critical error occurred. Please refresh the page.
           </p>
           {error.digest && (
-            <p className="mt-1 font-mono text-xs text-gray-400">
-              Error ID: {error.digest}
-            </p>
+            <p className="mt-1 font-mono text-xs text-gray-400">Error ID: {error.digest}</p>
           )}
           <button
             onClick={reset}

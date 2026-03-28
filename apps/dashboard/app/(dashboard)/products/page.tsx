@@ -55,7 +55,7 @@ export default async function ProductsPage() {
       {/* Coming soon */}
       {comingSoonProducts.length > 0 && (
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-slate-500 uppercase tracking-wide">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
             Coming Soon
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -80,9 +80,7 @@ export default async function ProductsPage() {
       {/* Upgrade prompt if no access */}
       {accessibleCount === 0 && activeProducts.length > 0 && (
         <div className="rounded-xl border border-indigo-100 bg-indigo-50 p-5">
-          <p className="text-sm font-medium text-indigo-900">
-            Interested in getting started?
-          </p>
+          <p className="text-sm font-medium text-indigo-900">Interested in getting started?</p>
           <p className="mt-1 text-sm text-indigo-700">
             Contact your account admin or reach out to our team to enable product access for your
             organization.

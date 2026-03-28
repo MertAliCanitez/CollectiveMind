@@ -87,8 +87,5 @@ export interface PaymentProvider {
   resumeSubscription(providerSubscriptionId: string): Promise<void>
 
   /** Verify and parse an incoming webhook payload from this provider */
-  constructWebhookEvent(
-    payload: string | Buffer,
-    signature: string,
-  ): Promise<ProviderWebhookEvent>
+  constructWebhookEvent(payload: string | Buffer, signature: string): Promise<ProviderWebhookEvent>
 }

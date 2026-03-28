@@ -17,18 +17,18 @@
 
 ### Platform-Level Roles (managed in Clerk)
 
-| Role | Description |
-|------|-------------|
+| Role                   | Description                                                                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `platform:super_admin` | Internal staff. Full access to admin panel, can impersonate orgs, manage all plans and subscriptions. Stored in Clerk `publicMetadata`. |
-| `platform:support` | Internal read-only staff. Can view org and subscription state. Cannot modify. |
+| `platform:support`     | Internal read-only staff. Can view org and subscription state. Cannot modify.                                                           |
 
 ### Organization-Level Roles (Clerk Organizations)
 
-| Role | Description |
-|------|-------------|
-| `org:admin` | Full control over the organization: invite members, manage subscriptions, access all licensed products. |
-| `org:billing` | Can manage billing and subscriptions, but not org members or product settings. |
-| `org:member` | Can use licensed products. Cannot manage org settings or billing. |
+| Role          | Description                                                                                             |
+| ------------- | ------------------------------------------------------------------------------------------------------- |
+| `org:admin`   | Full control over the organization: invite members, manage subscriptions, access all licensed products. |
+| `org:billing` | Can manage billing and subscriptions, but not org members or product settings.                          |
+| `org:member`  | Can use licensed products. Cannot manage org settings or billing.                                       |
 
 ### Role Design Rationale
 
@@ -64,14 +64,14 @@ The platform is structured as a **modular monolith**. All domains live in one de
 
 ### Domain Responsibilities
 
-| Domain | Owns | Does Not Own |
-|--------|------|-------------|
-| **Auth** | Identity, sessions, org membership, JWT | Authorization decisions (belongs to each domain) |
-| **Billing** | Plans, subscriptions, invoices, payment provider abstraction | Product feature logic, user management |
-| **Organizations** | Org metadata, member roles, settings | Billing state (references billing domain) |
-| **Products** | Product catalog, feature flags per plan, product-specific config | User identity, payment processing |
-| **Admin** | Internal views and controls across all domains | No exclusive data ownership — reads/writes through other domains |
-| **Audit** | Immutable log of all cross-domain actions | No write side effects |
+| Domain            | Owns                                                             | Does Not Own                                                     |
+| ----------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **Auth**          | Identity, sessions, org membership, JWT                          | Authorization decisions (belongs to each domain)                 |
+| **Billing**       | Plans, subscriptions, invoices, payment provider abstraction     | Product feature logic, user management                           |
+| **Organizations** | Org metadata, member roles, settings                             | Billing state (references billing domain)                        |
+| **Products**      | Product catalog, feature flags per plan, product-specific config | User identity, payment processing                                |
+| **Admin**         | Internal views and controls across all domains                   | No exclusive data ownership — reads/writes through other domains |
+| **Audit**         | Immutable log of all cross-domain actions                        | No write side effects                                            |
 
 ### Anti-Patterns Avoided
 
@@ -135,6 +135,7 @@ The platform is structured as a **modular monolith**. All domains live in one de
 **Turborepo** is chosen as the monorepo build system.
 
 **Why Turborepo over alternatives:**
+
 - Native support for Next.js incremental builds with remote caching
 - Task pipeline definition (`build` depends on `db:generate`) prevents broken deploys
 - Works well with `pnpm` workspaces (best-in-class disk efficiency for monorepos)
@@ -142,12 +143,14 @@ The platform is structured as a **modular monolith**. All domains live in one de
 - First-class Vercel integration for deployment
 
 **Why monorepo over polyrepo:**
+
 - Shared packages (`db`, `ui`, `auth`) must be in sync — monorepo enforces this
 - Single PR workflow for cross-domain changes
 - Unified CI/CD pipeline
 - Easier to onboard contributors
 
 **Why modular monolith over microservices at v1:**
+
 - Microservices introduce distributed systems complexity (network failures, distributed transactions, service discovery) that is not justified at early stage
 - A well-bounded modular monolith can be split later when scale demands it
 - Clerk handles the hardest distributed concern (auth) as a managed service
@@ -158,29 +161,30 @@ The platform is structured as a **modular monolith**. All domains live in one de
 
 ### Applications
 
-| App | Purpose | Port |
-|-----|---------|------|
-| `apps/web` | Public marketing site | 3000 |
+| App              | Purpose                           | Port |
+| ---------------- | --------------------------------- | ---- |
+| `apps/web`       | Public marketing site             | 3000 |
 | `apps/dashboard` | Customer-facing product dashboard | 3001 |
-| `apps/admin` | Internal admin panel | 3002 |
+| `apps/admin`     | Internal admin panel              | 3002 |
 
 All apps are **Next.js 14+ with App Router**. This enables:
+
 - React Server Components for data-heavy pages (no client-side fetch waterfalls)
 - Route Handlers as lightweight API endpoints (avoids separate Express API)
 - Middleware for auth enforcement at the edge
 
 ### Packages
 
-| Package | Purpose |
-|---------|---------|
-| `packages/db` | Prisma schema, generated client, migration tooling |
-| `packages/auth` | Clerk client wrappers, middleware helpers, role utilities |
+| Package            | Purpose                                                            |
+| ------------------ | ------------------------------------------------------------------ |
+| `packages/db`      | Prisma schema, generated client, migration tooling                 |
+| `packages/auth`    | Clerk client wrappers, middleware helpers, role utilities          |
 | `packages/billing` | Billing domain: plan types, subscription logic, provider interface |
-| `packages/ui` | Shared component library (Radix UI + Tailwind) |
-| `packages/email` | Transactional email templates (React Email) |
-| `packages/config` | Shared ESLint, TypeScript, Tailwind configs |
-| `packages/types` | Shared TypeScript types and Zod schemas |
-| `packages/utils` | Pure utility functions (formatting, slugs, dates) |
+| `packages/ui`      | Shared component library (Radix UI + Tailwind)                     |
+| `packages/email`   | Transactional email templates (React Email)                        |
+| `packages/config`  | Shared ESLint, TypeScript, Tailwind configs                        |
+| `packages/types`   | Shared TypeScript types and Zod schemas                            |
+| `packages/utils`   | Pure utility functions (formatting, slugs, dates)                  |
 
 ### Dependency Rules
 
@@ -201,12 +205,12 @@ Enforcing this with ESLint `import/no-restricted-paths` prevents circular depend
 
 ### Environment Tiers
 
-| Environment | Purpose | Database | Clerk Instance |
-|------------|---------|----------|----------------|
-| `local` | Developer machine | Local PostgreSQL (Docker) | Clerk dev instance |
-| `preview` | Per-PR Vercel preview | Shared staging DB (separate schema) | Clerk dev instance |
-| `staging` | Integration testing, QA | Dedicated staging DB | Clerk staging instance |
-| `production` | Live system | Production DB (managed, HA) | Clerk production instance |
+| Environment  | Purpose                 | Database                            | Clerk Instance            |
+| ------------ | ----------------------- | ----------------------------------- | ------------------------- |
+| `local`      | Developer machine       | Local PostgreSQL (Docker)           | Clerk dev instance        |
+| `preview`    | Per-PR Vercel preview   | Shared staging DB (separate schema) | Clerk dev instance        |
+| `staging`    | Integration testing, QA | Dedicated staging DB                | Clerk staging instance    |
+| `production` | Live system             | Production DB (managed, HA)         | Clerk production instance |
 
 ### Environment Variable Strategy
 
@@ -234,18 +238,21 @@ Variables are grouped by tier in `.env.local` (gitignored), with `.env.example` 
 ### Three Pillars
 
 **Logs**
+
 - Structured JSON logging in all server-side code
 - Log levels: `debug` (local only), `info`, `warn`, `error`
 - Log fields: `requestId`, `userId`, `orgId`, `productSlug`, `durationMs`
 - Shipping target: Axiom or Datadog (v1: `console.log` with structured format, ready to plug in)
 
 **Metrics**
+
 - Application metrics tracked via custom events to an analytics provider
 - Key business metrics: signups, org creations, subscription activations, product activations
 - Infrastructure metrics: DB connection pool, response times, error rates
 - Target: Vercel Analytics (built-in) + optional Prometheus/Grafana post-MVP
 
 **Traces**
+
 - OpenTelemetry instrumentation in Next.js via `@vercel/otel`
 - Trace context propagated via request headers
 - Useful for debugging slow DB queries and auth middleware overhead
@@ -262,6 +269,7 @@ All significant user and system actions are recorded in an `AuditLog` table (see
 ### MVP (v1)
 
 **Included:**
+
 - Public marketing site with product pages and pricing
 - User sign-up and sign-in via Clerk
 - Clerk Organizations for B2B teams
@@ -277,6 +285,7 @@ All significant user and system actions are recorded in an `AuditLog` table (see
 - Structured logging and audit trail
 
 **Excluded from MVP:**
+
 - Live payment checkout (Stripe/Paddle/etc.)
 - Webhook handling from payment providers
 - Metered/usage-based billing

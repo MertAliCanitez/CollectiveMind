@@ -35,15 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
      *   NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
      *   NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/onboarding
      */
-    <ClerkProvider
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      afterSignOutUrl="/sign-in"
-    >
+    <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up" afterSignOutUrl="/sign-in">
       <html lang="en" className={inter.variable}>
-        <body className="min-h-screen bg-background font-sans antialiased">
-          {children}
-        </body>
+        <body className="bg-background min-h-screen font-sans antialiased">{children}</body>
       </html>
     </ClerkProvider>
   )

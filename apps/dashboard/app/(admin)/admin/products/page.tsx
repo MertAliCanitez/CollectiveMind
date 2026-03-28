@@ -38,10 +38,10 @@ export default async function AdminProductsPage() {
           </Link>
         </div>
       ) : (
-        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Slug</th>
                 <th className="px-4 py-3">Status</th>
@@ -52,13 +52,11 @@ export default async function AdminProductsPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {products.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50 transition-colors">
+                <tr key={p.id} className="transition-colors hover:bg-slate-50">
                   <td className="px-4 py-3 font-medium text-slate-900">{p.name}</td>
                   <td className="px-4 py-3 font-mono text-xs text-slate-500">{p.slug}</td>
                   <td className="px-4 py-3">
-                    <Badge variant={statusVariant[p.status] ?? "secondary"}>
-                      {p.status}
-                    </Badge>
+                    <Badge variant={statusVariant[p.status] ?? "secondary"}>{p.status}</Badge>
                   </td>
                   <td className="px-4 py-3 text-slate-600">{p.planCount}</td>
                   <td className="px-4 py-3 text-slate-600">{p.sortOrder}</td>

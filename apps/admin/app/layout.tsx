@@ -21,17 +21,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider signInUrl="/sign-in" afterSignOutUrl="/sign-in">
       <html lang="en" className={inter.variable}>
-        <body className="min-h-screen bg-background font-sans antialiased">
-          {children}
-        </body>
+        <body className="bg-background min-h-screen font-sans antialiased">{children}</body>
       </html>
     </ClerkProvider>
   )

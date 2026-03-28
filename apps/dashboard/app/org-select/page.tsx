@@ -23,8 +23,8 @@ export default function OrgSelectPage() {
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-foreground">Select your workspace</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <h1 className="text-foreground text-2xl font-bold">Select your workspace</h1>
+          <p className="text-muted-foreground mt-2 text-sm">
             Choose an organization to continue, or create a new one.
           </p>
         </div>

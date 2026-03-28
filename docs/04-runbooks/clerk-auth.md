@@ -25,6 +25,7 @@ PostgreSQL  users, organizations, org_members
 ```
 
 Three layers of authorization:
+
 1. **Middleware** (`apps/dashboard/middleware.ts`, `apps/admin/middleware.ts`) — blocks unauthenticated and unauthorized requests at the edge
 2. **Route/Component** (`auth()` in server components) — verify context in each handler
 3. **Domain query** (all `db.*` calls) — always filter by `organizationId` from the JWT
@@ -35,34 +36,34 @@ Three layers of authorization:
 
 ### Required — all apps
 
-| Variable | Where to get it |
-|----------|----------------|
+| Variable                            | Where to get it            |
+| ----------------------------------- | -------------------------- |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk dashboard → API Keys |
-| `CLERK_SECRET_KEY` | Clerk dashboard → API Keys |
+| `CLERK_SECRET_KEY`                  | Clerk dashboard → API Keys |
 
 ### Required — `apps/dashboard` only
 
-| Variable | Value / Where to get it |
-|----------|------------------------|
-| `CLERK_WEBHOOK_SECRET` | Clerk dashboard → Webhooks → your endpoint → Signing Secret |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | `/sign-in` |
-| `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | `/sign-up` |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | `/` |
-| `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` | `/onboarding` |
+| Variable                                          | Value / Where to get it                                     |
+| ------------------------------------------------- | ----------------------------------------------------------- |
+| `CLERK_WEBHOOK_SECRET`                            | Clerk dashboard → Webhooks → your endpoint → Signing Secret |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_URL`                   | `/sign-in`                                                  |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_URL`                   | `/sign-up`                                                  |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | `/`                                                         |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` | `/onboarding`                                               |
 
 ### Required — `apps/admin` only
 
-| Variable | Value |
-|----------|-------|
+| Variable                        | Value      |
+| ------------------------------- | ---------- |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | `/sign-in` |
 
 ### One Clerk instance per environment
 
-| Environment | Clerk instance |
-|-------------|---------------|
-| Local dev | dev instance (separate from staging/prod) |
-| Staging | staging instance |
-| Production | production instance |
+| Environment | Clerk instance                            |
+| ----------- | ----------------------------------------- |
+| Local dev   | dev instance (separate from staging/prod) |
+| Staging     | staging instance                          |
+| Production  | production instance                       |
 
 Never share a Clerk instance between environments. Each has its own publishable key, secret key, and webhook endpoints.
 
@@ -93,6 +94,7 @@ CollectiveMind uses two non-default Clerk roles:
 The third role (`org:admin`) is Clerk's built-in admin role — do not create it.
 
 Final org roles:
+
 - `org:admin` — built-in
 - `org:billing_manager` — custom
 - `org:member` — built-in
@@ -137,13 +139,14 @@ After this, every session token will include `platformRole` if the user's `publi
 
 These are set by a `super_admin` via the Clerk dashboard or a one-off script. They are not tied to any organization.
 
-| Role | Access | How to assign |
-|------|--------|--------------|
+| Role          | Access                                           | How to assign                                      |
+| ------------- | ------------------------------------------------ | -------------------------------------------------- |
 | `super_admin` | Full admin panel, can promote/demote other staff | Clerk dashboard → Users → [user] → Public metadata |
-| `support` | Read-only admin panel | Same as above |
-| *(absent)* | Regular user — no admin access | Default |
+| `support`     | Read-only admin panel                            | Same as above                                      |
+| _(absent)_    | Regular user — no admin access                   | Default                                            |
 
 **Setting `super_admin` manually (bootstrap):**
+
 1. Clerk dashboard → Users → find your user
 2. Click **Public Metadata** → edit
 3. Set: `{ "platformRole": "super_admin" }`
@@ -153,13 +156,14 @@ These are set by a `super_admin` via the Clerk dashboard or a one-off script. Th
 
 These are set when a user is invited to or joins an organization.
 
-| Clerk role key | DB enum | Can do |
-|----------------|---------|--------|
-| `org:admin` | `ADMIN` | All org settings, billing, member management |
-| `org:billing_manager` | `BILLING_MANAGER` | Billing and invoices only |
-| `org:member` | `MEMBER` | Product access only |
+| Clerk role key        | DB enum           | Can do                                       |
+| --------------------- | ----------------- | -------------------------------------------- |
+| `org:admin`           | `ADMIN`           | All org settings, billing, member management |
+| `org:billing_manager` | `BILLING_MANAGER` | Billing and invoices only                    |
+| `org:member`          | `MEMBER`          | Product access only                          |
 
 Role checks are in `packages/auth/src/roles.ts`:
+
 - `isOrgAdmin(orgRole)` — true for `org:admin`
 - `isOrgBillingManager(orgRole)` — true for `org:admin` or `org:billing_manager`
 - `isPlatformAdmin(sessionClaims)` — true for `super_admin`
@@ -265,12 +269,12 @@ export default async function AdminPage() {
 
 The middleware is the **first** layer — it handles redirects and coarse-grained blocking.
 
-| Scenario | Dashboard middleware | Admin middleware |
-|----------|---------------------|-----------------|
-| Not signed in | Redirect to `/sign-in` | Redirect to `/sign-in` |
-| Signed in, no org | Redirect to `/org-select` | N/A (admin doesn't use orgs) |
-| Signed in with org | Allow | Check platform role |
-| Signed in, not platform staff | N/A | Return 403 JSON |
+| Scenario                      | Dashboard middleware      | Admin middleware             |
+| ----------------------------- | ------------------------- | ---------------------------- |
+| Not signed in                 | Redirect to `/sign-in`    | Redirect to `/sign-in`       |
+| Signed in, no org             | Redirect to `/org-select` | N/A (admin doesn't use orgs) |
+| Signed in with org            | Allow                     | Check platform role          |
+| Signed in, not platform staff | N/A                       | Return 403 JSON              |
 
 The middleware is **not** sufficient for security alone. Every server component and server action must also call `auth()` and verify context (defense in depth).
 
@@ -283,8 +287,8 @@ The middleware is **not** sufficient for security alone. Every server component 
 const { orgId } = await auth()
 
 // WRONG — never do this
-const { orgId } = params  // could be forged
-const orgId = req.nextUrl.searchParams.get("orgId")  // could be forged
+const { orgId } = params // could be forged
+const orgId = req.nextUrl.searchParams.get("orgId") // could be forged
 ```
 
 ### The `organizationId` filter rule
@@ -294,7 +298,7 @@ Every database query that returns org-owned data MUST filter by `organizationId`
 ```typescript
 // CORRECT
 await db.subscription.findMany({
-  where: { organizationId: org.id }  // org.id from requireOrg()
+  where: { organizationId: org.id }, // org.id from requireOrg()
 })
 
 // WRONG — no org filter allows cross-tenant data access
@@ -308,11 +312,13 @@ await db.subscription.findMany()
 The webhook handler at `apps/dashboard/app/api/webhooks/clerk/route.ts` is the only write path for User, Organization, and OrgMember records.
 
 **What it does:**
+
 - Verifies the svix HMAC signature (rejects invalid requests with 400)
 - Calls `handleClerkWebhook(event)` from `packages/auth/src/sync.ts`
 - Returns 500 on processing failure (Clerk retries on 5xx)
 
 **What NOT to do:**
+
 - Do not add authentication to this route — Clerk calls it without a session
 - Do not parse the body as JSON before verification — svix needs the exact raw bytes
 - Do not return 401 or 403 for invalid signatures — 400 is correct
@@ -403,6 +409,7 @@ Also check that `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` in the browser-side env matc
 ### Webhook returns 500 "Processing failed"
 
 Check server logs. Common causes:
+
 - Database is not running
 - `DATABASE_URL` is not set
 - A user or org referenced in a membership event hasn't synced yet (transient — Clerk retries)

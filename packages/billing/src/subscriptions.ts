@@ -27,10 +27,7 @@ function calculatePeriodEnd(billingInterval: string, from: Date): Date {
   return end
 }
 
-export async function createSubscription(
-  input: CreateSubscriptionInput,
-  actorUserId?: string,
-) {
+export async function createSubscription(input: CreateSubscriptionInput, actorUserId?: string) {
   const plan = await db.plan.findUniqueOrThrow({
     where: { id: input.planId },
     include: { product: { select: { slug: true } } },
@@ -82,10 +79,7 @@ export async function createSubscription(
   return subscription
 }
 
-export async function cancelSubscription(
-  input: CancelSubscriptionInput,
-  actorUserId?: string,
-) {
+export async function cancelSubscription(input: CancelSubscriptionInput, actorUserId?: string) {
   const subscription = await db.subscription.findUniqueOrThrow({
     where: { id: input.subscriptionId },
     include: { plan: { include: { product: { select: { slug: true } } } } },
@@ -137,10 +131,7 @@ export async function cancelSubscription(
  *
  * Idempotent: calling with the same planId twice produces the same result.
  */
-export async function updateSubscription(
-  input: UpdateSubscriptionInput,
-  actorUserId?: string,
-) {
+export async function updateSubscription(input: UpdateSubscriptionInput, actorUserId?: string) {
   const subscription = await db.subscription.findUniqueOrThrow({
     where: { id: input.subscriptionId },
     include: {

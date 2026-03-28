@@ -20,10 +20,7 @@ export default async function NewGrantPage({ searchParams }: Props) {
   await requirePlatformAdmin()
   const { error } = await searchParams
 
-  const [products, { orgs }] = await Promise.all([
-    listProducts(),
-    listOrganizations({ page: 1 }),
-  ])
+  const [products, { orgs }] = await Promise.all([listProducts(), listOrganizations({ page: 1 })])
 
   const activeProducts = products.filter((p) => p.status !== "DEPRECATED")
 
@@ -32,10 +29,7 @@ export default async function NewGrantPage({ searchParams }: Props) {
       <PageHeader
         title="New Access Grant"
         description="Grant an organization access to a product outside of normal billing."
-        breadcrumbs={[
-          { label: "Access Grants", href: "/admin/grants" },
-          { label: "New" },
-        ]}
+        breadcrumbs={[{ label: "Access Grants", href: "/admin/grants" }, { label: "New" }]}
       />
 
       <div className="max-w-xl rounded-xl border border-slate-200 bg-white p-6">
@@ -72,7 +66,12 @@ export default async function NewGrantPage({ searchParams }: Props) {
             htmlFor="reason"
             description="Internal note. Why is this access being granted?"
           >
-            <Textarea id="reason" name="reason" rows={2} placeholder="e.g. Beta partner, Q1 pilot program" />
+            <Textarea
+              id="reason"
+              name="reason"
+              rows={2}
+              placeholder="e.g. Beta partner, Q1 pilot program"
+            />
           </FormField>
 
           <FormField

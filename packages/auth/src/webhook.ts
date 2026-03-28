@@ -7,7 +7,8 @@
  *   const event = await verifyClerkWebhook(payload, req.headers, process.env.CLERK_WEBHOOK_SECRET!)
  *   await handleClerkWebhook(event)
  */
-import { Webhook, WebhookRequiredHeaders } from "svix"
+import { Webhook } from "svix"
+import type { WebhookRequiredHeaders } from "svix"
 import { logger } from "@repo/shared"
 
 type SvixHeaders = {

@@ -30,13 +30,13 @@ logger.error("clerk.webhook.processing_failed", { error: String(err), svixId })
 
 **What is recorded today:**
 
-| Source | Actions |
-|---|---|
-| `packages/billing` | `subscription.created`, `subscription.canceled`, `subscription.plan_changed` |
-| Admin Server Actions | `product.created`, `product.updated` |
-| Admin Server Actions | `plan.created`, `plan.updated` |
-| Admin Server Actions | `price.created`, `price.updated` |
-| Admin Server Actions | `grant.created`, `grant.revoked` |
+| Source               | Actions                                                                      |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `packages/billing`   | `subscription.created`, `subscription.canceled`, `subscription.plan_changed` |
+| Admin Server Actions | `product.created`, `product.updated`                                         |
+| Admin Server Actions | `plan.created`, `plan.updated`                                               |
+| Admin Server Actions | `price.created`, `price.updated`                                             |
+| Admin Server Actions | `grant.created`, `grant.revoked`                                             |
 
 **Schema:** See `prisma/schema.prisma → AuditLog`. Key fields: `actorType` (USER / ADMIN / SYSTEM), `organizationId`, `resourceType`, `resourceId`, `metadata` (JSON).
 
@@ -47,6 +47,7 @@ logger.error("clerk.webhook.processing_failed", { error: String(err), svixId })
 All auth boundary violations (unauthenticated access, insufficient role, platform admin access) log a `warn` event before redirecting. This creates a trace for debugging auth issues without exposing sensitive data.
 
 **Logged events:**
+
 - `auth.unauthenticated` — no session, redirecting to /sign-in
 - `auth.no_active_org` — authenticated but no org selected
 - `auth.org_not_in_db` — Clerk org not yet synced to DB (webhook race)
@@ -74,12 +75,14 @@ Both boundaries `console.error` the error today. When Sentry is added, replace t
 Sentry integration is the next observability step. Add it when you have real traffic to monitor.
 
 **Required packages:**
+
 ```bash
 pnpm add @sentry/nextjs --filter=@repo/dashboard
 pnpm add @sentry/nextjs --filter=@repo/web
 ```
 
 **Required env vars** (see `.env.example`):
+
 ```
 SENTRY_DSN=https://REPLACE_ME@o0.ingest.sentry.io/0
 NEXT_PUBLIC_SENTRY_DSN=https://REPLACE_ME@o0.ingest.sentry.io/0
@@ -96,6 +99,7 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 5. Wrap `next.config.ts` with `withSentryConfig`
 
 **What Sentry gives you over logging alone:**
+
 - Stack traces with source maps
 - Error grouping and deduplication
 - Release tracking (which deploy introduced a regression)
@@ -104,6 +108,7 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 ### Uptime monitoring
 
 No uptime monitoring is configured. Before first customer, add:
+
 - A synthetic check on `/api/health` (build one if it doesn't exist)
 - A check on the Clerk webhook endpoint reachability
 
@@ -112,6 +117,7 @@ Recommended: Checkly, Better Uptime, or Vercel's built-in checks.
 ### Log aggregation
 
 In Vercel/Fly.io deployments, stdout logs are available in the platform UI. For longer retention or search:
+
 - **Vercel:** Log Drains → stream to Datadog, Logtail, or Axiom
 - **Fly.io:** Log shipper to Papertrail or Loki
 
@@ -120,6 +126,7 @@ In Vercel/Fly.io deployments, stdout logs are available in the platform UI. For 
 ## Rate limiting
 
 Webhook endpoints (`/api/webhooks/*`) are rate-limited by IP in `apps/dashboard/middleware.ts`:
+
 - **Limit:** 30 requests per 60 seconds per IP
 - **Implementation:** In-memory sliding window (per process instance)
 - **Primary defense:** HMAC signature verification in the route handler — this is a secondary abuse guard

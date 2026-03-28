@@ -57,7 +57,9 @@ export async function createPlanAction(productId: string, formData: FormData): P
     })
     redirect(`/admin/products/${productId}/plans/${plan.id}`)
   } catch {
-    redirect(`/admin/products/${productId}/plans/new?error=${encodeURIComponent("Failed to create plan. Slug may already be taken.")}`)
+    redirect(
+      `/admin/products/${productId}/plans/new?error=${encodeURIComponent("Failed to create plan. Slug may already be taken.")}`,
+    )
   }
 }
 
@@ -100,7 +102,9 @@ export async function updatePlanAction(
       metadata: { slug: updated.slug, status: updated.status, productId },
     })
   } catch {
-    redirect(`/admin/products/${productId}/plans/${planId}?error=${encodeURIComponent("Failed to update plan.")}`)
+    redirect(
+      `/admin/products/${productId}/plans/${planId}?error=${encodeURIComponent("Failed to update plan.")}`,
+    )
   }
 
   redirect(`/admin/products/${productId}/plans/${planId}`)

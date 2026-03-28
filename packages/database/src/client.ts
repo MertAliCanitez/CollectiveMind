@@ -7,16 +7,12 @@ declare global {
 
 function createPrismaClient(): PrismaClient {
   return new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   })
 }
 
 // Singleton pattern — prevents multiple connections in dev (Next.js hot reload)
-export const db: PrismaClient =
-  globalThis.__prisma ?? createPrismaClient()
+export const db: PrismaClient = globalThis.__prisma ?? createPrismaClient()
 
 if (process.env.NODE_ENV !== "production") {
   globalThis.__prisma = db

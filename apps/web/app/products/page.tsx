@@ -16,10 +16,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ProductsPage() {
-  const [catalog, comingSoon] = await Promise.all([
-    getProductCatalog(),
-    getComingSoonProducts(),
-  ])
+  const [catalog, comingSoon] = await Promise.all([getProductCatalog(), getComingSoonProducts()])
 
   const activeProducts = catalog?.products ?? []
 
@@ -98,9 +95,7 @@ export default async function ProductsPage() {
                   <p className="text-sm font-semibold uppercase tracking-widest text-indigo-600">
                     {item.label}
                   </p>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                    {item.description}
-                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.description}</p>
                 </div>
               ))}
             </div>

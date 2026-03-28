@@ -34,10 +34,10 @@ export default async function AdminOrgDetailPage({ params }: Props) {
         <h2 className="mb-3 text-sm font-semibold text-slate-700">
           Members ({org.members.length})
         </h2>
-        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Role</th>
@@ -72,10 +72,10 @@ export default async function AdminOrgDetailPage({ params }: Props) {
         {org.subscriptions.length === 0 ? (
           <p className="text-sm text-slate-500">No subscriptions.</p>
         ) : (
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3">Plan</th>
                   <th className="px-4 py-3">Status</th>
@@ -127,10 +127,10 @@ export default async function AdminOrgDetailPage({ params }: Props) {
         {org.grants.length === 0 ? (
           <p className="text-sm text-slate-500">No access grants.</p>
         ) : (
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3">Reason</th>
                   <th className="px-4 py-3">Expires</th>
@@ -142,7 +142,7 @@ export default async function AdminOrgDetailPage({ params }: Props) {
                 {org.grants.map((g) => (
                   <tr key={g.id}>
                     <td className="px-4 py-2.5 text-slate-700">{g.productName}</td>
-                    <td className="px-4 py-2.5 text-slate-600 max-w-xs truncate">
+                    <td className="max-w-xs truncate px-4 py-2.5 text-slate-600">
                       {g.reason ?? "—"}
                     </td>
                     <td className="px-4 py-2.5 text-xs text-slate-500">

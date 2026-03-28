@@ -35,7 +35,9 @@ export async function createPriceAction(
   const parsed = priceSchema.safeParse(raw)
   if (!parsed.success) {
     const msg = parsed.error.errors[0]?.message ?? "Validation failed"
-    redirect(`/admin/products/${productId}/plans/${planId}/prices/new?error=${encodeURIComponent(msg)}`)
+    redirect(
+      `/admin/products/${productId}/plans/${planId}/prices/new?error=${encodeURIComponent(msg)}`,
+    )
   }
 
   try {
@@ -48,7 +50,9 @@ export async function createPriceAction(
       metadata: { planId, unitAmount: price.unitAmount, billingInterval: price.billingInterval },
     })
   } catch {
-    redirect(`/admin/products/${productId}/plans/${planId}/prices/new?error=${encodeURIComponent("Failed to create price. Provider price ID may already be in use.")}`)
+    redirect(
+      `/admin/products/${productId}/plans/${planId}/prices/new?error=${encodeURIComponent("Failed to create price. Provider price ID may already be in use.")}`,
+    )
   }
 
   redirect(`/admin/products/${productId}/plans/${planId}`)
@@ -78,7 +82,9 @@ export async function updatePriceAction(
       metadata: { planId, isActive },
     })
   } catch {
-    redirect(`/admin/products/${productId}/plans/${planId}?error=${encodeURIComponent("Failed to update price.")}`)
+    redirect(
+      `/admin/products/${productId}/plans/${planId}?error=${encodeURIComponent("Failed to update price.")}`,
+    )
   }
 
   redirect(`/admin/products/${productId}/plans/${planId}`)

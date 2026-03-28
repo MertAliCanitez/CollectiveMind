@@ -34,7 +34,9 @@ export default function CookiesPage() {
     <section className="bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <nav className="mb-6 flex items-center gap-2 text-sm text-slate-400">
-          <Link href="/legal" className="hover:text-slate-600">Legal</Link>
+          <Link href="/legal" className="hover:text-slate-600">
+            Legal
+          </Link>
           <span>/</span>
           <span className="text-slate-600">Cookie policy</span>
         </nav>
@@ -87,7 +89,7 @@ export default function CookiesPage() {
                     </span>
                   </div>
                   <p className="mt-1 text-slate-500">{type.purpose}</p>
-                  <p className="mt-1 text-slate-400 text-xs">Examples: {type.examples}</p>
+                  <p className="mt-1 text-xs text-slate-400">Examples: {type.examples}</p>
                 </div>
               ))}
             </div>
@@ -96,9 +98,9 @@ export default function CookiesPage() {
           <div>
             <h2 className="text-base font-semibold text-slate-900">Managing cookies</h2>
             <p className="mt-2 leading-relaxed">
-              You can control cookies through your browser settings. Note that disabling
-              certain cookies may affect the functionality of our platform. For analytics
-              cookies, you may also opt out directly through our cookie preference settings.
+              You can control cookies through your browser settings. Note that disabling certain
+              cookies may affect the functionality of our platform. For analytics cookies, you may
+              also opt out directly through our cookie preference settings.
             </p>
           </div>
 

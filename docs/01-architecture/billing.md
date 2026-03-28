@@ -28,6 +28,7 @@ A SaaS product offered on the platform. Has a slug (e.g., `product-a`), display 
 A pricing tier for a specific product. Examples: `product-a:free`, `product-a:pro`, `product-a:enterprise`.
 
 Each plan has:
+
 - `billingInterval`: `month` | `year` | `one_time` | `free`
 - `price`: stored in cents, currency-specified
 - `currency`: ISO 4217 (e.g., `USD`, `EUR`, `TRY`)
@@ -51,6 +52,7 @@ Features are checked by the product domain to gate functionality. This is a flat
 Links an organization to a plan for a product.
 
 States:
+
 ```
 trialing → active → past_due → canceled
                  → canceled
@@ -58,6 +60,7 @@ trialing → canceled
 ```
 
 Fields:
+
 - `status`: `trialing` | `active` | `past_due` | `canceled` | `paused`
 - `currentPeriodStart` / `currentPeriodEnd`
 - `trialEndsAt` (nullable)
@@ -80,6 +83,7 @@ A billing record. Created by the platform (v1: manually or seeded) or synced fro
 ### v1 (No Live Payment)
 
 At v1, subscriptions can be in one of two states:
+
 - **Free**: Created automatically when an org activates a free-tier product.
 - **Manual**: Created by a platform admin in the admin panel (for early customers, trials, pilots).
 
@@ -88,6 +92,7 @@ The subscription state machine is fully implemented. The missing piece is the tr
 ### Post-MVP (Live Payment)
 
 When a payment provider is connected:
+
 1. Customer clicks "Upgrade" in the dashboard
 2. Platform calls `PaymentProvider.createCheckout(org, plan)`
 3. Provider returns a checkout URL
@@ -97,6 +102,7 @@ When a payment provider is connected:
 7. Subscription status updated to `active`
 
 The transition from v1 to post-MVP requires:
+
 - Implementing one `PaymentProvider` adapter (see below)
 - Adding a webhook route for that provider
 - No changes to the billing domain model
@@ -215,12 +221,14 @@ type Entitlement = {
 ```
 
 **Usage in a product route:**
+
 ```ts
 const entitlement = await checkEntitlement({ orgId, productSlug: "product-a" })
 if (!entitlement.hasAccess) return <UpgradePrompt />
 ```
 
 **Why a single function?**
+
 - Keeps product code unaware of subscription implementation details
 - Easy to add caching (Redis, in-memory LRU) in one place
 - Easy to unit test product components by mocking this single boundary
@@ -230,6 +238,7 @@ if (!entitlement.hasAccess) return <UpgradePrompt />
 ## Pricing Page Strategy
 
 The pricing page reads plans from the database (via a cached server-side fetch). This means:
+
 - Pricing can be updated without a code deploy
 - Plans can be toggled public/private by admins
 - A/B testing different price points is possible without engineering involvement
@@ -255,6 +264,7 @@ No currency conversion is done by the platform. The provider handles it.
 ## Billing Events and Audit Trail
 
 All billing state changes are recorded in the `AuditLog` with:
+
 - `actor`: the user or system that triggered the change
 - `action`: `subscription.created`, `subscription.canceled`, `plan.changed`, etc.
 - `resourceType`: `Subscription`, `Invoice`

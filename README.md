@@ -4,16 +4,16 @@ Multi-product B2B SaaS platform. One account, one dashboard, multiple products.
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Monorepo | Turborepo + pnpm workspaces |
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript 5.7 (strict) |
-| Auth | Clerk (Organizations) |
-| Database | PostgreSQL + Prisma |
-| Styling | Tailwind CSS + shadcn/ui |
-| Testing | Vitest + Playwright |
-| CI/CD | GitHub Actions + Vercel |
+| Layer     | Technology                  |
+| --------- | --------------------------- |
+| Monorepo  | Turborepo + pnpm workspaces |
+| Framework | Next.js 15 (App Router)     |
+| Language  | TypeScript 5.7 (strict)     |
+| Auth      | Clerk (Organizations)       |
+| Database  | PostgreSQL + Prisma         |
+| Styling   | Tailwind CSS + shadcn/ui    |
+| Testing   | Vitest + Playwright         |
+| CI/CD     | GitHub Actions + Vercel     |
 
 ## Repository Structure
 
@@ -73,17 +73,17 @@ pnpm --filter @repo/admin dev
 
 ### Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start all apps in dev mode |
-| `pnpm build` | Build all apps and packages |
-| `pnpm lint` | Lint all packages |
-| `pnpm type-check` | Type-check all packages |
-| `pnpm test` | Run all tests |
-| `pnpm format` | Format all files with Prettier |
-| `pnpm db:migrate` | Run pending migrations (dev) |
-| `pnpm db:studio` | Open Prisma Studio |
-| `pnpm db:seed` | Seed the development database |
+| Command           | Description                    |
+| ----------------- | ------------------------------ |
+| `pnpm dev`        | Start all apps in dev mode     |
+| `pnpm build`      | Build all apps and packages    |
+| `pnpm lint`       | Lint all packages              |
+| `pnpm type-check` | Type-check all packages        |
+| `pnpm test`       | Run all tests                  |
+| `pnpm format`     | Format all files with Prettier |
+| `pnpm db:migrate` | Run pending migrations (dev)   |
+| `pnpm db:studio`  | Open Prisma Studio             |
+| `pnpm db:seed`    | Seed the development database  |
 
 ## Architecture
 
@@ -98,5 +98,6 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 Copy `.env.example` to `.env.local` and fill in the required values.
 
 Required for local development:
+
 - `DATABASE_URL` — PostgreSQL connection string (Docker provides this)
 - `CLERK_SECRET_KEY` + `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` — from [Clerk dashboard](https://dashboard.clerk.com)

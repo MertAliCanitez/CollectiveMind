@@ -1,6 +1,13 @@
 import { cn } from "@repo/ui"
 
-type BadgeVariant = "default" | "secondary" | "outline" | "success" | "coming-soon" | "enterprise" | "popular"
+type BadgeVariant =
+  | "default"
+  | "secondary"
+  | "outline"
+  | "success"
+  | "coming-soon"
+  | "enterprise"
+  | "popular"
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant

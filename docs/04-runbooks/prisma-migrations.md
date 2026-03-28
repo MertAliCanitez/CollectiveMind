@@ -8,10 +8,10 @@ This document is the authoritative reference for all database migration work on 
 
 Prisma has two migration commands. Understanding when to use each is the most important thing in this document.
 
-| Command | When to use | What it does |
-|---------|-------------|--------------|
-| `prisma migrate dev` | Local development only | Creates a new migration file, applies it to your local DB, re-generates the client. Runs `seed` if present. |
-| `prisma migrate deploy` | Staging and production only | Applies pending migration files without creating new ones. Never resets. Never seeds. Safe for CI/CD. |
+| Command                 | When to use                 | What it does                                                                                                |
+| ----------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `prisma migrate dev`    | Local development only      | Creates a new migration file, applies it to your local DB, re-generates the client. Runs `seed` if present. |
+| `prisma migrate deploy` | Staging and production only | Applies pending migration files without creating new ones. Never resets. Never seeds. Safe for CI/CD.       |
 
 **Never run `migrate dev` against staging or production.**
 **Never run `migrate deploy` with no migration files — it will error if no pending migrations exist.**
@@ -44,16 +44,16 @@ The schema is at the repo root. All packages reference it via the `prisma.schema
 
 All commands are run from the repo root. They delegate to `packages/database` via pnpm filter.
 
-| Root command | What it does |
-|---|---|
-| `pnpm db:generate` | Re-generates `@prisma/client` types from the current schema |
-| `pnpm db:migrate` | Create + apply a new migration in local dev (`migrate dev`) |
-| `pnpm db:migrate:deploy` | Apply pending migrations to staging/production |
-| `pnpm db:migrate:reset` | Drop + recreate local DB + re-apply all migrations + seed (**local only**) |
-| `pnpm db:migrate:status` | Show which migrations have and haven't been applied |
-| `pnpm db:studio` | Open Prisma Studio at localhost:5555 |
-| `pnpm db:seed` | Run the seed script against `$DATABASE_URL` |
-| `pnpm db:validate` | Validate `schema.prisma` for syntax errors |
+| Root command             | What it does                                                               |
+| ------------------------ | -------------------------------------------------------------------------- |
+| `pnpm db:generate`       | Re-generates `@prisma/client` types from the current schema                |
+| `pnpm db:migrate`        | Create + apply a new migration in local dev (`migrate dev`)                |
+| `pnpm db:migrate:deploy` | Apply pending migrations to staging/production                             |
+| `pnpm db:migrate:reset`  | Drop + recreate local DB + re-apply all migrations + seed (**local only**) |
+| `pnpm db:migrate:status` | Show which migrations have and haven't been applied                        |
+| `pnpm db:studio`         | Open Prisma Studio at localhost:5555                                       |
+| `pnpm db:seed`           | Run the seed script against `$DATABASE_URL`                                |
+| `pnpm db:validate`       | Validate `schema.prisma` for syntax errors                                 |
 
 ---
 
@@ -151,12 +151,14 @@ When using `pnpm db:migrate`, Prisma prompts: `Enter a name for the new migratio
 Use this for any change that could break the running app during the deployment window — i.e. when the old code and new code will briefly run against the same DB.
 
 ### Phase 1 (deploy DB change, keep old code running)
+
 - Add new columns as nullable (no `NOT NULL` without a default)
 - Add new tables
 - Add new indexes
 - **Do not** rename columns, remove columns, or change column types yet
 
 ### Phase 2 (after new code is fully live)
+
 - Add `NOT NULL` constraints after backfilling the column
 - Remove old columns that new code no longer reads
 - Rename columns (add new → backfill → remove old, across separate deployments)
@@ -175,6 +177,7 @@ Each phase is a separate migration file and a separate deployment.
 ## Writing Migrations Safely
 
 ### Additive changes (low risk)
+
 - Adding a nullable column
 - Adding a new table
 - Adding an index
@@ -183,6 +186,7 @@ Each phase is a separate migration file and a separate deployment.
 These are safe to apply with zero downtime. One migration, one deployment.
 
 ### Breaking changes (requires two-phase)
+
 - Renaming a column
 - Removing a column that existing code reads
 - Changing a column type
@@ -190,6 +194,7 @@ These are safe to apply with zero downtime. One migration, one deployment.
 - Removing an enum value
 
 ### Never do in production
+
 - `DROP TABLE` without a deprecation period
 - Changing the type of a column with existing data without a backfill
 - Removing a unique constraint that the application depends on
@@ -207,6 +212,7 @@ The migration history is append-only and tracks in Git. Each branch that include
 **When two branches both add migrations:**
 
 If branch A and branch B are both created from main and both add a migration:
+
 1. The first branch to merge lands its migration
 2. The second branch must rebase on main before merging
 3. After rebase, run `pnpm db:migrate` locally — Prisma will either apply the existing migration from the first branch or prompt for a new one if there's a conflict
@@ -246,11 +252,13 @@ psql $DATABASE_URL -c "SELECT migration_name, finished_at, applied_steps_count F
 ## Seed Strategy
 
 The seed script at `prisma/seed.ts` is for development only. It is:
+
 - **Idempotent** — all operations use upsert with stable identifiers
 - **Safe to run multiple times** — will not create duplicates
 - **Never run in production** — CI runs `migrate:deploy`, not `seed`
 
 The seed creates:
+
 - Products and plans for all products (with display prices and plan features)
 - A test organization (`test-org`) with an admin user
 - An active Pro subscription for the test org
@@ -263,6 +271,7 @@ To add new seed data: edit `prisma/seed.ts`, use upsert, commit alongside the sc
 ## When to Regenerate the Client
 
 Run `pnpm db:generate` whenever:
+
 - You edit `prisma/schema.prisma`
 - A teammate pushes schema changes and you pull them
 - TS types in `packages/database/src/index.ts` show errors for known models
@@ -280,6 +289,7 @@ Prisma detected a migration file was edited after being applied. Do not edit mig
 ### "Migration failed to apply cleanly"
 
 The migration SQL errored against the target DB. Common causes:
+
 - Constraint violation (data exists that violates a new NOT NULL or UNIQUE)
 - Type mismatch (column already exists with a different type)
 

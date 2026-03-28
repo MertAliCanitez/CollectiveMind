@@ -35,9 +35,7 @@ export async function createGrantAction(formData: FormData): Promise<void> {
     redirect(`/admin/grants/new?error=${encodeURIComponent(msg)}`)
   }
 
-  const dbUser = clerkUserId
-    ? await db.user.findFirst({ where: { clerkId: clerkUserId } })
-    : null
+  const dbUser = clerkUserId ? await db.user.findFirst({ where: { clerkId: clerkUserId } }) : null
 
   try {
     const grant = await createGrant({

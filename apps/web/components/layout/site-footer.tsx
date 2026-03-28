@@ -33,8 +33,8 @@ export function SiteFooter() {
               CollectiveMind
             </Link>
             <p className="mt-3 max-w-xs text-sm text-slate-500">
-              The operating stack for modern B2B teams. Analytics, integrations,
-              and collaboration — unified.
+              The operating stack for modern B2B teams. Analytics, integrations, and collaboration —
+              unified.
             </p>
           </div>
 
@@ -64,9 +64,7 @@ export function SiteFooter() {
           <p className="text-sm text-slate-400">
             &copy; {new Date().getFullYear()} CollectiveMind. All rights reserved.
           </p>
-          <p className="text-xs text-slate-400">
-            Built with care for B2B teams everywhere.
-          </p>
+          <p className="text-xs text-slate-400">Built with care for B2B teams everywhere.</p>
         </div>
       </div>
     </footer>

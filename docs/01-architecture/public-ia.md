@@ -22,13 +22,13 @@ For content conventions (products, plans, feature keys), see `docs/04-runbooks/c
 
 ### SEO priority
 
-| Priority | Pages |
-|----------|-------|
-| 1.0 | `/` |
-| 0.9 | `/products`, `/pricing` |
-| 0.85 | `/products/[slug]` (per product) |
-| 0.7 | `/contact` |
-| 0.3 | `/legal/*` |
+| Priority | Pages                            |
+| -------- | -------------------------------- |
+| 1.0      | `/`                              |
+| 0.9      | `/products`, `/pricing`          |
+| 0.85     | `/products/[slug]` (per product) |
+| 0.7      | `/contact`                       |
+| 0.3      | `/legal/*`                       |
 
 The sitemap (`app/sitemap.ts`) fetches product slugs from the catalog at build/request time and includes them dynamically.
 
@@ -41,6 +41,7 @@ The sitemap (`app/sitemap.ts`) fetches product slugs from the catalog at build/r
 **Purpose:** Acquisition — introduce the platform and drive to products or contact.
 
 **Sections (in order):**
+
 1. `Hero` — dark, headline + 2 CTAs ("Explore products", "Request a demo")
 2. `TrustBar` — social proof / customer logos row
 3. Products grid — `ProductCard` for each active product
@@ -50,6 +51,7 @@ The sitemap (`app/sitemap.ts`) fetches product slugs from the catalog at build/r
 **Data:** `getProductCatalog()` — products grid. Degrades to skeleton cards if DB unavailable.
 
 **Metadata:**
+
 ```
 title: "CollectiveMind — The operating stack for modern B2B teams"
 description: "Analytics, API integrations, and team collaboration — unified..."
@@ -62,6 +64,7 @@ description: "Analytics, API integrations, and team collaboration — unified...
 **Purpose:** Discovery — show all products with value propositions, help users find the right fit.
 
 **Sections:**
+
 1. Page header with `SectionHeader` (left-aligned)
 2. Active products grid — `ProductCard` per product
 3. Coming soon section — `ProductCard` with COMING_SOON badge
@@ -77,6 +80,7 @@ description: "Analytics, API integrations, and team collaboration — unified...
 **Purpose:** Conversion — deep dive into a single product, show plans, drive to contact/checkout.
 
 **Sections:**
+
 1. Dark hero — product name, tagline, value proposition, CTA
 2. Plans grid — `PlanCard` per plan (featured plan highlighted)
 3. Comparison table — `ComparisonTable` (hidden if no `comparisonConfig`)
@@ -86,6 +90,7 @@ description: "Analytics, API integrations, and team collaboration — unified...
 **Data:** `getCatalogProduct(slug)` — single product with plans + comparison config.
 
 **Special states:**
+
 - DB unavailable → "not available right now" message (not 404)
 - Product not found → `notFound()` → Next.js 404 page
 - Coming soon → alternate hero + no plans section
@@ -99,6 +104,7 @@ description: "Analytics, API integrations, and team collaboration — unified...
 **Purpose:** Conversion — all products' plans in one place, answer pricing objections.
 
 **Sections:**
+
 1. Page header with billing-not-live notice when applicable
 2. Per-product plan sections (one per active product)
 3. FAQ accordion (`<details>` / `<summary>`, zero-JS)
@@ -115,6 +121,7 @@ description: "Analytics, API integrations, and team collaboration — unified...
 **Purpose:** Lead capture — request access, demo, or general inquiry.
 
 **Sections:**
+
 1. Left column — headline, trust points (fast response, human, no pressure), early access note
 2. Right column — `ContactForm` (client component)
 
@@ -214,16 +221,16 @@ apps/web/
 
 ### Color palette
 
-| Use | Value |
-|-----|-------|
-| Primary CTA | `indigo-600` / `indigo-700` (hover) |
-| Dark hero bg | `slate-950` → `slate-900` gradient |
-| Dark CTA band | `slate-900` → `indigo-950` gradient |
-| Section alt bg | `slate-50` |
-| Body text | `slate-600` |
-| Muted text | `slate-400` / `slate-500` |
-| Headings | `slate-900` |
-| Borders | `slate-200` / `slate-100` |
+| Use            | Value                                    |
+| -------------- | ---------------------------------------- |
+| Primary CTA    | `indigo-600` / `indigo-700` (hover)      |
+| Dark hero bg   | `slate-950` → `slate-900` gradient       |
+| Dark CTA band  | `slate-900` → `indigo-950` gradient      |
+| Section alt bg | `slate-50`                               |
+| Body text      | `slate-600`                              |
+| Muted text     | `slate-400` / `slate-500`                |
+| Headings       | `slate-900`                              |
+| Borders        | `slate-200` / `slate-100`                |
 | Eyebrow labels | `indigo-600`, uppercase, tracking-widest |
 
 CSS variables from `packages/ui/src/globals.css` are inherited but the marketing site primarily uses Tailwind palette classes directly rather than CSS variable tokens, for clarity.

@@ -11,9 +11,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env["NEXT_PUBLIC_APP_URL"] ?? "https://collectivemind.com",
-  ),
+  metadataBase: new URL(process.env["NEXT_PUBLIC_APP_URL"] ?? "https://collectivemind.com"),
   title: {
     default: "CollectiveMind — The operating stack for modern B2B teams",
     template: "%s — CollectiveMind",
@@ -33,11 +31,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen bg-white font-sans antialiased">

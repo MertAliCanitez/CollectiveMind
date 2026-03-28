@@ -6,12 +6,12 @@ This document covers deploying CollectiveMind to Vercel (preview and production)
 
 ## Environment Overview
 
-| Environment | Branch | Database | Clerk Instance | URL |
-|-------------|--------|----------|----------------|-----|
-| Local | any | `collectivemind_dev` (local PG) | dev instance | localhost |
-| Preview | any PR branch | Neon branch (auto) | dev instance | Vercel preview URL |
-| Staging | `main` (manual promote) | Neon staging branch | staging instance | staging.collectivemind.com |
-| Production | `main` | Neon production | production instance | collectivemind.com |
+| Environment | Branch                  | Database                        | Clerk Instance      | URL                        |
+| ----------- | ----------------------- | ------------------------------- | ------------------- | -------------------------- |
+| Local       | any                     | `collectivemind_dev` (local PG) | dev instance        | localhost                  |
+| Preview     | any PR branch           | Neon branch (auto)              | dev instance        | Vercel preview URL         |
+| Staging     | `main` (manual promote) | Neon staging branch             | staging instance    | staging.collectivemind.com |
+| Production  | `main`                  | Neon production                 | production instance | collectivemind.com         |
 
 > **No `develop` branch.** Staging is a manually-promoted deployment of `main`. Vercel projects have separate environments (Preview / Production) — staging is set up as a second Production deployment in its own Vercel project, or via Vercel's environment aliases. See the staging setup section below.
 
@@ -21,11 +21,11 @@ This document covers deploying CollectiveMind to Vercel (preview and production)
 
 Three Vercel projects, one per app:
 
-| App | Vercel project | Root directory |
-|-----|---------------|----------------|
-| `apps/web` | `collectivemind-web` | `apps/web` |
+| App              | Vercel project             | Root directory   |
+| ---------------- | -------------------------- | ---------------- |
+| `apps/web`       | `collectivemind-web`       | `apps/web`       |
 | `apps/dashboard` | `collectivemind-dashboard` | `apps/dashboard` |
-| `apps/admin` | `collectivemind-admin` | `apps/admin` |
+| `apps/admin`     | `collectivemind-admin`     | `apps/admin`     |
 
 Each project uses the **same monorepo** — set the root directory in Vercel's project settings, not via separate repos.
 
@@ -56,23 +56,23 @@ Staging uses the same three Vercel projects but with a separate **environment** 
 
 ### Required in every Vercel app
 
-| Variable | Where to get it |
-|----------|----------------|
-| `DATABASE_URL` | Neon console → Connection string |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk dashboard → API Keys |
-| `CLERK_SECRET_KEY` | Clerk dashboard → API Keys |
+| Variable                            | Where to get it                  |
+| ----------------------------------- | -------------------------------- |
+| `DATABASE_URL`                      | Neon console → Connection string |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk dashboard → API Keys       |
+| `CLERK_SECRET_KEY`                  | Clerk dashboard → API Keys       |
 
 ### Additional for `apps/dashboard`
 
-| Variable | Where to get it |
-|----------|----------------|
+| Variable               | Where to get it                            |
+| ---------------------- | ------------------------------------------ |
 | `CLERK_WEBHOOK_SECRET` | Clerk dashboard → Webhooks → your endpoint |
-| `NEXT_PUBLIC_APP_URL` | Your deployment URL |
+| `NEXT_PUBLIC_APP_URL`  | Your deployment URL                        |
 
 ### Additional for `apps/admin`
 
-| Variable | Where to get it |
-|----------|----------------|
+| Variable              | Where to get it     |
+| --------------------- | ------------------- |
 | `NEXT_PUBLIC_APP_URL` | Your deployment URL |
 
 > Never put secrets in `vercel.json` or committed `.env.*` files. Use Vercel's environment variable UI or `vercel env add`.
@@ -165,6 +165,7 @@ curl https://admin.collectivemind.com/api/health
 In the Vercel dashboard: Deployments → find the last good deployment → "Promote to Production".
 
 Or via CLI:
+
 ```bash
 vercel rollback
 ```
@@ -184,10 +185,10 @@ Prisma does not support automatic rollback. If a migration must be reverted:
 
 Each environment needs its own Clerk instance to prevent test data from polluting production.
 
-| Env | Clerk instance | Webhook URL |
-|-----|---------------|-------------|
-| Dev | dev instance | `localhost:<port>/api/webhooks/clerk` via tunnel |
-| Staging | staging instance | `https://staging.collectivemind.com/api/webhooks/clerk` |
+| Env        | Clerk instance      | Webhook URL                                               |
+| ---------- | ------------------- | --------------------------------------------------------- |
+| Dev        | dev instance        | `localhost:<port>/api/webhooks/clerk` via tunnel          |
+| Staging    | staging instance    | `https://staging.collectivemind.com/api/webhooks/clerk`   |
 | Production | production instance | `https://dashboard.collectivemind.com/api/webhooks/clerk` |
 
 Clerk webhook must subscribe to: `user.*`, `organization.*`, `organizationMembership.*`

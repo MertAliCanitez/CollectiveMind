@@ -10,12 +10,14 @@
 We do not chase coverage numbers. We test to protect refactors and to document critical contracts.
 
 **Test something when:**
+
 - It encodes a business rule (access control, billing state transitions)
 - It touches the boundary between Clerk and our database (webhook sync)
 - It is a query that future engineers will break by accident (catalog filtering, plan visibility)
 - A bug here would be silent and costly to debug
 
 **Do not test:**
+
 - React rendering (unless a component has logic)
 - Trivial getters and type wrappers
 - External services directly (mock at the boundary)
@@ -34,6 +36,7 @@ Fastest. Run on every save. No setup required.
 Role checks (`isOrgAdmin`, `isOrgBillingManager`, `isPlatformAdmin`, `isPlatformStaff`) are pure functions used in every auth boundary. They must be bulletproof.
 
 **Run:**
+
 ```bash
 pnpm vitest --filter packages/auth -- --reporter=verbose
 ```
@@ -46,16 +49,17 @@ Medium speed. Require `TEST_DATABASE_URL`. Isolated via `cleanDatabase()` in `be
 
 **Targets:**
 
-| Package | File | What it covers |
-|---|---|---|
-| `packages/auth` | `sync.test.ts` | Clerk webhook → DB user/org/membership sync |
-| `packages/billing` | `entitlements.test.ts` | `checkEntitlement()` — subscription and AccessGrant paths |
-| `packages/billing` | `subscriptions.test.ts` | Subscription state machine (create, cancel, update) |
-| `packages/billing` | `catalog.test.ts` | Product catalog query filtering and enrichment |
-| `apps/dashboard` | `lib/admin/products.test.ts` | Admin product CRUD |
-| `apps/dashboard` | `lib/admin/grants.test.ts` | Access grant list/create/revoke |
+| Package            | File                         | What it covers                                            |
+| ------------------ | ---------------------------- | --------------------------------------------------------- |
+| `packages/auth`    | `sync.test.ts`               | Clerk webhook → DB user/org/membership sync               |
+| `packages/billing` | `entitlements.test.ts`       | `checkEntitlement()` — subscription and AccessGrant paths |
+| `packages/billing` | `subscriptions.test.ts`      | Subscription state machine (create, cancel, update)       |
+| `packages/billing` | `catalog.test.ts`            | Product catalog query filtering and enrichment            |
+| `apps/dashboard`   | `lib/admin/products.test.ts` | Admin product CRUD                                        |
+| `apps/dashboard`   | `lib/admin/grants.test.ts`   | Access grant list/create/revoke                           |
 
 **Database setup:**
+
 ```bash
 # Create the test database (one-time)
 createdb collectivemind_test
@@ -68,11 +72,13 @@ export TEST_DATABASE_URL=postgresql://localhost/collectivemind_test
 ```
 
 **Run all integration tests:**
+
 ```bash
 pnpm turbo test
 ```
 
 **Run a single package:**
+
 ```bash
 pnpm vitest run --project packages/billing
 # or
@@ -86,6 +92,7 @@ cd packages/billing && pnpm test
 Slow. Not yet implemented. Reserved for critical happy paths post-MVP.
 
 **Planned targets (Playwright):**
+
 - Sign-in → org selection → dashboard home
 - Admin creates product → publishes → visible in public catalog
 - Access grant issued → customer sees product in dashboard
@@ -212,6 +219,7 @@ Use Playwright. Start with the sign-in → dashboard → product access flow. On
 ## Running in CI
 
 The `turbo.json` `test` task:
+
 - Depends on `db:generate` (Prisma client must be generated)
 - Passes `DATABASE_URL` and `TEST_DATABASE_URL` through to the subprocess
 - Caches coverage output in `coverage/**`
@@ -225,6 +233,7 @@ The `turbo.json` `test` task:
 ```
 
 The test database must be migrated before tests run:
+
 ```yaml
 - name: Migrate test database
   env:

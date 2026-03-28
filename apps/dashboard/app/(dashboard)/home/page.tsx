@@ -29,32 +29,28 @@ export default async function HomePage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Welcome back
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          {org.name} workspace
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Welcome back</h1>
+        <p className="mt-1 text-sm text-slate-500">{org.name} workspace</p>
       </div>
 
       {/* Quick stats row */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Products</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Products</p>
           <p className="mt-1 text-2xl font-bold text-slate-900">{accessibleProducts.length}</p>
           <p className="mt-0.5 text-xs text-slate-400">active</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Plan</p>
-          <p className="mt-1 text-sm font-semibold text-slate-900 truncate">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Plan</p>
+          <p className="mt-1 truncate text-sm font-semibold text-slate-900">
             {accessibleProducts.length > 0
-              ? entitlements.find((e) => e?.hasAccess)?.plan?.name ?? "—"
+              ? (entitlements.find((e) => e?.hasAccess)?.plan?.name ?? "—")
               : "None"}
           </p>
           <p className="mt-0.5 text-xs text-slate-400">current</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4 col-span-2 sm:col-span-1">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Role</p>
+        <div className="col-span-2 rounded-xl border border-slate-200 bg-white p-4 sm:col-span-1">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Role</p>
           <div className="mt-1">
             <Badge variant={isAdmin ? "default" : "secondary"}>
               {isAdmin ? "Admin" : "Member"}
@@ -66,11 +62,11 @@ export default async function HomePage() {
 
       {/* Product access section */}
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-slate-700">Your Products</h2>
           <Link
             href="/products"
-            className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+            className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
           >
             View all <ArrowRight size={12} />
           </Link>
@@ -106,7 +102,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/billing"
-              className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
             >
               View billing <ArrowRight size={12} />
             </Link>

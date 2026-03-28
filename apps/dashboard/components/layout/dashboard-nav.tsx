@@ -41,10 +41,7 @@ export function DashboardNav() {
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
                   )}
                 >
-                  <Icon
-                    size={16}
-                    className={cn(isActive ? "text-indigo-600" : "text-slate-400")}
-                  />
+                  <Icon size={16} className={cn(isActive ? "text-indigo-600" : "text-slate-400")} />
                   {label}
                 </Link>
               </li>
@@ -54,7 +51,7 @@ export function DashboardNav() {
       </nav>
 
       {/* Org switcher + user */}
-      <div className="border-t border-slate-100 p-3 space-y-2">
+      <div className="space-y-2 border-t border-slate-100 p-3">
         <OrganizationSwitcher
           hidePersonal
           appearance={{

@@ -64,8 +64,7 @@ const sections = [
   {
     id: "contact",
     title: "10. Contact",
-    content:
-      "For questions about these terms, contact us at legal@collectivemind.com.",
+    content: "For questions about these terms, contact us at legal@collectivemind.com.",
   },
 ]
 
@@ -76,7 +75,9 @@ export default function TermsPage() {
     <section className="bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <nav className="mb-6 flex items-center gap-2 text-sm text-slate-400">
-          <Link href="/legal" className="hover:text-slate-600">Legal</Link>
+          <Link href="/legal" className="hover:text-slate-600">
+            Legal
+          </Link>
           <span>/</span>
           <span className="text-slate-600">Terms of service</span>
         </nav>

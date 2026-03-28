@@ -84,7 +84,11 @@ export async function requireBillingAccess() {
   const { org, orgRole } = await requireOrg()
 
   if (!isOrgBillingManager(orgRole)) {
-    logger.warn("auth.access_denied", { orgId: org.clerkId, orgRole, required: "org:billing_manager" })
+    logger.warn("auth.access_denied", {
+      orgId: org.clerkId,
+      orgRole,
+      required: "org:billing_manager",
+    })
     redirect("/home")
   }
 

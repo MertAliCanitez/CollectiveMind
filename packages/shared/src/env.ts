@@ -7,7 +7,7 @@
  *   import { z } from "zod"
  *   export const env = validateEnv(z.object({ MY_VAR: z.string() }))
  */
-import { z } from "zod"
+import type { z } from "zod"
 
 export function validateEnv<T extends z.ZodTypeAny>(schema: T): z.infer<T> {
   const parsed = schema.safeParse(process.env)

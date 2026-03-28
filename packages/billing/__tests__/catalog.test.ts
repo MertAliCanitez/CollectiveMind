@@ -10,13 +10,13 @@
  * Requires TEST_DATABASE_URL to be set.
  */
 import { describe, it, expect, beforeEach, afterAll } from "vitest"
-import { getProductCatalog, getCatalogProduct, getAllProductsAdmin, getComingSoonProducts } from "../src/catalog.js"
 import {
-  testDb,
-  cleanDatabase,
-  createTestProduct,
-  createTestPlan,
-} from "@repo/testing"
+  getProductCatalog,
+  getCatalogProduct,
+  getAllProductsAdmin,
+  getComingSoonProducts,
+} from "../src/catalog.js"
+import { testDb, cleanDatabase, createTestProduct, createTestPlan } from "@repo/testing"
 
 beforeEach(cleanDatabase)
 

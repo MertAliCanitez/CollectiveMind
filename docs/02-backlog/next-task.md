@@ -53,17 +53,20 @@ Dashboard app: Clerk provider + middleware (Phase 1, item 2)
 Read this file. If a task is listed with status `[~]` (in progress), resume that task — do not start something new.
 
 **When given a new task by the user:**
+
 1. Check if it conflicts with the current task.
 2. If yes, surface the conflict and ask which to prioritize.
 3. If no, complete the current task first (or mark it blocked with a reason).
 
 **When completing a task:**
+
 1. Mark the task `[x]` in `backlog.md`.
 2. Move it to the Done section of `backlog.md`.
 3. Update this file with the next task from the backlog.
 4. Commit the doc update alongside the code: `docs: complete [task name], advance next-task`.
 
 **When a task is blocked:**
+
 1. Change status to `[!]` and write the blocker inline.
 2. Note the blocker in `backlog.md` too.
 3. Pull the next unblocked task from the backlog into this file.
@@ -82,12 +85,15 @@ Read this file. If a task is listed with status `[~]` (in progress), resume that
 **From backlog:** [Phase] — [Section], item [N]
 
 ### What to do
+
 [Concrete steps — precise enough to execute without rereading the backlog]
 
 ### Done when
+
 - [ ] [Acceptance criterion 1]
 - [ ] [Acceptance criterion 2]
 
 ### Next task after this
+
 [Name of next backlog item]
 ```

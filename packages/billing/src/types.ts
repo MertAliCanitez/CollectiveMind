@@ -9,12 +9,7 @@
 
 // ─── Provider configuration ───────────────────────────────────────────────────
 
-export type BillingProviderName =
-  | "null"
-  | "stripe"
-  | "paddle"
-  | "lemon_squeezy"
-  | "iyzico"
+export type BillingProviderName = "null" | "stripe" | "paddle" | "lemon_squeezy" | "iyzico"
 
 /**
  * Whether a real payment provider is wired in.

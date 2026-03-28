@@ -5,12 +5,7 @@
  * They are the foundation of every auth boundary in the platform.
  */
 import { describe, it, expect } from "vitest"
-import {
-  isOrgAdmin,
-  isOrgBillingManager,
-  isPlatformAdmin,
-  isPlatformStaff,
-} from "../src/roles.js"
+import { isOrgAdmin, isOrgBillingManager, isPlatformAdmin, isPlatformStaff } from "../src/roles.js"
 
 // ─── isOrgAdmin ───────────────────────────────────────────────────────────────
 

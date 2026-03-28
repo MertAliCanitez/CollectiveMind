@@ -8,12 +8,7 @@
  */
 import { describe, it, expect, beforeEach, afterAll } from "vitest"
 import { listProducts, getProduct, createProduct, updateProduct } from "../../../lib/admin/products"
-import {
-  testDb,
-  cleanDatabase,
-  createTestProduct,
-  createTestPlan,
-} from "@repo/testing"
+import { testDb, cleanDatabase, createTestProduct, createTestPlan } from "@repo/testing"
 
 beforeEach(cleanDatabase)
 

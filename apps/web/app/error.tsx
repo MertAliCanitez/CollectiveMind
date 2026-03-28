@@ -26,9 +26,7 @@ export default function Error({
           An unexpected error occurred. Please try again.
         </p>
         {error.digest && (
-          <p className="mt-1 font-mono text-xs text-gray-400">
-            Error ID: {error.digest}
-          </p>
+          <p className="mt-1 font-mono text-xs text-gray-400">Error ID: {error.digest}</p>
         )}
         <button
           onClick={reset}

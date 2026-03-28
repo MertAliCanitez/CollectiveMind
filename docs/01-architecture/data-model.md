@@ -366,6 +366,7 @@ This pattern must be reviewed in every new domain function. A linting rule or te
 ## Seeding Strategy
 
 `packages/db/prisma/seed.ts` seeds:
+
 - 2–3 `Product` records
 - 2–3 `Plan` records per product (Free, Pro, Enterprise)
 - `PlanFeature` records for each plan

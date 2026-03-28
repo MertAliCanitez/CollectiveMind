@@ -7,9 +7,7 @@ import { cn } from "@repo/ui"
 const navSections = [
   {
     label: "Catalog",
-    items: [
-      { href: "/admin/products", label: "Products & Plans" },
-    ],
+    items: [{ href: "/admin/products", label: "Products & Plans" }],
   },
   {
     label: "Customers",
@@ -20,9 +18,7 @@ const navSections = [
   },
   {
     label: "Observability",
-    items: [
-      { href: "/admin/audit", label: "Audit Log" },
-    ],
+    items: [{ href: "/admin/audit", label: "Audit Log" }],
   },
 ]
 
@@ -37,7 +33,7 @@ export function AdminNav() {
           <Link href="/admin" className="text-sm font-semibold text-white hover:text-indigo-300">
             CollectiveMind
           </Link>
-          <p className="text-[10px] font-medium tracking-widest text-slate-400 uppercase">Admin</p>
+          <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">Admin</p>
         </div>
       </div>
 

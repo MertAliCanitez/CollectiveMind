@@ -11,7 +11,12 @@
  */
 import { db } from "@repo/database"
 import { formatCurrency } from "@repo/shared"
-import type { BillingConfiguration, BillingProviderName, OrgBillingStatus, SubscriptionUIState } from "./types.js"
+import type {
+  BillingConfiguration,
+  BillingProviderName,
+  OrgBillingStatus,
+  SubscriptionUIState,
+} from "./types.js"
 
 /**
  * Returns whether a live payment provider is configured.
@@ -81,8 +86,7 @@ export async function getOrgBillingStatus(orgId: string): Promise<OrgBillingStat
     isManagedManually: !subscription.providerSubscriptionId,
   }
 
-  const hasActiveAccess =
-    subscription.status === "ACTIVE" || subscription.status === "TRIALING"
+  const hasActiveAccess = subscription.status === "ACTIVE" || subscription.status === "TRIALING"
 
   return {
     billing,

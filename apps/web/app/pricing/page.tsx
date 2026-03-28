@@ -71,7 +71,7 @@ export default async function PricingPage() {
         products.map((product) => (
           <section
             key={product.id}
-            className="border-b border-slate-100 bg-white py-16 sm:py-20 last:border-0"
+            className="border-b border-slate-100 bg-white py-16 last:border-0 sm:py-20"
           >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               {/* Product header */}
@@ -79,7 +79,7 @@ export default async function PricingPage() {
                 <div>
                   <h2 className="text-2xl font-bold text-slate-900">{product.name}</h2>
                   {product.content?.tagline && (
-                    <p className="mt-1 text-sm text-indigo-600 font-medium">
+                    <p className="mt-1 text-sm font-medium text-indigo-600">
                       {product.content.tagline}
                     </p>
                   )}
@@ -95,9 +95,11 @@ export default async function PricingPage() {
               {product.plans.length > 0 ? (
                 <div
                   className={`grid grid-cols-1 gap-6 ${
-                    product.plans.length === 2 ? "sm:grid-cols-2 max-w-2xl" :
-                    product.plans.length === 3 ? "sm:grid-cols-3" :
-                    "sm:grid-cols-2 lg:grid-cols-4"
+                    product.plans.length === 2
+                      ? "max-w-2xl sm:grid-cols-2"
+                      : product.plans.length === 3
+                        ? "sm:grid-cols-3"
+                        : "sm:grid-cols-2 lg:grid-cols-4"
                   }`}
                 >
                   {product.plans.map((plan) => {
@@ -135,14 +137,11 @@ export default async function PricingPage() {
       {/* FAQ */}
       <section className="bg-slate-50 py-20 sm:py-28">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            eyebrow="FAQ"
-            heading="Pricing questions answered"
-          />
+          <SectionHeader eyebrow="FAQ" heading="Pricing questions answered" />
           <div className="mt-10 divide-y divide-slate-200">
             {faq.map((item) => (
               <details key={item.q} className="group py-5">
-                <summary className="flex cursor-pointer items-center justify-between gap-4 text-sm font-semibold text-slate-900 marker:hidden list-none">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-slate-900 marker:hidden">
                   {item.q}
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-400 transition-transform group-open:rotate-180">
                     <svg

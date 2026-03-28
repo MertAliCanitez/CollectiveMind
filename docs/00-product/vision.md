@@ -6,11 +6,11 @@ CollectiveMind is a multi-product B2B SaaS platform. It sells software products 
 
 The platform ships as three applications:
 
-| App | Audience | Purpose |
-|-----|----------|---------|
-| `apps/web` | Public / prospects | Marketing site, pricing, product pages |
-| `apps/dashboard` | Org members | Customer-facing product access, billing, team |
-| `apps/admin` | Internal staff | Organization and subscription management |
+| App              | Audience           | Purpose                                       |
+| ---------------- | ------------------ | --------------------------------------------- |
+| `apps/web`       | Public / prospects | Marketing site, pricing, product pages        |
+| `apps/dashboard` | Org members        | Customer-facing product access, billing, team |
+| `apps/admin`     | Internal staff     | Organization and subscription management      |
 
 ## Core Principles
 
@@ -28,18 +28,18 @@ The platform ships as three applications:
 
 ### Platform Roles (global, via Clerk `publicMetadata.platformRole`)
 
-| Role | What They Can Do |
-|------|-----------------|
-| `super_admin` | Full platform access, can grant/revoke staff roles |
-| `support` | Read-only access to org and subscription data in admin |
+| Role          | What They Can Do                                       |
+| ------------- | ------------------------------------------------------ |
+| `super_admin` | Full platform access, can grant/revoke staff roles     |
+| `support`     | Read-only access to org and subscription data in admin |
 
 ### Organization Roles (per-org, via Clerk built-in roles)
 
-| Role | What They Can Do |
-|------|-----------------|
-| `ADMIN` | Manage members, billing, all org settings |
-| `BILLING_MANAGER` | Manage subscriptions and invoices only |
-| `MEMBER` | Access to org products, no admin capabilities |
+| Role              | What They Can Do                              |
+| ----------------- | --------------------------------------------- |
+| `ADMIN`           | Manage members, billing, all org settings     |
+| `BILLING_MANAGER` | Manage subscriptions and invoices only        |
+| `MEMBER`          | Access to org products, no admin capabilities |
 
 ## What Success Looks Like at MVP
 

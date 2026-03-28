@@ -33,10 +33,10 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
         />
       </form>
 
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Slug</th>
               <th className="px-4 py-3">Members</th>
@@ -55,13 +55,13 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
               </tr>
             ) : (
               orgs.map((org) => (
-                <tr key={org.id} className="hover:bg-slate-50 transition-colors">
+                <tr key={org.id} className="transition-colors hover:bg-slate-50">
                   <td className="px-4 py-3 font-medium text-slate-900">{org.name}</td>
                   <td className="px-4 py-3 font-mono text-xs text-slate-500">{org.slug}</td>
                   <td className="px-4 py-3 text-slate-600">{org.memberCount}</td>
                   <td className="px-4 py-3 text-slate-600">{org.subscriptionCount}</td>
                   <td className="px-4 py-3 text-slate-600">{org.grantCount}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs">
+                  <td className="px-4 py-3 text-xs text-slate-500">
                     {org.createdAt.toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -82,7 +82,9 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
       {/* Pagination */}
       {total > 30 && (
         <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-          <span>Showing {orgs.length} of {total}</span>
+          <span>
+            Showing {orgs.length} of {total}
+          </span>
           <div className="flex gap-2">
             {page && parseInt(page, 10) > 1 && (
               <Link

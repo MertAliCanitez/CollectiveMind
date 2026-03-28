@@ -22,10 +22,7 @@ export default async function AdminAuditPage({ searchParams }: Props) {
 
   return (
     <div>
-      <PageHeader
-        title="Audit Log"
-        description={`${total} total events`}
-      />
+      <PageHeader title="Audit Log" description={`${total} total events`} />
 
       {/* Filters */}
       <form method="GET" className="mb-4 flex flex-wrap gap-2">
@@ -57,16 +54,16 @@ export default async function AdminAuditPage({ searchParams }: Props) {
         )}
       </form>
 
-      <div className="rounded-xl border border-slate-200 bg-white overflow-x-auto">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-              <th className="px-4 py-3 whitespace-nowrap">Time</th>
-              <th className="px-4 py-3 whitespace-nowrap">Action</th>
-              <th className="px-4 py-3 whitespace-nowrap">Actor</th>
-              <th className="px-4 py-3 whitespace-nowrap">Organization</th>
-              <th className="px-4 py-3 whitespace-nowrap">Resource</th>
-              <th className="px-4 py-3 whitespace-nowrap">Resource ID</th>
+            <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="whitespace-nowrap px-4 py-3">Time</th>
+              <th className="whitespace-nowrap px-4 py-3">Action</th>
+              <th className="whitespace-nowrap px-4 py-3">Actor</th>
+              <th className="whitespace-nowrap px-4 py-3">Organization</th>
+              <th className="whitespace-nowrap px-4 py-3">Resource</th>
+              <th className="whitespace-nowrap px-4 py-3">Resource ID</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -79,10 +76,10 @@ export default async function AdminAuditPage({ searchParams }: Props) {
             ) : (
               entries.map((entry) => (
                 <tr key={entry.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-2.5 text-xs text-slate-500 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-4 py-2.5 text-xs text-slate-500">
                     {entry.createdAt.toLocaleString()}
                   </td>
-                  <td className="px-4 py-2.5 font-mono text-xs font-medium text-slate-700 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-4 py-2.5 font-mono text-xs font-medium text-slate-700">
                     {entry.action}
                   </td>
                   <td className="px-4 py-2.5 text-xs text-slate-600">
@@ -94,7 +91,7 @@ export default async function AdminAuditPage({ searchParams }: Props) {
                   <td className="px-4 py-2.5 font-mono text-xs text-slate-500">
                     {entry.resourceType}
                   </td>
-                  <td className="px-4 py-2.5 font-mono text-xs text-slate-400 truncate max-w-xs">
+                  <td className="max-w-xs truncate px-4 py-2.5 font-mono text-xs text-slate-400">
                     {entry.resourceId ?? "—"}
                   </td>
                 </tr>
@@ -107,7 +104,9 @@ export default async function AdminAuditPage({ searchParams }: Props) {
       {/* Pagination */}
       {total > 50 && (
         <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-          <span>Showing {entries.length} of {total}</span>
+          <span>
+            Showing {entries.length} of {total}
+          </span>
           <div className="flex gap-3">
             {page && parseInt(page, 10) > 1 && (
               <a

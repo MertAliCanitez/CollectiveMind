@@ -13,7 +13,9 @@ import { db, type Prisma } from "@repo/database"
  * Resolve the internal DB user ID from a Clerk user ID.
  * Returns null if the user hasn't been synced yet (race) or doesn't exist.
  */
-export async function resolveDbUserId(clerkUserId: string | null | undefined): Promise<string | null> {
+export async function resolveDbUserId(
+  clerkUserId: string | null | undefined,
+): Promise<string | null> {
   if (!clerkUserId) return null
   const user = await db.user.findFirst({ where: { clerkId: clerkUserId }, select: { id: true } })
   return user?.id ?? null

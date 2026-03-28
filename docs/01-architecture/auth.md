@@ -3,6 +3,7 @@
 ## Overview
 
 Authentication is handled entirely by **Clerk**. Clerk is the single source of truth for:
+
 - User identities
 - Sessions and tokens
 - Organization membership and roles
@@ -14,11 +15,11 @@ The application database maintains a **synchronized copy** of user and organizat
 
 ## Clerk Instance Strategy
 
-| Environment | Clerk Instance |
-|------------|----------------|
-| `local` + `preview` | Shared development instance |
-| `staging` | Dedicated staging instance |
-| `production` | Production instance (isolated, separate keys) |
+| Environment         | Clerk Instance                                |
+| ------------------- | --------------------------------------------- |
+| `local` + `preview` | Shared development instance                   |
+| `staging`           | Dedicated staging instance                    |
+| `production`        | Production instance (isolated, separate keys) |
 
 **Why separate production instance:** A compromised development key cannot affect production users. Clerk's instances are isolated — user records, orgs, and sessions do not cross instances.
 
@@ -59,6 +60,7 @@ User is invited to existing Organization
 ### Platform Roles (via Clerk `publicMetadata`)
 
 Platform roles are stored in the Clerk User `publicMetadata` object. This metadata is:
+
 - Set server-side only (cannot be tampered with by the client)
 - Available in the JWT session claims
 - Checked in Next.js middleware and server components
@@ -77,10 +79,10 @@ Clerk's built-in role system is scoped to organizations. Platform roles span all
 
 Clerk's default org roles are used as-is:
 
-| Clerk Role | Platform Meaning |
-|-----------|-----------------|
-| `org:admin` | Can manage org settings, members, billing, and all products |
-| `org:member` | Can use licensed products; read-only on org settings |
+| Clerk Role   | Platform Meaning                                            |
+| ------------ | ----------------------------------------------------------- |
+| `org:admin`  | Can manage org settings, members, billing, and all products |
+| `org:member` | Can use licensed products; read-only on org settings        |
 
 A custom `org:billing_manager` role is defined for post-MVP to separate billing management from admin access. At v1, billing is only accessible to `org:admin`.
 
@@ -105,21 +107,22 @@ POST /api/webhooks/clerk
 
 ### Events Handled
 
-| Event | Action |
-|-------|--------|
-| `user.created` | Upsert User in DB |
-| `user.updated` | Update User name/email in DB |
-| `user.deleted` | Soft-delete User in DB |
-| `organization.created` | Upsert Organization in DB |
-| `organization.updated` | Update Organization in DB |
-| `organization.deleted` | Soft-delete Organization in DB |
-| `organizationMembership.created` | Create OrgMember record in DB |
-| `organizationMembership.updated` | Update OrgMember role in DB |
+| Event                            | Action                          |
+| -------------------------------- | ------------------------------- |
+| `user.created`                   | Upsert User in DB               |
+| `user.updated`                   | Update User name/email in DB    |
+| `user.deleted`                   | Soft-delete User in DB          |
+| `organization.created`           | Upsert Organization in DB       |
+| `organization.updated`           | Update Organization in DB       |
+| `organization.deleted`           | Soft-delete Organization in DB  |
+| `organizationMembership.created` | Create OrgMember record in DB   |
+| `organizationMembership.updated` | Update OrgMember role in DB     |
 | `organizationMembership.deleted` | Remove OrgMember record from DB |
 
 ### Why sync to DB at all?
 
 Clerk is the authoritative source for identity, but the application needs to:
+
 - Join subscriptions, audit logs, and product data against users and orgs
 - Run analytics queries without Clerk API rate limits
 - Maintain referential integrity (FK constraints in Postgres)
@@ -214,6 +217,7 @@ if (!entitlement.hasAccess) throw new EntitlementError()
 ```
 
 **Why three layers?**
+
 - Middleware alone is too coarse — it can't check subscription state.
 - Route-level checks alone are fragile — one missed check = data leak.
 - Domain-level checks alone are invisible to routing — the user gets a 500 instead of a clean redirect.

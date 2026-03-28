@@ -7,6 +7,7 @@ ADRs record significant technical decisions: what was decided, why, and what alt
 ## When to Write an ADR
 
 Write an ADR when a decision:
+
 - Changes a constraint established in `docs/01-architecture/`
 - Introduces a new dependency that will be hard to remove
 - Affects multiple packages or apps
@@ -14,6 +15,7 @@ Write an ADR when a decision:
 - Supersedes a previous ADR
 
 Do **not** write an ADR for:
+
 - Routine implementation choices that follow established patterns
 - Dependency patch/minor version bumps
 - Styling or formatting decisions
@@ -42,20 +44,25 @@ Be specific. Include relevant links to prior art, error logs, or external refere
 ## Consequences
 
 **Positive:**
+
 - [What does this make easier or better?]
 
 **Negative / trade-offs:**
+
 - [What does this make harder or require us to live with?]
 
 **Risks:**
+
 - [What could go wrong, and how do we mitigate it?]
 
 ## Alternatives Considered
 
 ### [Alternative 1 name]
+
 [Why wasn't this chosen?]
 
 ### [Alternative 2 name]
+
 [Why wasn't this chosen?]
 
 ## Implementation Notes
@@ -70,20 +77,20 @@ This is not a how-to guide — keep it to decision-relevant constraints only.]
 
 The following decisions are established in `docs/01-architecture/` and do not require ADRs — they are founding constraints:
 
-| Decision | Where documented |
-|----------|-----------------|
-| Clerk for auth (no custom auth) | `auth.md` |
-| Organizations as tenancy primitive | `auth.md`, `architecture.md` |
-| PostgreSQL + Prisma (no raw SQL) | `data-model.md`, `security.md` |
-| NullPaymentProvider at v1 | `billing.md` |
-| `checkEntitlement()` as billing API surface | `billing.md` |
-| Modular monolith (no microservices at v1) | `architecture.md` |
-| pnpm + Turborepo monorepo | `repo-structure.md` |
-| `organizationId` from JWT only (never user input) | `security.md`, `auth.md` |
-| Three-layer authorization (middleware → route → domain) | `security.md` |
-| Soft deletes via `deletedAt` | `data-model.md` |
-| Money in integer cents | `data-model.md` |
-| UUID primary keys | `data-model.md` |
+| Decision                                                | Where documented               |
+| ------------------------------------------------------- | ------------------------------ |
+| Clerk for auth (no custom auth)                         | `auth.md`                      |
+| Organizations as tenancy primitive                      | `auth.md`, `architecture.md`   |
+| PostgreSQL + Prisma (no raw SQL)                        | `data-model.md`, `security.md` |
+| NullPaymentProvider at v1                               | `billing.md`                   |
+| `checkEntitlement()` as billing API surface             | `billing.md`                   |
+| Modular monolith (no microservices at v1)               | `architecture.md`              |
+| pnpm + Turborepo monorepo                               | `repo-structure.md`            |
+| `organizationId` from JWT only (never user input)       | `security.md`, `auth.md`       |
+| Three-layer authorization (middleware → route → domain) | `security.md`                  |
+| Soft deletes via `deletedAt`                            | `data-model.md`                |
+| Money in integer cents                                  | `data-model.md`                |
+| UUID primary keys                                       | `data-model.md`                |
 
 Any change to the above requires both an ADR and an update to the relevant architecture doc.
 
@@ -91,9 +98,9 @@ Any change to the above requires both an ADR and an update to the relevant archi
 
 ## ADR Index
 
-| # | Title | Status | Date |
-|---|-------|--------|------|
-| — | *(no ADRs yet — founding constraints documented in architecture docs)* | — | — |
+| #   | Title                                                                  | Status | Date |
+| --- | ---------------------------------------------------------------------- | ------ | ---- |
+| —   | _(no ADRs yet — founding constraints documented in architecture docs)_ | —      | —    |
 
 > Add a row here when a new ADR is created.
 

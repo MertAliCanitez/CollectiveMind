@@ -29,11 +29,7 @@
 import { db } from "@repo/database"
 import { formatCurrency } from "@repo/shared"
 import { getBillingConfiguration } from "./status.js"
-import {
-  getProductContent,
-  getPlanContent,
-  getFeatureDisplayConfig,
-} from "./product-content.js"
+import { getProductContent, getPlanContent, getFeatureDisplayConfig } from "./product-content.js"
 import type { ProductContent, PlanContent, FeatureDisplay } from "./product-content.js"
 import type { BillingConfiguration } from "./types.js"
 
@@ -47,7 +43,6 @@ export interface CatalogFeature {
   /** How to format the value for display */
   format: FeatureDisplay["format"] | null
 }
-
 
 export interface CatalogPlan {
   id: string
@@ -131,26 +126,24 @@ function buildCatalogPlan(
   }
 }
 
-function buildCatalogProduct(
-  product: {
+function buildCatalogProduct(product: {
+  id: string
+  slug: string
+  name: string
+  status: string
+  sortOrder: number
+  plans: Array<{
     id: string
     slug: string
     name: string
-    status: string
+    billingInterval: string
+    displayPrice: number
+    currency: string
+    isPublic: boolean
     sortOrder: number
-    plans: Array<{
-      id: string
-      slug: string
-      name: string
-      billingInterval: string
-      displayPrice: number
-      currency: string
-      isPublic: boolean
-      sortOrder: number
-      features: Array<{ key: string; value: string }>
-    }>
-  },
-): CatalogProduct {
+    features: Array<{ key: string; value: string }>
+  }>
+}): CatalogProduct {
   const featureConfig = getFeatureDisplayConfig(product.slug)
 
   return {
@@ -205,9 +198,7 @@ export async function getProductCatalog(): Promise<ProductCatalog> {
  *
  * Returns null if the product does not exist or is not active.
  */
-export async function getCatalogProduct(
-  productSlug: string,
-): Promise<CatalogProduct | null> {
+export async function getCatalogProduct(productSlug: string): Promise<CatalogProduct | null> {
   const product = await db.product.findFirst({
     where: { slug: productSlug, status: "ACTIVE" },
     include: {

@@ -21,7 +21,7 @@ export default async function SettingsPage() {
       {/* Organization settings */}
       <div>
         <h2 className="mb-4 text-sm font-semibold text-slate-700">Organization</h2>
-        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
           <OrganizationProfile
             routing="hash"
             appearance={{
@@ -39,7 +39,7 @@ export default async function SettingsPage() {
       {/* Personal account */}
       <div>
         <h2 className="mb-4 text-sm font-semibold text-slate-700">Personal Account</h2>
-        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
           <UserProfile
             routing="hash"
             appearance={{

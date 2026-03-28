@@ -2,13 +2,13 @@
 
 ## Monorepo Toolchain
 
-| Tool | Role |
-|------|------|
+| Tool                | Role                                                         |
+| ------------------- | ------------------------------------------------------------ |
 | **pnpm workspaces** | Package manager, workspace hoisting, disk-efficient installs |
-| **Turborepo** | Task orchestration, remote caching, build pipeline |
-| **TypeScript** | All packages and apps use TypeScript strict mode |
-| **ESLint** | Lint rules shared via `packages/config/eslint` |
-| **Prettier** | Formatting shared via `packages/config/prettier` |
+| **Turborepo**       | Task orchestration, remote caching, build pipeline           |
+| **TypeScript**      | All packages and apps use TypeScript strict mode             |
+| **ESLint**          | Lint rules shared via `packages/config/eslint`               |
+| **Prettier**        | Formatting shared via `packages/config/prettier`             |
 
 **Why pnpm over npm/yarn?**
 pnpm's content-addressable store means each package version is stored once on disk regardless of how many packages depend on it. In a monorepo with many apps sharing Next.js and React, this is a meaningful efficiency. Hoisting behavior is predictable.
@@ -192,6 +192,7 @@ collectivemind/
 ```
 
 **Key design decisions:**
+
 - `build` depends on `db#generate`: Prisma client must be generated before any app builds. Prevents the common "PrismaClient not found" CI failure.
 - `db#migrate` is never in the `build` pipeline: migrations run as a separate CI step, not as part of build. Running migrations in the build step would fail on read-only build environments.
 - `dev` has `persistent: true` and `cache: false`: dev servers must stay running and must not cache output.
@@ -213,11 +214,11 @@ main           ← production-ready, protected
 
 ### Branch Rules
 
-| Branch | Protection | Deploys to |
-|--------|-----------|-----------|
-| `main` | Required: PR + 1 review + all CI green + no direct pushes | Production |
-| `develop` | Required: PR + all CI green | Staging |
-| `feature/*`, `fix/*`, `chore/*` | None | Vercel preview (auto) |
+| Branch                          | Protection                                                | Deploys to            |
+| ------------------------------- | --------------------------------------------------------- | --------------------- |
+| `main`                          | Required: PR + 1 review + all CI green + no direct pushes | Production            |
+| `develop`                       | Required: PR + all CI green                               | Staging               |
+| `feature/*`, `fix/*`, `chore/*` | None                                                      | Vercel preview (auto) |
 
 ### PR Workflow
 
@@ -233,6 +234,7 @@ main           ← production-ready, protected
 ### Why `develop` as integration branch?
 
 Direct merge to `main` from feature branches works for solo developers but breaks down for teams:
+
 - Staging needs a stable integration target that isn't polluted by unfinished features
 - `develop` provides a buffer: QA happens on staging, not production
 - Emergency hotfixes can branch from `main` directly and merge back to both `main` and `develop`
@@ -324,6 +326,7 @@ pnpm --filter dashboard dev
 ```
 
 `docker-compose.yml` at root provides:
+
 - PostgreSQL 16 on port 5432
 - (Post-MVP) Redis on port 6379
 
