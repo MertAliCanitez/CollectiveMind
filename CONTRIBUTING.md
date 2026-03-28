@@ -1,22 +1,80 @@
 # Contributing to CollectiveMind
 
-## Branch Workflow
+This document describes the branch, commit, and PR workflow for this repository.
+It applies to human contributors and to Claude Code-driven development equally.
 
-All development happens on feature branches targeting `develop`. See the [`branch-workflow`](.claude/skills/branch-workflow/SKILL.md) skill for the full workflow.
+---
+
+## Branch naming
+
+Every change lives on a branch. Direct commits to `main` are blocked.
+
+| Pattern | When to use | Example |
+|---|---|---|
+| `feature/<slug>` | New functionality | `feature/webhook-payment-provider` |
+| `fix/<slug>` | Bug fix | `fix/grant-expiry-check` |
+| `refactor/<slug>` | Structural change with no behaviour change | `refactor/auth-middleware-extract` |
+| `chore/<slug>` | Dependency updates, config, tooling | `chore/upgrade-clerk-v7` |
+| `docs/<slug>` | Documentation only | `docs/billing-runbook-update` |
+| `test/<slug>` | Tests only | `test/entitlement-edge-cases` |
+| `db/<slug>` | Schema migrations | `db/add-invoice-pdf-url` |
+
+**Rules:**
+- Slug is lowercase, hyphen-separated, ≤ 40 characters
+- Branch off `main`
+- One concern per branch — do not bundle unrelated changes
+
+---
+
+## Commit messages
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
 ```
-main       ← production
-  └── develop  ← integration (PRs target this)
-        ├── feature/TICKET-123-short-name
-        ├── fix/TICKET-456-short-name
-        └── chore/short-name
+<type>(<scope>): <summary>
+
+[optional body]
+
+[optional footer(s)]
 ```
 
-## Getting Started
+**Types:**
+
+| Type | Use for |
+|---|---|
+| `feat` | New feature or behaviour |
+| `fix` | Bug fix |
+| `refactor` | Code change that is neither a fix nor a feature |
+| `test` | Adding or updating tests |
+| `docs` | Documentation only |
+| `chore` | Tooling, dependencies, config |
+| `db` | Prisma schema or migration changes |
+| `perf` | Performance improvement |
+| `ci` | CI/CD workflow changes |
+
+**Scopes:** `auth`, `billing`, `admin`, `dashboard`, `web`, `db`, `ui`, `shared`, `config`, `ci`, `hardening`, `testing`
+
+**Examples:**
+```
+feat(billing): add cancelAtPeriodEnd to subscription state machine
+fix(auth): redirect to /home instead of / on access denied
+docs(runbooks): add observability guide
+db(schema): add ipAddress to AuditLog
+ci: add format check job
+```
+
+**Rules:**
+- Summary is imperative mood, ≤ 72 characters, no trailing period
+- Body explains *why*, not *what* (the diff shows the what)
+- Reference issues in footer: `Closes #42`
+
+---
+
+## Getting started
 
 ```bash
-# Fork and clone
-git clone https://github.com/YOUR_FORK/CollectiveMind
+# Clone the repo
+git clone https://github.com/MertAliCanitez/CollectiveMind
 cd CollectiveMind
 
 # Install dependencies
@@ -26,82 +84,132 @@ pnpm install
 cp .env.example .env.local
 # Edit .env.local with your values
 
-# Start database
-docker compose up -d
-
 # Generate Prisma client and run migrations
 pnpm db:generate
 pnpm db:migrate
-pnpm db:seed
 
 # Start development
 pnpm dev
 ```
 
-## Commit Convention
+See `docs/04-runbooks/local-setup.md` for the full setup walkthrough.
 
-This project uses [Conventional Commits](https://www.conventionalcommits.org/).
+---
 
+## Opening a pull request
+
+1. Create a branch off `main`:
+   ```bash
+   git checkout main && git pull && git checkout -b feature/my-feature
+   ```
+2. Make changes, run `pnpm turbo type-check` and `pnpm turbo lint` before committing
+3. Push and open a PR against `main`
+4. Fill in the PR template — What, Why, Test plan, checklist
+5. Keep PRs focused: one concern, one PR
+6. Self-review your diff before requesting review
+
+**CI must pass before merge:**
+- Lint
+- Format
+- Type Check
+- Prisma Schema
+- Tests
+- Build
+
+---
+
+## Merging
+
+- Squash merge for feature/fix/docs branches (one clean commit on `main` per PR)
+- Delete the source branch after merge
+
+**Squash commit message** — edit GitHub's pre-populated message to follow Conventional Commits:
 ```
-feat(scope): add new feature
-fix(scope): fix a bug
-chore(scope): maintenance task
-docs(scope): documentation update
-refactor(scope): code restructure
-test(scope): add or fix tests
-perf(scope): performance improvement
-ci: CI/CD changes
+feat(billing): add Stripe webhook processor (#42)
 ```
 
-**Scopes:** `auth`, `billing`, `admin`, `web`, `db`, `ui`, `shared`, `config`, `ci`
+---
 
-## Pull Request Process
+## Code standards
 
-1. Branch from `develop`: `git checkout -b feature/my-feature develop`
-2. Make your changes and commit with Conventional Commits
-3. Open a PR targeting `develop`
-4. Ensure all CI checks pass
-5. Request review from a team member
-6. Squash-merge after approval
-
-## Code Standards
-
-- **TypeScript strict mode** — no `any`, no `ts-ignore` without explanation
-- **Zod validation** at all system boundaries (API routes, Server Actions, env vars)
-- **No `console.log`** in production code — use the `logger` from `@repo/shared`
+- **TypeScript strict mode** — no `any`, no `ts-ignore` without a comment explaining why
+- **Zod validation** at all system boundaries (Server Actions, webhook routes)
+- **No `console.log`** in production code — use `logger` from `@repo/shared`
 - **Never log PII** — log IDs only, never names, emails, or payment data
-- **All DB queries scoped to `organizationId`** — never return cross-tenant data
-- **No Prisma mocks** in tests — use the real test database with cleanup helpers
+- **All DB queries scoped to `organizationId`** from `auth()` — never from request params
+- **No Prisma mocks in tests** — use the real test database with `cleanDatabase()`
+- **`orgId` from JWT only** — see `docs/04-runbooks/clerk-auth.md`
 
-## Running Tests
+---
 
-```bash
-# Run all tests
-pnpm test
+## Database changes
 
-# Run tests for a specific package
-pnpm --filter @repo/billing test
-
-# Watch mode
-pnpm --filter @repo/billing test -- --watch
-```
-
-## Database Changes
-
-All schema changes must use Prisma Migrate. See the [`prisma-migrations`](.claude/skills/prisma-migrations/SKILL.md) skill.
+All schema changes use Prisma Migrate. See `docs/04-runbooks/prisma-migrations.md`.
 
 ```bash
 # After editing prisma/schema.prisma
-pnpm db:migrate  # generates + applies migration
+pnpm db:migrate           # generate + apply migration in dev
+pnpm db:validate          # validate schema without migrating
 ```
+
+**When adding a new model:** update `cleanDatabase()` in `packages/testing/src/helpers/database.ts`
+to include the new table in the TRUNCATE statement.
 
 **Never edit a migration file after it has been committed.**
 
-## Adding a shadcn/ui Component
+---
+
+## Running tests
 
 ```bash
-# From the packages/ui directory
+# All tests
+pnpm turbo test
+
+# Single package
+pnpm --filter @repo/billing test
+
+# Watch mode
+cd packages/billing && pnpm test -- --watch
+```
+
+See `docs/04-runbooks/testing.md` for the full test strategy.
+
+---
+
+## Adding a UI component (shadcn/ui)
+
+```bash
+# From packages/ui
 pnpm dlx shadcn@latest add button
 ```
 
-Components are installed to `packages/ui/src/components/` and re-exported from `packages/ui/src/index.ts`.
+Components install to `packages/ui/src/components/` and are re-exported from `packages/ui/src/index.ts`.
+
+---
+
+## Branch protection (GitHub → Settings → Branches → main)
+
+| Rule | Value |
+|---|---|
+| Require pull request before merging | ✓ |
+| Required approving reviews | 1 |
+| Dismiss stale reviews on new push | ✓ |
+| Require status checks to pass | ✓ |
+| Required checks | Lint, Format, Type Check, Prisma Schema, Tests, Build |
+| Require branches up to date before merging | ✓ |
+| Restrict pushes to main | Admins only |
+
+---
+
+## Claude Code workflow
+
+See `docs/04-runbooks/git-workflow.md` for the complete Claude Code branch/commit/PR protocol.
+
+**Short version:**
+1. Branch off `main` with the correct prefix
+2. Implement, then `pnpm turbo type-check`
+3. Commit with Conventional Commits + `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`
+4. Push with `git push -u origin <branch>`
+5. Report the branch name and a summary of what changed
+
+Claude Code does **not** merge to `main` or open PRs without explicit instruction.

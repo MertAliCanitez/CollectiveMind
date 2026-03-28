@@ -2,9 +2,11 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
+  # Push to main is gated by branch protection — CI runs on the PR.
+  # This push trigger keeps the main branch status badge green after merge.
   push:
-    branches: [develop]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,13 +18,21 @@ env:
   # Placeholder values — real secrets come from GitHub repo settings
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/collectivemind_test"
   TEST_DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/collectivemind_test"
-  # Clerk values required for type-check to pass
+  # Clerk values required for type-check to pass (not real credentials)
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_placeholder"
   CLERK_SECRET_KEY: "sk_test_placeholder"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Reusable setup steps are expressed as a composite action (actions/checkout +
+# pnpm + node + install + db:generate) that every job repeats.
+# This keeps jobs independent so they can run in parallel and be required
+# separately in branch protection rules.
+# ─────────────────────────────────────────────────────────────────────────────
 
 jobs:
   # ─────────────────────────────────────────────────────────────
   # Lint
+  # Required check: "Lint"
   # ─────────────────────────────────────────────────────────────
   lint:
     name: Lint
@@ -49,7 +59,33 @@ jobs:
         run: pnpm turbo lint
 
   # ─────────────────────────────────────────────────────────────
+  # Format check
+  # Required check: "Format"
+  # ─────────────────────────────────────────────────────────────
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check formatting
+        run: pnpm format:check
+
+  # ─────────────────────────────────────────────────────────────
   # Type Check
+  # Required check: "Type Check"
   # ─────────────────────────────────────────────────────────────
   type-check:
     name: Type Check
@@ -77,6 +113,7 @@ jobs:
 
   # ─────────────────────────────────────────────────────────────
   # Prisma Schema Validation
+  # Required check: "Prisma Schema"
   # ─────────────────────────────────────────────────────────────
   prisma-validate:
     name: Prisma Schema
@@ -97,10 +134,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Validate schema
-        run: pnpm --filter @repo/database validate
+        run: pnpm db:validate
 
   # ─────────────────────────────────────────────────────────────
   # Unit + Integration Tests
+  # Required check: "Tests"
+  # Depends on the fast checks above so failures surface quickly.
   # ─────────────────────────────────────────────────────────────
   test:
     name: Tests
@@ -147,7 +186,9 @@ jobs:
         run: pnpm turbo test
 
   # ─────────────────────────────────────────────────────────────
-  # Build (final gate — runs after all checks pass)
+  # Build
+  # Required check: "Build"
+  # Final gate — confirms the full monorepo compiles cleanly.
   # ─────────────────────────────────────────────────────────────
   build:
     name: Build
@@ -173,11 +214,7 @@ jobs:
 
       - name: Build
         run: pnpm turbo build
-
-      - name: Cache build outputs
-        uses: actions/cache@v4
-        with:
-          path: |
-            apps/*/**.next
-            packages/*/dist
-          key: build-${{ github.sha }}
+        env:
+          # Build-time Next.js public env vars must be present even as placeholders
+          NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+          NEXT_PUBLIC_DASHBOARD_URL: "http://localhost:3001"
