@@ -11,7 +11,20 @@ export { getBillingConfiguration, getOrgBillingStatus } from "./status.js"
 // Webhook processor
 export { processWebhookEvent } from "./webhooks.js"
 
-// Plans
+// Product catalog — enriched product/plan data with marketing content
+export {
+  getProductCatalog,
+  getCatalogProduct,
+  getAllProductsAdmin,
+  getComingSoonProducts,
+} from "./catalog.js"
+export type { CatalogPlan, CatalogProduct, CatalogFeature, ProductCatalog } from "./catalog.js"
+
+// Product marketing content
+export { getProductContent, getPlanContent, getFeatureDisplayConfig } from "./product-content.js"
+export type { ProductContent, PlanContent, FeatureDisplay, PlanBadge } from "./product-content.js"
+
+// Plans (thin DB query layer — prefer catalog.ts for UI work)
 export { getPublicPlans, getAllPublicPlans, getPlanBySlug } from "./plans.js"
 
 // Payment provider abstraction
