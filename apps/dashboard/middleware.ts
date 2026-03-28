@@ -43,6 +43,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/webhooks/(.*)",
+  "/api/health",
 ])
 
 /** Routes that are webhook endpoints — subject to rate limiting. */

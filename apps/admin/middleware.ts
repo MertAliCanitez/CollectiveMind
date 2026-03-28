@@ -3,12 +3,20 @@
  * All routes require authentication AND platform staff role.
  * Returns 403 for authenticated non-staff users — does NOT redirect to sign-in
  * (admin is an internal tool, not a customer-facing app).
+ *
+ * Exception: /api/health is public — used by uptime monitors and post-deploy checks.
  */
-import { clerkMiddleware } from "@repo/auth"
+import { clerkMiddleware, createRouteMatcher } from "@repo/auth"
 import { isPlatformStaff } from "@repo/auth"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
-export default clerkMiddleware(async (auth) => {
+const isPublicRoute = createRouteMatcher(["/api/health"])
+
+export default clerkMiddleware(async (auth, req: NextRequest) => {
+  // Health check is public — bypass auth entirely
+  if (isPublicRoute(req)) return
+
   const { userId, sessionClaims } = await auth.protect()
 
   if (!userId) {

@@ -10,10 +10,10 @@ This document covers deploying CollectiveMind to Vercel (preview and production)
 |-------------|--------|----------|----------------|-----|
 | Local | any | `collectivemind_dev` (local PG) | dev instance | localhost |
 | Preview | any PR branch | Neon branch (auto) | dev instance | Vercel preview URL |
-| Staging | `develop` | Neon staging branch | staging instance | staging.collectivemind.com |
+| Staging | `main` (manual promote) | Neon staging branch | staging instance | staging.collectivemind.com |
 | Production | `main` | Neon production | production instance | collectivemind.com |
 
-> Staging environment is not yet set up (Phase 4 backlog item). Until then, skip the staging row.
+> **No `develop` branch.** Staging is a manually-promoted deployment of `main`. Vercel projects have separate environments (Preview / Production) — staging is set up as a second Production deployment in its own Vercel project, or via Vercel's environment aliases. See the staging setup section below.
 
 ---
 
@@ -29,15 +29,26 @@ Three Vercel projects, one per app:
 
 Each project uses the **same monorepo** — set the root directory in Vercel's project settings, not via separate repos.
 
-Build command (set in Vercel UI or `vercel.json`):
-```
-cd ../.. && pnpm turbo build --filter=<app-name>
+Each app has a committed `vercel.json` that specifies the build and install commands. Vercel will read it automatically when the root directory is set correctly. No manual build command entry in the UI is needed.
+
+```json
+// Example: apps/dashboard/vercel.json
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm turbo build --filter=@repo/dashboard",
+  "installCommand": "pnpm install",
+  "outputDirectory": ".next"
+}
 ```
 
-Install command:
-```
-pnpm install
-```
+### Staging Vercel setup
+
+Staging uses the same three Vercel projects but with a separate **environment** or a separate set of projects (e.g., `collectivemind-dashboard-staging`). Recommended approach:
+
+1. Create three additional Vercel projects (e.g., `collectivemind-web-staging`, etc.) with the same monorepo config
+2. Point them at a **Neon staging branch** and a **Clerk staging instance**
+3. Deploy to staging by running `vercel --prod` from the `apps/<name>` directory with the staging project selected, or via a dedicated GitHub Actions job that deploys on merge to `main`
+4. Keep staging and production environment variables isolated — never share `DATABASE_URL` between environments
 
 ---
 
@@ -106,12 +117,12 @@ All migrations should show `applied_steps_count = 1` and no `rolled_back_at`.
 
 ```
 1. PR is opened → Vercel creates preview deployment automatically
-2. CI must be green (lint, type-check, prisma-validate, test, build)
+2. CI must be green (lint, format, type-check, prisma-validate, test, build)
 3. PR is reviewed and approved
-4. Merge to main (or develop for staging)
-5. If migration is needed: run migrate:deploy against target DB before traffic shifts
+4. If migration is needed: run migrate:deploy against target DB BEFORE merge
+5. Merge to main
 6. Vercel auto-deploys on merge
-7. Verify health check endpoints post-deploy
+7. Verify health check endpoints post-deploy (see Health Checks section)
 ```
 
 ### Manual deploy (emergency / hotfix)
@@ -143,7 +154,7 @@ curl https://admin.collectivemind.com/api/health
 # Expected: {"ok":true,"db":"connected"}
 ```
 
-> Health check endpoints are a Phase 4 backlog item. Until implemented, verify manually by loading the app.
+> Health check endpoints are live at `/api/health` on dashboard and admin. The web app has no server-side health endpoint (it is a static/SSG app with no DB dependency — uptime monitors should check the root path instead).
 
 ---
 
