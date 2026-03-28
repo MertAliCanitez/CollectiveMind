@@ -13,6 +13,8 @@
     "db:generate": "pnpm --filter @repo/database db:generate",
     "db:migrate": "pnpm --filter @repo/database migrate:dev",
     "db:migrate:deploy": "pnpm --filter @repo/database migrate:deploy",
+    "db:migrate:reset": "pnpm --filter @repo/database migrate:reset",
+    "db:migrate:status": "pnpm --filter @repo/database migrate:status",
     "db:studio": "pnpm --filter @repo/database studio",
     "db:seed": "pnpm --filter @repo/database seed",
     "db:validate": "pnpm --filter @repo/database validate",

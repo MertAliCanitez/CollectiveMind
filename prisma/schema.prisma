@@ -1,6 +1,13 @@
 // CollectiveMind — PostgreSQL Schema
 // Managed by: packages/database
 // Migrations: prisma/migrations/
+//
+// Conventions:
+//   - All IDs are UUIDs
+//   - Soft deletes via deletedAt (identity tables only)
+//   - All money fields are integers in the smallest currency unit (cents for USD)
+//   - All org-scoped queries must filter by organizationId
+//   - Provider fields (providerXxx) are null until a real PaymentProvider is wired
 
 generator client {
   provider = "prisma-client-js"
@@ -15,7 +22,8 @@ datasource db {
 // IDENTITY
 // Synced from Clerk via webhooks.
 // Clerk is the source of truth for auth.
-// This copy exists for relational integrity.
+// This mirror exists for relational integrity only.
+// Never trust these fields for auth decisions — use auth() from Clerk.
 // ─────────────────────────────────────────
 
 model User {
@@ -29,11 +37,13 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  memberships OrgMember[]
-  auditLogs   AuditLog[]  @relation("AuditLogActor")
+  memberships         OrgMember[]
+  auditLogs           AuditLog[]    @relation("AuditLogActor")
+  grantedAccessGrants AccessGrant[] @relation("AccessGrantGrantor")
 
   @@index([clerkId])
   @@index([email])
+  @@map("users")
 }
 
 model Organization {
@@ -48,10 +58,12 @@ model Organization {
 
   members       OrgMember[]
   subscriptions Subscription[]
+  accessGrants  AccessGrant[]
   auditLogs     AuditLog[]     @relation("AuditLogOrg")
 
   @@index([clerkId])
   @@index([slug])
+  @@map("organizations")
 }
 
 model OrgMember {
@@ -68,6 +80,7 @@ model OrgMember {
   @@unique([organizationId, userId])
   @@index([organizationId])
   @@index([userId])
+  @@map("org_members")
 }
 
 enum OrgRole {
@@ -78,6 +91,10 @@ enum OrgRole {
 
 // ─────────────────────────────────────────
 // PRODUCT CATALOG
+// Products are the top-level SaaS offerings.
+// Plans are the purchasable tiers under a product.
+// PlanFeatures define entitlement values per plan.
+// Prices hold payment-provider-specific pricing records.
 // ─────────────────────────────────────────
 
 model Product {
@@ -91,10 +108,12 @@ model Product {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  plans Plan[]
+  plans        Plan[]
+  accessGrants AccessGrant[]
 
   @@index([slug])
   @@index([status])
+  @@map("products")
 }
 
 enum ProductStatus {
@@ -110,7 +129,9 @@ model Plan {
   slug            String          @unique
   description     String?
   billingInterval BillingInterval
-  price           Int // in cents
+  // Display price used for the pricing page and as default when no Price record exists.
+  // When a live payment provider is integrated, Price records take precedence.
+  displayPrice    Int // in cents
   currency        String          @default("USD")
   isPublic        Boolean         @default(true)
   status          PlanStatus      @default(ACTIVE)
@@ -118,12 +139,14 @@ model Plan {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  product       Product       @relation(fields: [productId], references: [id])
+  product       Product        @relation(fields: [productId], references: [id])
   features      PlanFeature[]
+  prices        Price[]
   subscriptions Subscription[]
 
   @@index([productId])
   @@index([status])
+  @@map("plans")
 }
 
 enum BillingInterval {
@@ -139,6 +162,9 @@ enum PlanStatus {
   DEPRECATED
 }
 
+// PlanFeature — key/value entitlement rules per plan.
+// checkEntitlement() reads these to determine what an org can do.
+// Keys are product-defined strings (e.g. "max_seats", "api_access", "storage_gb").
 model PlanFeature {
   id        String   @id @default(uuid())
   planId    String
@@ -151,16 +177,80 @@ model PlanFeature {
 
   @@unique([planId, key])
   @@index([planId])
+  @@map("plan_features")
+}
+
+// Price — payment-provider-specific price records.
+// At v1 (NullPaymentProvider) these rows are not created.
+// When Stripe (or another provider) is wired in, each Plan gets one or more
+// Price rows representing the provider's price object (e.g. a Stripe Price ID).
+// Subscriptions optionally reference a Price to track which provider price was active.
+model Price {
+  id              String          @id @default(uuid())
+  planId          String
+  nickname        String? // human label e.g. "Monthly USD"
+  currency        String          @default("USD")
+  unitAmount      Int // in cents
+  billingInterval BillingInterval
+  providerPriceId String?         @unique // e.g. Stripe price_xxx
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  plan          Plan           @relation(fields: [planId], references: [id])
+  subscriptions Subscription[]
+
+  @@index([planId])
+  @@index([providerPriceId])
+  @@index([isActive])
+  @@map("prices")
+}
+
+// ─────────────────────────────────────────
+// ACCESS
+// Two paths to product access:
+//   1. Subscription — org pays for a plan (standard path)
+//   2. AccessGrant  — staff grants access directly (manual override / trial / migration)
+//
+// checkEntitlement() checks both. AccessGrant wins if present and not revoked/expired.
+// ─────────────────────────────────────────
+
+// AccessGrant — explicit product access outside of the subscription flow.
+// Created by staff in the admin panel. Audited. Does not generate invoices.
+// Use cases: complimentary access, onboarding trials, legacy customer migration.
+model AccessGrant {
+  id              String    @id @default(uuid())
+  organizationId  String
+  productId       String
+  grantedByUserId String? // staff User.id who created the grant (null = SYSTEM)
+  reason          String? // internal note explaining why access was granted
+  expiresAt       DateTime? // null = never expires
+  revokedAt       DateTime? // set when staff revokes; null = still active
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  product      Product      @relation(fields: [productId], references: [id])
+  grantedBy    User?        @relation("AccessGrantGrantor", fields: [grantedByUserId], references: [id])
+
+  @@index([organizationId, productId])
+  @@index([organizationId])
+  @@index([expiresAt])
+  @@map("access_grants")
 }
 
 // ─────────────────────────────────────────
 // BILLING
+// Subscriptions track what plan an org is on.
+// Invoices are billing records (not payment records at v1).
 // ─────────────────────────────────────────
 
 model Subscription {
   id                     String             @id @default(uuid())
   organizationId         String
   planId                 String
+  // Optional reference to the specific Price used (populated when provider is live)
+  priceId                String?
   status                 SubscriptionStatus @default(TRIALING)
   currentPeriodStart     DateTime
   currentPeriodEnd       DateTime
@@ -171,19 +261,21 @@ model Subscription {
   providerName           String?
   providerSubscriptionId String?            @unique
   providerCustomerId     String?
-  // Internal admin notes
+  // Internal admin notes (used at v1 when subscriptions are managed manually)
   notes                  String?
   createdAt              DateTime           @default(now())
   updatedAt              DateTime           @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
   plan         Plan         @relation(fields: [planId], references: [id])
+  price        Price?       @relation(fields: [priceId], references: [id])
   invoices     Invoice[]
 
   @@index([organizationId])
   @@index([planId])
   @@index([status])
   @@index([providerSubscriptionId])
+  @@map("subscriptions")
 }
 
 enum SubscriptionStatus {
@@ -212,12 +304,13 @@ model Invoice {
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 
-  subscription Subscription    @relation(fields: [subscriptionId], references: [id])
+  subscription Subscription      @relation(fields: [subscriptionId], references: [id])
   lineItems    InvoiceLineItem[]
 
   @@index([subscriptionId])
   @@index([organizationId])
   @@index([status])
+  @@map("invoices")
 }
 
 enum InvoiceStatus {
@@ -234,18 +327,20 @@ model InvoiceLineItem {
   description String
   quantity    Int      @default(1)
   unitPrice   Int // in cents
-  total       Int // quantity * unitPrice
+  total       Int // quantity * unitPrice, denormalized for audit trail integrity
   createdAt   DateTime @default(now())
 
   invoice Invoice @relation(fields: [invoiceId], references: [id])
 
   @@index([invoiceId])
+  @@map("invoice_line_items")
 }
 
 // ─────────────────────────────────────────
 // AUDIT
-// Immutable log of all significant actions.
+// Immutable append-only log of all significant actions.
 // Business record — not a diagnostic log.
+// Never update or delete rows in this table.
 // ─────────────────────────────────────────
 
 model AuditLog {
@@ -253,8 +348,8 @@ model AuditLog {
   actorUserId    String?
   actorType      AuditActorType @default(USER)
   organizationId String?
-  action         String
-  resourceType   String
+  action         String // verb-noun format e.g. "subscription.created"
+  resourceType   String // e.g. "Subscription", "AccessGrant"
   resourceId     String?
   metadata       Json?
   ipAddress      String?
@@ -269,6 +364,7 @@ model AuditLog {
   @@index([action])
   @@index([resourceType, resourceId])
   @@index([createdAt])
+  @@map("audit_logs")
 }
 
 enum AuditActorType {

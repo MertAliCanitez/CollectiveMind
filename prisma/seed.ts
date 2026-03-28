@@ -1,7 +1,9 @@
 /**
  * Development seed script.
  * Run with: pnpm db:seed
- * All operations are idempotent (upsert).
+ *
+ * All operations are idempotent (upsert). Safe to run multiple times.
+ * Do NOT run this in production — it creates test data with fixed Clerk IDs.
  */
 import { PrismaClient, BillingInterval, PlanStatus, ProductStatus } from "@prisma/client"
 
@@ -10,7 +12,7 @@ const db = new PrismaClient()
 async function main() {
   console.log("🌱 Seeding database...")
 
-  // ─── Products ──────────────────────────────────────────────
+  // ─── Products ──────────────────────────────────────────────────────────────
   const productA = await db.product.upsert({
     where: { slug: "product-a" },
     update: {},
@@ -35,9 +37,11 @@ async function main() {
     },
   })
 
-  console.log(`✓ Products: ${productA.name}, ${productB.name}`)
+  console.log(`  ✓ Products: ${productA.name}, ${productB.name}`)
 
-  // ─── Plans for Product A ───────────────────────────────────
+  // ─── Plans for Product A ───────────────────────────────────────────────────
+  // displayPrice is the pricing page value (in cents).
+  // Price rows (for payment provider integration) are not seeded here.
   const freePlan = await db.plan.upsert({
     where: { slug: "product-a:free" },
     update: {},
@@ -46,7 +50,7 @@ async function main() {
       name: "Free",
       slug: "product-a:free",
       billingInterval: BillingInterval.FREE,
-      price: 0,
+      displayPrice: 0,
       currency: "USD",
       isPublic: true,
       status: PlanStatus.ACTIVE,
@@ -70,7 +74,7 @@ async function main() {
       name: "Pro",
       slug: "product-a:pro",
       billingInterval: BillingInterval.MONTH,
-      price: 4900, // $49.00
+      displayPrice: 4900, // $49.00/month
       currency: "USD",
       isPublic: true,
       status: PlanStatus.ACTIVE,
@@ -94,7 +98,7 @@ async function main() {
       name: "Enterprise",
       slug: "product-a:enterprise",
       billingInterval: BillingInterval.YEAR,
-      price: 99900, // $999.00/year
+      displayPrice: 99900, // $999.00/year
       currency: "USD",
       isPublic: true,
       status: PlanStatus.ACTIVE,
@@ -113,10 +117,11 @@ async function main() {
   })
 
   console.log(
-    `✓ Plans: ${freePlan.name}, ${proPlan.name}, ${enterprisePlan.name} (for ${productA.name})`,
+    `  ✓ Plans: ${freePlan.name}, ${proPlan.name}, ${enterprisePlan.name} for ${productA.name}`,
   )
 
-  // ─── Test Organization + User ──────────────────────────────
+  // ─── Test Organization + User ──────────────────────────────────────────────
+  // These use fixed Clerk IDs that will only exist in a dev Clerk instance.
   const testOrg = await db.organization.upsert({
     where: { slug: "test-org" },
     update: {},
@@ -153,17 +158,17 @@ async function main() {
     },
   })
 
-  console.log(`✓ Test org: ${testOrg.name} with admin ${testUser.email}`)
+  console.log(`  ✓ Test org: ${testOrg.name} (admin: ${testUser.email})`)
 
-  // ─── Active Pro Subscription for test org ─────────────────
+  // ─── Active Pro Subscription for test org ─────────────────────────────────
+  // providerSubscriptionId is the upsert key. This is a manually-managed
+  // (NullPaymentProvider) subscription with a fixed sentinel ID.
   const now = new Date()
   const periodEnd = new Date(now)
   periodEnd.setMonth(periodEnd.getMonth() + 1)
 
   await db.subscription.upsert({
-    where: {
-      providerSubscriptionId: "sub_seed_test_001",
-    },
+    where: { providerSubscriptionId: "sub_seed_test_001" },
     update: {},
     create: {
       organizationId: testOrg.id,
@@ -172,11 +177,28 @@ async function main() {
       currentPeriodStart: now,
       currentPeriodEnd: periodEnd,
       providerSubscriptionId: "sub_seed_test_001",
-      notes: "Seed data — test subscription",
+      notes: "Seed data — manual test subscription",
     },
   })
 
-  console.log(`✓ Active Pro subscription for ${testOrg.name}`)
+  console.log(`  ✓ Active Pro subscription for ${testOrg.name}`)
+
+  // ─── AccessGrant for Product B (COMING_SOON — subscription not available) ─
+  // Demonstrates the AccessGrant path: staff grants direct product access
+  // without a plan subscription.
+  await db.accessGrant.upsert({
+    where: { id: "ag_seed_test_001" },
+    update: {},
+    create: {
+      id: "ag_seed_test_001",
+      organizationId: testOrg.id,
+      productId: productB.id,
+      reason: "Seed data — beta access grant for test org",
+      // No expiry: permanent until revoked
+    },
+  })
+
+  console.log(`  ✓ Beta AccessGrant: ${testOrg.name} → ${productB.name}`)
   console.log("\n✅ Seed complete.")
 }
 
