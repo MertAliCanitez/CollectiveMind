@@ -59,7 +59,7 @@ export async function requireOrgAdmin() {
   if (!isOrgAdmin(orgRole)) {
     // Return 403 as a Next.js error — or redirect to a "not authorized" page
     // Using redirect here keeps the UX clean; for API routes throw instead
-    redirect("/")
+    redirect("/home")
   }
 
   return { org, orgRole }
@@ -75,7 +75,7 @@ export async function requireBillingAccess() {
   const { org, orgRole } = await requireOrg()
 
   if (!isOrgBillingManager(orgRole)) {
-    redirect("/")
+    redirect("/home")
   }
 
   return { org, orgRole }
