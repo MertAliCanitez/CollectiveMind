@@ -119,6 +119,9 @@ importers:
       '@repo/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@repo/testing':
+        specifier: workspace:*
+        version: link:../../packages/testing
       '@types/node':
         specifier: ^22.10.7
         version: 22.19.15
@@ -137,6 +140,9 @@ importers:
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.15)
 
   apps/web:
     dependencies:
@@ -202,9 +208,15 @@ importers:
       '@repo/config':
         specifier: workspace:*
         version: link:../config
+      '@repo/testing':
+        specifier: workspace:*
+        version: link:../testing
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.15)
 
   packages/billing:
     dependencies:

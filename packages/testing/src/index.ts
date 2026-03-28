@@ -9,4 +9,5 @@ export {
   createTestProduct,
   createTestPlan,
   createTestSubscription,
+  createTestAccessGrant,
 } from "./helpers/factories.js"

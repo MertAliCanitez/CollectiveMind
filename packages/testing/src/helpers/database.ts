@@ -26,6 +26,8 @@ export async function cleanDatabase(): Promise<void> {
       "InvoiceLineItem",
       "Invoice",
       "Subscription",
+      "AccessGrant",
+      "Price",
       "PlanFeature",
       "Plan",
       "Product",

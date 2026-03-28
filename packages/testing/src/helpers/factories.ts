@@ -128,3 +128,23 @@ export async function createTestSubscription(params: {
     },
   })
 }
+
+export async function createTestAccessGrant(params: {
+  organizationId: string
+  productId: string
+  grantedByUserId?: string
+  reason?: string
+  expiresAt?: Date
+  revokedAt?: Date
+}) {
+  return testDb.accessGrant.create({
+    data: {
+      organizationId: params.organizationId,
+      productId: params.productId,
+      grantedByUserId: params.grantedByUserId ?? null,
+      reason: params.reason ?? null,
+      expiresAt: params.expiresAt ?? null,
+      revokedAt: params.revokedAt ?? null,
+    },
+  })
+}
