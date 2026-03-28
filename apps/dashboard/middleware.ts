@@ -11,9 +11,32 @@
  *   - orgId is NEVER read from request params or body — only from auth()
  *   - The middleware is the first auth layer; route handlers and server
  *     components must still call auth() themselves (defense in depth)
+ *
+ * Rate limiting:
+ *   - Webhook routes (/api/webhooks/*) are limited to WEBHOOK_RATE_LIMIT requests
+ *     per WEBHOOK_RATE_WINDOW_MS per IP. In-memory — per instance. Primary defense
+ *     is HMAC verification in the route handler; this is a secondary abuse guard.
  */
 import { clerkMiddleware, createRouteMatcher } from "@repo/auth"
 import { NextResponse } from "next/server"
+
+// ─── Webhook rate limiter (in-memory, sliding window) ────────────────────────
+
+const WEBHOOK_RATE_LIMIT = 30 // requests per window
+const WEBHOOK_RATE_WINDOW_MS = 60_000 // 1 minute
+
+const webhookHits = new Map<string, number[]>()
+
+function isWebhookRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const cutoff = now - WEBHOOK_RATE_WINDOW_MS
+  const timestamps = (webhookHits.get(ip) ?? []).filter((t) => t > cutoff)
+  timestamps.push(now)
+  webhookHits.set(ip, timestamps)
+  return timestamps.length > WEBHOOK_RATE_LIMIT
+}
+
+// ─── Route matchers ───────────────────────────────────────────────────────────
 
 /** Routes that do not require authentication at all. */
 const isPublicRoute = createRouteMatcher([
@@ -22,6 +45,9 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhooks/(.*)",
 ])
 
+/** Routes that are webhook endpoints — subject to rate limiting. */
+const isWebhookRoute = createRouteMatcher(["/api/webhooks/(.*)"])
+
 /**
  * Routes that require authentication but NOT an active organization.
  * Used for the post-signup flow before an org exists.
@@ -29,6 +55,17 @@ const isPublicRoute = createRouteMatcher([
 const isOrgOptionalRoute = createRouteMatcher(["/onboarding(.*)"])
 
 export default clerkMiddleware(async (auth, req) => {
+  // Rate-limit webhook routes before any auth processing
+  if (isWebhookRoute(req)) {
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      req.headers.get("x-real-ip") ??
+      "unknown"
+    if (isWebhookRateLimited(ip)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 })
+    }
+  }
+
   // Public routes — no auth check
   if (isPublicRoute(req)) return
 

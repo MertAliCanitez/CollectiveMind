@@ -14,6 +14,7 @@ import { redirect } from "next/navigation"
 import { db, type Organization } from "@repo/database"
 import { isOrgAdmin, isOrgBillingManager, isPlatformAdmin, isPlatformStaff } from "@repo/auth"
 import type { ClerkSessionClaims } from "@repo/auth"
+import { logger } from "@repo/shared"
 
 /**
  * Requires an authenticated user with an active organization.
@@ -29,8 +30,14 @@ import type { ClerkSessionClaims } from "@repo/auth"
 export async function requireOrg() {
   const { userId, orgId, orgRole } = await auth()
 
-  if (!userId) redirect("/sign-in")
-  if (!orgId) redirect("/org-select")
+  if (!userId) {
+    logger.warn("auth.unauthenticated", { action: "requireOrg" })
+    redirect("/sign-in")
+  }
+  if (!orgId) {
+    logger.warn("auth.no_active_org", { userId, action: "requireOrg" })
+    redirect("/org-select")
+  }
 
   const org = await db.organization.findFirst({
     where: { clerkId: orgId, deletedAt: null },
@@ -38,7 +45,10 @@ export async function requireOrg() {
 
   // Org exists in Clerk session but hasn't been synced to DB yet
   // (race condition: user logged in before webhook arrived)
-  if (!org) redirect("/org-select")
+  if (!org) {
+    logger.warn("auth.org_not_in_db", { userId, orgId, action: "requireOrg" })
+    redirect("/org-select")
+  }
 
   return {
     org,
@@ -57,8 +67,7 @@ export async function requireOrgAdmin() {
   const { org, orgRole } = await requireOrg()
 
   if (!isOrgAdmin(orgRole)) {
-    // Return 403 as a Next.js error — or redirect to a "not authorized" page
-    // Using redirect here keeps the UX clean; for API routes throw instead
+    logger.warn("auth.access_denied", { orgId: org.clerkId, orgRole, required: "org:admin" })
     redirect("/home")
   }
 
@@ -75,6 +84,7 @@ export async function requireBillingAccess() {
   const { org, orgRole } = await requireOrg()
 
   if (!isOrgBillingManager(orgRole)) {
+    logger.warn("auth.access_denied", { orgId: org.clerkId, orgRole, required: "org:billing_manager" })
     redirect("/home")
   }
 
@@ -96,6 +106,7 @@ export async function requirePlatformAdmin() {
   if (!userId) redirect("/sign-in")
 
   if (!isPlatformAdmin(sessionClaims as Record<string, unknown>)) {
+    logger.warn("auth.platform_access_denied", { userId, required: "super_admin" })
     redirect("/home")
   }
 
@@ -115,6 +126,7 @@ export async function requirePlatformStaff() {
   if (!userId) redirect("/sign-in")
 
   if (!isPlatformStaff(sessionClaims as Record<string, unknown>)) {
+    logger.warn("auth.platform_access_denied", { userId, required: "super_admin|support" })
     redirect("/home")
   }
 

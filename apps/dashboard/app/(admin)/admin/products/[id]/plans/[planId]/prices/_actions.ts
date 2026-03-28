@@ -2,8 +2,10 @@
 
 import { redirect } from "next/navigation"
 import { z } from "zod"
+import { auth } from "@clerk/nextjs/server"
 import { requirePlatformAdmin } from "../../../../../../../../lib/auth"
 import { createPrice, updatePrice } from "../../../../../../../../lib/admin/plans"
+import { resolveDbUserId, writeAdminAuditLog } from "../../../../../../../../lib/admin/audit"
 
 const priceSchema = z.object({
   nickname: z.string().max(128).optional(),
@@ -19,6 +21,8 @@ export async function createPriceAction(
   formData: FormData,
 ): Promise<void> {
   await requirePlatformAdmin()
+  const { userId: clerkUserId } = await auth()
+  const actorDbUserId = await resolveDbUserId(clerkUserId)
 
   const raw = {
     nickname: formData.get("nickname") || undefined,
@@ -35,7 +39,14 @@ export async function createPriceAction(
   }
 
   try {
-    await createPrice({ ...parsed.data, planId })
+    const price = await createPrice({ ...parsed.data, planId })
+    await writeAdminAuditLog({
+      actorDbUserId,
+      action: "price.created",
+      resourceType: "Price",
+      resourceId: price.id,
+      metadata: { planId, unitAmount: price.unitAmount, billingInterval: price.billingInterval },
+    })
   } catch {
     redirect(`/admin/products/${productId}/plans/${planId}/prices/new?error=${encodeURIComponent("Failed to create price. Provider price ID may already be in use.")}`)
   }
@@ -50,6 +61,8 @@ export async function updatePriceAction(
   formData: FormData,
 ): Promise<void> {
   await requirePlatformAdmin()
+  const { userId: clerkUserId } = await auth()
+  const actorDbUserId = await resolveDbUserId(clerkUserId)
 
   const nickname = (formData.get("nickname") as string) || undefined
   const isActive = formData.get("isActive") === "true"
@@ -57,6 +70,13 @@ export async function updatePriceAction(
 
   try {
     await updatePrice(priceId, { nickname, isActive, providerPriceId })
+    await writeAdminAuditLog({
+      actorDbUserId,
+      action: "price.updated",
+      resourceType: "Price",
+      resourceId: priceId,
+      metadata: { planId, isActive },
+    })
   } catch {
     redirect(`/admin/products/${productId}/plans/${planId}?error=${encodeURIComponent("Failed to update price.")}`)
   }

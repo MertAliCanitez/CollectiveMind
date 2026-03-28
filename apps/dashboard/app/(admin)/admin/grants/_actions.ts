@@ -5,6 +5,7 @@ import { z } from "zod"
 import { auth } from "@clerk/nextjs/server"
 import { requirePlatformAdmin } from "../../../../lib/auth"
 import { createGrant, revokeGrant } from "../../../../lib/admin/grants"
+import { resolveDbUserId, writeAdminAuditLog } from "../../../../lib/admin/audit"
 import { db } from "@repo/database"
 
 const grantSchema = z.object({
@@ -39,9 +40,17 @@ export async function createGrantAction(formData: FormData): Promise<void> {
     : null
 
   try {
-    await createGrant({
+    const grant = await createGrant({
       ...parsed.data,
       grantedByUserId: dbUser?.id ?? undefined,
+    })
+    await writeAdminAuditLog({
+      actorDbUserId: dbUser?.id ?? null,
+      action: "grant.created",
+      resourceType: "AccessGrant",
+      resourceId: grant.id,
+      organizationId: grant.organizationId,
+      metadata: { productId: grant.productId, reason: grant.reason ?? null },
     })
   } catch {
     redirect(`/admin/grants/new?error=${encodeURIComponent("Failed to create grant.")}`)
@@ -52,6 +61,16 @@ export async function createGrantAction(formData: FormData): Promise<void> {
 
 export async function revokeGrantAction(grantId: string): Promise<void> {
   await requirePlatformAdmin()
+  const { userId: clerkUserId } = await auth()
+  const actorDbUserId = await resolveDbUserId(clerkUserId)
 
-  await revokeGrant(grantId)
+  const revoked = await revokeGrant(grantId)
+  await writeAdminAuditLog({
+    actorDbUserId,
+    action: "grant.revoked",
+    resourceType: "AccessGrant",
+    resourceId: grantId,
+    organizationId: revoked.organizationId,
+    metadata: { productId: revoked.productId },
+  })
 }

@@ -2,8 +2,10 @@
 
 import { redirect } from "next/navigation"
 import { z } from "zod"
+import { auth } from "@clerk/nextjs/server"
 import { requirePlatformAdmin } from "../../../../../../lib/auth"
 import { createPlan, updatePlan } from "../../../../../../lib/admin/plans"
+import { resolveDbUserId, writeAdminAuditLog } from "../../../../../../lib/admin/audit"
 
 const planSchema = z.object({
   name: z.string().min(1, "Name is required").max(128),
@@ -23,6 +25,8 @@ const planSchema = z.object({
 
 export async function createPlanAction(productId: string, formData: FormData): Promise<void> {
   await requirePlatformAdmin()
+  const { userId: clerkUserId } = await auth()
+  const actorDbUserId = await resolveDbUserId(clerkUserId)
 
   const raw = {
     name: formData.get("name"),
@@ -44,6 +48,13 @@ export async function createPlanAction(productId: string, formData: FormData): P
 
   try {
     const plan = await createPlan({ ...parsed.data, productId })
+    await writeAdminAuditLog({
+      actorDbUserId,
+      action: "plan.created",
+      resourceType: "Plan",
+      resourceId: plan.id,
+      metadata: { slug: plan.slug, productId, billingInterval: plan.billingInterval },
+    })
     redirect(`/admin/products/${productId}/plans/${plan.id}`)
   } catch {
     redirect(`/admin/products/${productId}/plans/new?error=${encodeURIComponent("Failed to create plan. Slug may already be taken.")}`)
@@ -56,6 +67,8 @@ export async function updatePlanAction(
   formData: FormData,
 ): Promise<void> {
   await requirePlatformAdmin()
+  const { userId: clerkUserId } = await auth()
+  const actorDbUserId = await resolveDbUserId(clerkUserId)
 
   const raw = {
     name: formData.get("name"),
@@ -78,7 +91,14 @@ export async function updatePlanAction(
   }
 
   try {
-    await updatePlan(planId, parsed.data)
+    const updated = await updatePlan(planId, parsed.data)
+    await writeAdminAuditLog({
+      actorDbUserId,
+      action: "plan.updated",
+      resourceType: "Plan",
+      resourceId: planId,
+      metadata: { slug: updated.slug, status: updated.status, productId },
+    })
   } catch {
     redirect(`/admin/products/${productId}/plans/${planId}?error=${encodeURIComponent("Failed to update plan.")}`)
   }

@@ -2,8 +2,10 @@
 
 import { redirect } from "next/navigation"
 import { z } from "zod"
+import { auth } from "@clerk/nextjs/server"
 import { requirePlatformAdmin } from "../../../../lib/auth"
 import { createProduct, updateProduct, type CreateProductInput } from "../../../../lib/admin/products"
+import { resolveDbUserId, writeAdminAuditLog } from "../../../../lib/admin/audit"
 
 const productSchema = z.object({
   slug: z
@@ -19,6 +21,8 @@ const productSchema = z.object({
 
 export async function createProductAction(formData: FormData): Promise<void> {
   await requirePlatformAdmin()
+  const { userId: clerkUserId } = await auth()
+  const actorDbUserId = await resolveDbUserId(clerkUserId)
 
   const raw = {
     slug: formData.get("slug"),
@@ -36,6 +40,13 @@ export async function createProductAction(formData: FormData): Promise<void> {
 
   try {
     const product = await createProduct(parsed.data as CreateProductInput)
+    await writeAdminAuditLog({
+      actorDbUserId,
+      action: "product.created",
+      resourceType: "Product",
+      resourceId: product.id,
+      metadata: { slug: product.slug, status: product.status },
+    })
     redirect(`/admin/products/${product.id}`)
   } catch {
     redirect(`/admin/products/new?error=${encodeURIComponent("Failed to create product. Slug may already be taken.")}`)
@@ -44,6 +55,8 @@ export async function createProductAction(formData: FormData): Promise<void> {
 
 export async function updateProductAction(id: string, formData: FormData): Promise<void> {
   await requirePlatformAdmin()
+  const { userId: clerkUserId } = await auth()
+  const actorDbUserId = await resolveDbUserId(clerkUserId)
 
   const raw = {
     name: formData.get("name"),
@@ -63,7 +76,14 @@ export async function updateProductAction(id: string, formData: FormData): Promi
   }
 
   try {
-    await updateProduct(id, parsed.data)
+    const updated = await updateProduct(id, parsed.data)
+    await writeAdminAuditLog({
+      actorDbUserId,
+      action: "product.updated",
+      resourceType: "Product",
+      resourceId: id,
+      metadata: { slug: updated.slug, status: updated.status },
+    })
   } catch {
     redirect(`/admin/products/${id}?error=${encodeURIComponent("Failed to update product.")}`)
   }
