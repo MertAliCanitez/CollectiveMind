@@ -18,4 +18,6 @@ export type {
   InvoiceLineItem,
   AuditLog,
   AuditActorType,
+  AccessGrant,
+  Price,
 } from "@prisma/client"

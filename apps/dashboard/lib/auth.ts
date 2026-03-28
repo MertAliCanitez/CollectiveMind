@@ -12,7 +12,7 @@
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { db, type Organization } from "@repo/database"
-import { isOrgAdmin, isOrgBillingManager } from "@repo/auth"
+import { isOrgAdmin, isOrgBillingManager, isPlatformAdmin, isPlatformStaff } from "@repo/auth"
 import type { ClerkSessionClaims } from "@repo/auth"
 
 /**
@@ -79,6 +79,46 @@ export async function requireBillingAccess() {
   }
 
   return { org, orgRole }
+}
+
+/**
+ * Requires platform-level admin role (super_admin in Clerk publicMetadata).
+ * Use this for all admin/* routes — protects against org admins accessing the platform panel.
+ *
+ * Returns the userId of the authenticated platform admin.
+ *
+ * @example
+ * const { userId } = await requirePlatformAdmin()
+ */
+export async function requirePlatformAdmin() {
+  const { userId, sessionClaims } = await auth()
+
+  if (!userId) redirect("/sign-in")
+
+  if (!isPlatformAdmin(sessionClaims as Record<string, unknown>)) {
+    redirect("/home")
+  }
+
+  return { userId }
+}
+
+/**
+ * Requires platform-level staff role (super_admin or support).
+ * Broader than requirePlatformAdmin — use for read-only admin views accessible to support.
+ *
+ * @example
+ * const { userId } = await requirePlatformStaff()
+ */
+export async function requirePlatformStaff() {
+  const { userId, sessionClaims } = await auth()
+
+  if (!userId) redirect("/sign-in")
+
+  if (!isPlatformStaff(sessionClaims as Record<string, unknown>)) {
+    redirect("/home")
+  }
+
+  return { userId }
 }
 
 /**
