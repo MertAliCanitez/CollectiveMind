@@ -3,7 +3,13 @@ export { checkEntitlement } from "./entitlements.js"
 export type { Entitlement } from "./entitlements.js"
 
 // Subscriptions
-export { createSubscription, cancelSubscription } from "./subscriptions.js"
+export { createSubscription, cancelSubscription, updateSubscription } from "./subscriptions.js"
+
+// Billing status
+export { getBillingConfiguration, getOrgBillingStatus } from "./status.js"
+
+// Webhook processor
+export { processWebhookEvent } from "./webhooks.js"
 
 // Plans
 export { getPublicPlans, getAllPublicPlans, getPlanBySlug } from "./plans.js"
@@ -18,3 +24,13 @@ export type {
   CreateCheckoutParams,
   CheckoutSession,
 } from "./providers/interface.js"
+
+// Billing domain types
+export type {
+  BillingProviderName,
+  BillingConfiguration,
+  UpdateSubscriptionInput,
+  SubscriptionUIState,
+  OrgBillingStatus,
+  WebhookProcessingResult,
+} from "./types.js"
