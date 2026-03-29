@@ -18,12 +18,14 @@ export function SectionHeader({
   return (
     <div className={cn("max-w-3xl", align === "center" && "mx-auto text-center", className)}>
       {eyebrow && (
-        <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-indigo-600">
+        <p className="mb-4 bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-xs font-semibold uppercase tracking-[0.18em] text-transparent">
           {eyebrow}
         </p>
       )}
-      <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{heading}</h2>
-      {subheading && <p className="mt-4 text-lg leading-relaxed text-slate-600">{subheading}</p>}
+      <h2 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
+        {heading}
+      </h2>
+      {subheading && <p className="mt-5 text-lg leading-relaxed text-slate-400">{subheading}</p>}
     </div>
   )
 }

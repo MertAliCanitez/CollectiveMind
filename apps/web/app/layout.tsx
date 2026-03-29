@@ -33,8 +33,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen bg-white font-sans antialiased">
+    <html lang="en" className={`${inter.variable} dark`}>
+      <body className="min-h-screen bg-[#07070f] font-sans text-white antialiased">
         <SiteNav />
         <main>{children}</main>
         <SiteFooter />

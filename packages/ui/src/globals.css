@@ -57,3 +57,71 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ─── CollectiveMind brand animations ──────────────────────────────────────── */
+
+@keyframes neural-float {
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-18px);
+    opacity: 1;
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.32;
+  }
+}
+
+@keyframes glow-dot {
+  0%,
+  100% {
+    opacity: 0.8;
+    box-shadow: 0 0 6px 2px currentColor;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 14px 4px currentColor;
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

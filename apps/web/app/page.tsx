@@ -77,7 +77,10 @@ export default async function HomePage() {
       <TrustBar />
 
       {/* Products section */}
-      <section className="bg-white py-24 sm:py-32">
+      <section className="relative bg-[#0a0a18] py-24 sm:py-32">
+        {/* Subtle top separator */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             eyebrow="The suite"
@@ -85,7 +88,7 @@ export default async function HomePage() {
             subheading="Three products built to work together. Use one, use all — they share the same auth, billing, and team management layer."
           />
 
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {activeProducts.length > 0 ? (
               activeProducts.map((product) => <ProductCard key={product.id} product={product} />)
             ) : (
@@ -100,7 +103,7 @@ export default async function HomePage() {
           <div className="mt-10 text-center">
             <Link
               href="/products"
-              className="text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+              className="text-sm font-semibold text-blue-400 transition-colors hover:text-blue-300"
             >
               View all products and pricing →
             </Link>
