@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { cn } from "@repo/ui"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Check, Minus } from "@/components/ui/icons"
 import type { CatalogPlan } from "@repo/billing"
 import type { PlanBadge } from "@repo/billing"
@@ -35,8 +34,8 @@ function formatBillingInterval(interval: string, price: number): string {
 
 function formatFeatureValue(value: string, format: string | null): React.ReactNode {
   if (format === "boolean") {
-    if (value === "true") return <Check size={16} className="text-emerald-500" />
-    return <Minus size={16} className="text-slate-300" />
+    if (value === "true") return <Check size={16} className="text-emerald-400" />
+    return <Minus size={16} className="text-white/20" />
   }
   if (value === "unlimited") return "Unlimited"
   if (value === "custom") return "Custom"
@@ -48,25 +47,103 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
   const badge = content?.badge
   const isFree = plan.displayPrice === 0 || plan.billingInterval === "FREE"
 
-  // Determine CTA
   const ctaLabel = billingEnabled
     ? (content?.ctaLabel ?? "Get started")
     : isFree
       ? "Request free access"
       : "Contact us"
 
-  const ctaHref = billingEnabled && !isFree ? "/contact" : "/contact"
+  const ctaHref = "/contact"
+
+  if (featured) {
+    return (
+      /* Gradient-border wrapper */
+      <div className="relative rounded-2xl p-px bg-gradient-to-b from-violet-500/50 via-blue-500/25 to-transparent shadow-[0_16px_48px_rgba(0,0,0,0.6)]">
+        {badge && (
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+            <Badge variant={badgeVariantMap[badge]} className="shadow-sm">
+              {badgeLabelMap[badge]}
+            </Badge>
+          </div>
+        )}
+        <div className="relative flex flex-col rounded-2xl bg-[#0d0d1f] p-6 sm:p-8">
+          {/* Top shimmer line */}
+          <div className="absolute inset-x-0 top-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-violet-400/40 to-transparent" />
+
+          <h3 className="text-lg font-bold text-white">{plan.name}</h3>
+          {content?.tagline && (
+            <p className="mt-1 text-sm bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent font-medium">
+              {content.tagline}
+            </p>
+          )}
+
+          <div className="mt-5">
+            {isFree ? (
+              <div>
+                <span className="text-4xl font-bold tracking-tight text-white">$0</span>
+                <span className="ml-2 text-sm text-slate-400">free forever</span>
+              </div>
+            ) : (
+              <div>
+                <span className="text-4xl font-bold tracking-tight text-white">
+                  {plan.formattedPrice}
+                </span>
+                <span className="ml-2 text-sm text-slate-400">
+                  {formatBillingInterval(plan.billingInterval, plan.displayPrice)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {!billingEnabled && !isFree && (
+            <p className="mt-2 text-xs text-blue-400">Payments coming soon — contact us for access</p>
+          )}
+
+          <div className="mt-6">
+            <Link
+              href={ctaHref}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 via-violet-600 to-fuchsia-600 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_0_24px_rgba(99,102,241,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90"
+            >
+              {ctaLabel}
+            </Link>
+          </div>
+
+          {content?.highlights && content.highlights.length > 0 && (
+            <ul className="mt-7 space-y-2.5">
+              {content.highlights.map((h) => (
+                <li key={h} className="flex items-start gap-2.5">
+                  <Check size={15} className="mt-0.5 shrink-0 text-blue-400" />
+                  <span className="text-sm text-slate-300">{h}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {(!content?.highlights || content.highlights.length === 0) && plan.features.length > 0 && (
+            <ul className="mt-7 space-y-2.5">
+              {plan.features.slice(0, 6).map((f) => (
+                <li key={f.key} className="flex items-center justify-between">
+                  <span className="text-sm text-slate-400">
+                    {f.label ?? f.key.replace(/_/g, " ")}
+                  </span>
+                  <span className="text-sm font-medium text-white">
+                    {formatFeatureValue(f.value, f.format)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
       className={cn(
-        "relative flex flex-col rounded-2xl p-6 sm:p-8",
-        featured
-          ? "bg-slate-900 text-white shadow-xl ring-2 ring-indigo-500"
-          : "border border-slate-200 bg-white shadow-sm",
+        "relative flex flex-col rounded-2xl border border-white/[0.07] bg-white/[0.025] p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.13] hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] sm:p-8",
       )}
     >
-      {/* Badge */}
       {badge && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <Badge variant={badgeVariantMap[badge]} className="shadow-sm">
@@ -75,98 +152,61 @@ export function PlanCard({ plan, billingEnabled, featured = false }: PlanCardPro
         </div>
       )}
 
-      {/* Plan name & tagline */}
-      <div>
-        <h3 className={cn("text-lg font-bold", featured ? "text-white" : "text-slate-900")}>
-          {plan.name}
-        </h3>
-        {content?.tagline && (
-          <p className={cn("mt-1 text-sm", featured ? "text-slate-300" : "text-slate-500")}>
-            {content.tagline}
-          </p>
-        )}
-      </div>
+      <h3 className="text-lg font-bold text-white">{plan.name}</h3>
+      {content?.tagline && (
+        <p className="mt-1 text-sm text-slate-400">{content.tagline}</p>
+      )}
 
-      {/* Price */}
       <div className="mt-5">
         {isFree ? (
           <div>
-            <span
-              className={cn(
-                "text-4xl font-bold tracking-tight",
-                featured ? "text-white" : "text-slate-900",
-              )}
-            >
-              $0
-            </span>
-            <span className={cn("ml-2 text-sm", featured ? "text-slate-400" : "text-slate-400")}>
-              free forever
-            </span>
+            <span className="text-4xl font-bold tracking-tight text-white">$0</span>
+            <span className="ml-2 text-sm text-slate-400">free forever</span>
           </div>
         ) : (
           <div>
-            <span
-              className={cn(
-                "text-4xl font-bold tracking-tight",
-                featured ? "text-white" : "text-slate-900",
-              )}
-            >
+            <span className="text-4xl font-bold tracking-tight text-white">
               {plan.formattedPrice}
             </span>
-            <span className={cn("ml-2 text-sm", featured ? "text-slate-400" : "text-slate-400")}>
+            <span className="ml-2 text-sm text-slate-400">
               {formatBillingInterval(plan.billingInterval, plan.displayPrice)}
             </span>
           </div>
         )}
       </div>
 
-      {/* Not-yet-live notice */}
       {!billingEnabled && !isFree && (
-        <p className={cn("mt-2 text-xs", featured ? "text-indigo-300" : "text-indigo-500")}>
-          Payments coming soon — contact us for access
-        </p>
+        <p className="mt-2 text-xs text-slate-500">Payments coming soon — contact us for access</p>
       )}
 
-      {/* CTA */}
       <div className="mt-6">
-        <Button
-          variant={featured ? "default" : "outline"}
-          size="md"
-          asChild
-          className={cn("w-full", featured && "border-0 bg-indigo-500 hover:bg-indigo-400")}
+        <Link
+          href={ctaHref}
+          className="flex w-full items-center justify-center rounded-xl border border-white/[0.14] bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-300 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.09] hover:text-white"
         >
-          <Link href={ctaHref}>{ctaLabel}</Link>
-        </Button>
+          {ctaLabel}
+        </Link>
       </div>
 
-      {/* Highlights */}
       {content?.highlights && content.highlights.length > 0 && (
         <ul className="mt-7 space-y-2.5">
           {content.highlights.map((h) => (
             <li key={h} className="flex items-start gap-2.5">
-              <Check
-                size={15}
-                className={cn("mt-0.5 shrink-0", featured ? "text-indigo-400" : "text-indigo-500")}
-              />
-              <span className={cn("text-sm", featured ? "text-slate-300" : "text-slate-600")}>
-                {h}
-              </span>
+              <Check size={15} className="mt-0.5 shrink-0 text-blue-400/70" />
+              <span className="text-sm text-slate-400">{h}</span>
             </li>
           ))}
         </ul>
       )}
 
-      {/* Raw features (when no highlight content) */}
       {(!content?.highlights || content.highlights.length === 0) && plan.features.length > 0 && (
         <ul className="mt-7 space-y-2.5">
           {plan.features.slice(0, 6).map((f) => (
             <li key={f.key} className="flex items-center justify-between">
-              <span className={cn("text-sm", featured ? "text-slate-300" : "text-slate-600")}>
+              <span className="text-sm text-slate-400">
                 {f.label ?? f.key.replace(/_/g, " ")}
               </span>
-              <span
-                className={cn("text-sm font-medium", featured ? "text-white" : "text-slate-900")}
-              >
+              <span className="text-sm font-medium text-white">
                 {formatFeatureValue(f.value, f.format)}
               </span>
             </li>

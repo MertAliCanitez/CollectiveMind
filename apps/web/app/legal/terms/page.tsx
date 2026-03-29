@@ -72,39 +72,39 @@ const LAST_UPDATED = "March 28, 2026"
 
 export default function TermsPage() {
   return (
-    <section className="bg-white py-20 sm:py-28">
+    <section className="bg-[#07070f] py-20 sm:py-28">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <nav className="mb-6 flex items-center gap-2 text-sm text-slate-400">
-          <Link href="/legal" className="hover:text-slate-600">
+        <nav className="mb-6 flex items-center gap-2 text-sm text-slate-500">
+          <Link href="/legal" className="transition-colors hover:text-slate-300">
             Legal
           </Link>
           <span>/</span>
-          <span className="text-slate-600">Terms of service</span>
+          <span className="text-slate-400">Terms of service</span>
         </nav>
 
-        <div className="mb-8 rounded-xl border border-amber-200 bg-amber-50 px-5 py-3">
-          <p className="text-sm font-semibold text-amber-800">Placeholder document</p>
-          <p className="mt-0.5 text-sm text-amber-700">
+        <div className="mb-8 rounded-xl border border-amber-500/20 bg-amber-500/10 px-5 py-3">
+          <p className="text-sm font-semibold text-amber-300">Placeholder document</p>
+          <p className="mt-0.5 text-sm text-amber-400/80">
             This is a structural placeholder. Replace with reviewed legal copy before launching.
           </p>
         </div>
 
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
           Terms of Service
         </h1>
-        <p className="mt-2 text-sm text-slate-400">Last updated: {LAST_UPDATED}</p>
+        <p className="mt-2 text-sm text-slate-500">Last updated: {LAST_UPDATED}</p>
 
         <div className="mt-10 space-y-8">
           {sections.map((section) => (
             <div key={section.id} id={section.id}>
-              <h2 className="text-base font-semibold text-slate-900">{section.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{section.content}</p>
+              <h2 className="text-base font-semibold text-white">{section.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">{section.content}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-12 border-t border-slate-100 pt-8">
-          <Link href="/legal" className="text-sm text-indigo-600 hover:text-indigo-700">
+        <div className="mt-12 border-t border-white/[0.06] pt-8">
+          <Link href="/legal" className="text-sm text-blue-400 transition-colors hover:text-blue-300">
             ← Back to legal
           </Link>
         </div>

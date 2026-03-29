@@ -50,15 +50,22 @@ export default async function PricingPage() {
   return (
     <>
       {/* Header */}
-      <section className="border-b border-slate-200 bg-white py-16 sm:py-20">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+      <section className="relative bg-[#07070f] py-20 sm:py-28">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/10 blur-[130px]"
+            style={{ animation: "glow-pulse 12s ease-in-out infinite" }}
+          />
+        </div>
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <SectionHeader
             eyebrow="Pricing"
             heading="Simple, transparent pricing"
             subheading="Free plans to start. Upgrade when you need more. No hidden fees, no surprise invoices."
           />
           {!billingEnabled && (
-            <div className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
+            <div className="mx-auto mt-8 inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-4 py-2 text-sm text-amber-300">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
               Payments coming soon — contact us for early access to any plan
             </div>
@@ -68,25 +75,25 @@ export default async function PricingPage() {
 
       {/* Plans per product */}
       {products.length > 0 ? (
-        products.map((product) => (
+        products.map((product, idx) => (
           <section
             key={product.id}
-            className="border-b border-slate-100 bg-white py-16 last:border-0 sm:py-20"
+            className={`relative py-16 sm:py-20 ${idx % 2 === 0 ? "bg-[#07070f]" : "bg-[#0a0a18]"}`}
           >
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              {/* Product header */}
               <div className="mb-10 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900">{product.name}</h2>
+                  <h2 className="text-2xl font-bold text-white">{product.name}</h2>
                   {product.content?.tagline && (
-                    <p className="mt-1 text-sm font-medium text-indigo-600">
+                    <p className="mt-1 bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-sm font-medium text-transparent">
                       {product.content.tagline}
                     </p>
                   )}
                 </div>
                 <Link
                   href={`/products/${product.slug}`}
-                  className="text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+                  className="text-sm font-semibold text-blue-400 transition-colors hover:text-blue-300"
                 >
                   Learn more →
                 </Link>
@@ -94,7 +101,7 @@ export default async function PricingPage() {
 
               {product.plans.length > 0 ? (
                 <div
-                  className={`grid grid-cols-1 gap-6 ${
+                  className={`grid grid-cols-1 gap-5 ${
                     product.plans.length === 2
                       ? "max-w-2xl sm:grid-cols-2"
                       : product.plans.length === 3
@@ -115,18 +122,19 @@ export default async function PricingPage() {
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-slate-400">Plans coming soon.</p>
+                <p className="text-sm text-slate-500">Plans coming soon.</p>
               )}
             </div>
           </section>
         ))
       ) : (
-        <section className="bg-white py-24">
+        <section className="relative bg-[#07070f] py-24">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
           <div className="mx-auto max-w-md px-4 text-center">
             <p className="text-slate-400">Pricing information is not available right now.</p>
             <Link
               href="/contact"
-              className="mt-4 inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+              className="mt-4 inline-block text-sm font-semibold text-blue-400 hover:text-blue-300"
             >
               Contact us for pricing →
             </Link>
@@ -135,15 +143,22 @@ export default async function PricingPage() {
       )}
 
       {/* FAQ */}
-      <section className="bg-slate-50 py-20 sm:py-28">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-[#0a0a18] py-20 sm:py-28">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute right-1/4 top-1/2 h-[300px] w-[300px] -translate-y-1/2 rounded-full bg-blue-600/8 blur-[100px]"
+            style={{ animation: "glow-pulse 16s ease-in-out infinite" }}
+          />
+        </div>
+        <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <SectionHeader eyebrow="FAQ" heading="Pricing questions answered" />
-          <div className="mt-10 divide-y divide-slate-200">
+          <div className="mt-10 divide-y divide-white/[0.06]">
             {faq.map((item) => (
               <details key={item.q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-slate-900 marker:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-white marker:hidden">
                   {item.q}
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-400 transition-transform group-open:rotate-180">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/10 text-slate-400 transition-transform group-open:rotate-180">
                     <svg
                       className="h-3 w-3"
                       fill="none"
@@ -155,7 +170,7 @@ export default async function PricingPage() {
                     </svg>
                   </span>
                 </summary>
-                <p className="mt-3 text-sm leading-relaxed text-slate-500">{item.a}</p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">{item.a}</p>
               </details>
             ))}
           </div>

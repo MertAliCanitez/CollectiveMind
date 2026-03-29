@@ -27,26 +27,26 @@ const documents = [
 
 export default function LegalIndexPage() {
   return (
-    <section className="bg-white py-20 sm:py-28">
+    <section className="bg-[#07070f] py-20 sm:py-28">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Legal</h1>
-        <p className="mt-4 text-slate-500">
+        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Legal</h1>
+        <p className="mt-4 text-slate-400">
           Important documents about how CollectiveMind operates and your rights as a user.
         </p>
 
-        <div className="mt-10 divide-y divide-slate-100 rounded-2xl border border-slate-200">
+        <div className="mt-10 divide-y divide-white/[0.06] rounded-2xl border border-white/[0.07] bg-white/[0.02]">
           {documents.map((doc) => (
             <Link
               key={doc.href}
               href={doc.href}
-              className="flex items-center justify-between gap-6 px-6 py-5 transition-colors first:rounded-t-2xl last:rounded-b-2xl hover:bg-slate-50"
+              className="flex items-center justify-between gap-6 px-6 py-5 transition-colors first:rounded-t-2xl last:rounded-b-2xl hover:bg-white/[0.04]"
             >
               <div>
-                <p className="text-sm font-semibold text-slate-900">{doc.title}</p>
-                <p className="mt-0.5 text-sm text-slate-500">{doc.description}</p>
+                <p className="text-sm font-semibold text-white">{doc.title}</p>
+                <p className="mt-0.5 text-sm text-slate-400">{doc.description}</p>
               </div>
               <svg
-                className="h-4 w-4 shrink-0 text-slate-300"
+                className="h-4 w-4 shrink-0 text-slate-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

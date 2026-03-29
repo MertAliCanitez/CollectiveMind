@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 
 const footerLinks = {
@@ -19,42 +20,16 @@ const footerLinks = {
   ],
 }
 
-function FooterLogo() {
+function FooterBrand() {
   return (
-    <svg width="26" height="26" viewBox="0 0 30 30" fill="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="footer-node-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#60A5FA" />
-          <stop offset="50%" stopColor="#8B5CF6" />
-          <stop offset="100%" stopColor="#E879F9" />
-        </linearGradient>
-        <linearGradient id="footer-line-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.25" />
-        </linearGradient>
-      </defs>
-      <line x1="15" y1="7" x2="8" y2="14" stroke="url(#footer-line-grad)" strokeWidth="1.2" />
-      <line x1="15" y1="7" x2="22" y2="14" stroke="url(#footer-line-grad)" strokeWidth="1.2" />
-      <line x1="8" y1="14" x2="5" y2="22" stroke="url(#footer-line-grad)" strokeWidth="1" />
-      <line x1="22" y1="14" x2="25" y2="22" stroke="url(#footer-line-grad)" strokeWidth="1" />
-      <line x1="8" y1="14" x2="15" y2="20" stroke="url(#footer-line-grad)" strokeWidth="1" />
-      <line x1="22" y1="14" x2="15" y2="20" stroke="url(#footer-line-grad)" strokeWidth="1" />
-      <line
-        x1="15"
-        y1="20"
-        x2="15"
-        y2="27"
-        stroke="#6D28D9"
-        strokeWidth="1.5"
-        strokeOpacity="0.5"
-      />
-      <circle cx="15" cy="7" r="3" fill="url(#footer-node-grad)" />
-      <circle cx="8" cy="14" r="2.2" fill="#60A5FA" />
-      <circle cx="22" cy="14" r="2.2" fill="#8B5CF6" />
-      <circle cx="5" cy="22" r="1.6" fill="#60A5FA" fillOpacity="0.6" />
-      <circle cx="25" cy="22" r="1.6" fill="#E879F9" fillOpacity="0.6" />
-      <circle cx="15" cy="20" r="1.6" fill="#8B5CF6" fillOpacity="0.7" />
-    </svg>
+    <Image
+      src="/logo.png"
+      alt="CollectiveMind logo"
+      width={48}
+      height={48}
+      className="h-12 w-12 object-contain"
+      style={{ mixBlendMode: "lighten" }}
+    />
   )
 }
 
@@ -68,9 +43,9 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5 font-bold text-white">
-              <FooterLogo />
-              <span>
+            <Link href="/" className="flex items-center gap-1.5 font-bold text-white">
+              <FooterBrand />
+              <span className="text-[0.95rem] tracking-tight">
                 Collective<span className="text-blue-400">Mind</span>
               </span>
             </Link>
