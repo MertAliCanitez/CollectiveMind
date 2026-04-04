@@ -7,17 +7,17 @@
     "./client": "./src/client.ts"
   },
   "scripts": {
-    "db:generate": "prisma generate",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy",
-    "migrate:reset": "prisma migrate reset",
-    "migrate:status": "prisma migrate status",
-    "migrate:diff": "prisma migrate diff --from-local-db --to-schema-datamodel ../../prisma/schema.prisma --script",
-    "validate": "prisma validate",
-    "format": "prisma format",
-    "format:check": "prisma format --check",
-    "studio": "prisma studio",
-    "seed": "tsx ../../prisma/seed.ts",
+    "db:generate": "dotenv -e ../../prisma/.env -- prisma generate",
+    "migrate:dev": "dotenv -e ../../prisma/.env -- prisma migrate dev",
+    "migrate:deploy": "dotenv -e ../../prisma/.env -- prisma migrate deploy",
+    "migrate:reset": "dotenv -e ../../prisma/.env -- prisma migrate reset",
+    "migrate:status": "dotenv -e ../../prisma/.env -- prisma migrate status",
+    "migrate:diff": "dotenv -e ../../prisma/.env -- prisma migrate diff --from-local-db --to-schema-datamodel ../../prisma/schema.prisma --script",
+    "validate": "dotenv -e ../../prisma/.env -- prisma validate",
+    "format": "dotenv -e ../../prisma/.env -- prisma format",
+    "format:check": "dotenv -e ../../prisma/.env -- prisma format --check",
+    "studio": "dotenv -e ../../prisma/.env -- prisma studio",
+    "seed": "tsx --env-file=../../prisma/.env ../../prisma/seed.ts",
     "clean": "rm -rf dist node_modules/.prisma"
   },
   "prisma": {
