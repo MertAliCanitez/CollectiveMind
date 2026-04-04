@@ -28,18 +28,33 @@ The platform ships as three applications:
 
 ### Platform Roles (global, via Clerk `publicMetadata.platformRole`)
 
-| Role          | What They Can Do                                       |
-| ------------- | ------------------------------------------------------ |
-| `super_admin` | Full platform access, can grant/revoke staff roles     |
-| `support`     | Read-only access to org and subscription data in admin |
+| Canonical Name | Clerk Value | What They Can Do |
+| -------------- | ----------- | ---------------- |
+| `platform_super_admin` | `"super_admin"` | Full access to admin panel. Can manage orgs, subscriptions, access grants, plans, and staff roles. |
+| `platform_support` | `"support"` | Read-only access to org and subscription state in the admin panel. Cannot modify. |
 
 ### Organization Roles (per-org, via Clerk built-in roles)
 
-| Role              | What They Can Do                              |
-| ----------------- | --------------------------------------------- |
-| `ADMIN`           | Manage members, billing, all org settings     |
-| `BILLING_MANAGER` | Manage subscriptions and invoices only        |
-| `MEMBER`          | Access to org products, no admin capabilities |
+| Canonical Name | Clerk Value | What They Can Do |
+| -------------- | ----------- | ---------------- |
+| `customer_owner` | `"org:admin"` | Manage members, billing, subscriptions, and all org settings. |
+| `customer_billing_manager` | `"org:billing_manager"` | Manage subscriptions and invoices only. No member or product management. |
+| `customer_member` | `"org:member"` | Standard org member. No admin or billing capabilities. |
+
+### Product Access Model (critical distinction)
+
+**Role is not entitlement.** Organization roles control what a user can *manage*. They do not control which products a user can *access or see*.
+
+- A `customer_owner` does **not** automatically get access to every product on the platform.
+- A `customer_member` has the same product access as the `customer_owner` of their org — whatever the org is subscribed to or granted.
+- Product access is determined entirely by the organization's active **Subscriptions** and **AccessGrants** in the database.
+
+| Access path | When it applies |
+| ----------- | --------------- |
+| **Subscription** | Org has a paid, trialing, or free-tier subscription to a product plan. |
+| **AccessGrant** | Staff has explicitly granted the org access to a product (trial, complimentary, migration). |
+
+The customer portal only ever shows a user the products their organization has access to through one of these two paths.
 
 ## What Success Looks Like at MVP
 

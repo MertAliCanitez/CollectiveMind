@@ -16,12 +16,26 @@
 ```
 User ──< OrgMember >── Organization
                            │
-                           └──< Subscription >── Plan >── Product
-                           │         │
+                           ├──< Subscription >── Plan >── Product
+                           │         │                       │
                            │         └──< Invoice >── InvoiceLineItem
+                           │
+                           ├──< AccessGrant >── Product
+                           │
                            └──< AuditLog
 User ──< AuditLog
 ```
+
+### Two paths to product access
+
+Product access is always organization-scoped and takes exactly one of two paths:
+
+1. **Subscription** — the organization subscribes to a `Plan` for a `Product`. Standard commercial path. Subscription has a lifecycle (`TRIALING → ACTIVE → PAST_DUE → CANCELED`).
+2. **AccessGrant** — staff explicitly grants an organization access to a `Product`, bypassing the subscription flow. Used for complimentary access, onboarding trials, legacy migration, or manual overrides.
+
+`checkEntitlement({ orgId, productSlug })` checks both. An active, non-expired, non-revoked `AccessGrant` wins if present.
+
+**Roles do not grant product access.** An `org:admin` (customer_owner) has no product access by default — they only gain access when their organization has a Subscription or AccessGrant for that product.
 
 ---
 
@@ -116,7 +130,8 @@ model Product {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  plans Plan[]
+  plans        Plan[]
+  accessGrants AccessGrant[]
 
   @@index([slug])
   @@index([status])
@@ -177,6 +192,39 @@ model PlanFeature {
 
   @@unique([planId, key])
   @@index([planId])
+}
+
+// ─────────────────────────────────────────
+// ACCESS
+// Two paths to product access:
+//   1. Subscription — org pays for a plan (standard path)
+//   2. AccessGrant  — staff grants access directly (manual override / trial / migration)
+//
+// checkEntitlement() checks both. AccessGrant wins if present and not revoked/expired.
+// ─────────────────────────────────────────
+
+// AccessGrant — explicit product access outside of the subscription flow.
+// Created by staff in the admin panel. Audited. Does not generate invoices.
+// Use cases: complimentary access, onboarding trials, legacy customer migration.
+model AccessGrant {
+  id              String    @id @default(uuid())
+  organizationId  String
+  productId       String
+  grantedByUserId String?   // staff User.id who created the grant (null = SYSTEM)
+  reason          String?   // internal note explaining why access was granted
+  expiresAt       DateTime? // null = never expires
+  revokedAt       DateTime? // set when staff revokes; null = still active
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  product      Product      @relation(fields: [productId], references: [id])
+  grantedBy    User?        @relation("AccessGrantGrantor", fields: [grantedByUserId], references: [id])
+
+  @@index([organizationId, productId])
+  @@index([organizationId])
+  @@index([expiresAt])
+  @@map("access_grants")
 }
 
 // ─────────────────────────────────────────

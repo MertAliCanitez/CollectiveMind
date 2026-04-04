@@ -77,17 +77,18 @@ Clerk's built-in role system is scoped to organizations. Platform roles span all
 
 ### Organization Roles (via Clerk built-in)
 
-Clerk's default org roles are used as-is:
+| Canonical Name | Clerk Value | Platform Meaning |
+| -------------- | ----------- | ---------------- |
+| `customer_owner` | `org:admin` | Can manage org settings, invite/remove members, and manage billing and subscriptions. |
+| `customer_billing_manager` | `org:billing_manager` | Can manage subscriptions and billing only. No member management or product settings. |
+| `customer_member` | `org:member` | Standard org member with no admin or billing capabilities. |
 
-| Clerk Role   | Platform Meaning                                            |
-| ------------ | ----------------------------------------------------------- |
-| `org:admin`  | Can manage org settings, members, billing, and all products |
-| `org:member` | Can use licensed products; read-only on org settings        |
+> **Important:** Organization roles govern account-management permissions only. They do **not** determine which products a user can see or use. Product access is granted via active `Subscription` or `AccessGrant` records — not by role. A `customer_owner` who has no subscriptions sees no products. A `customer_member` in an org with a subscription has the same product access as the `customer_owner` of that org.
 
-A custom `org:billing_manager` role is defined for post-MVP to separate billing management from admin access. At v1, billing is only accessible to `org:admin`.
+A `org:billing_manager` custom role is registered in Clerk for the `customer_billing_manager` use case.
 
 **Why not more custom roles at v1?**
-Custom roles add complexity to every authorization check. The two built-in roles cover 95% of B2B use cases at early stage. Role granularity should be added when a real customer requires it — not speculatively.
+Custom roles add complexity to every authorization check. Three roles cover the standard B2B split (owner, billing contact, member). Product-level permissions do not exist — they are derived from subscription/grant state, not roles.
 
 ---
 

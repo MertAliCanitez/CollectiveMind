@@ -6,7 +6,7 @@
 
 ### Design Philosophy
 
-- **One account, many products.** A user signs in once and sees every product their organization has licensed.
+- **One account, many products.** A user signs in once and can access every product their organization has an active subscription or access grant for.
 - **Organization-first.** Every subscription, access grant, and billing event is owned by an organization, not an individual. Individuals are members of organizations.
 - **Loose product coupling.** Products share infrastructure (auth, DB, billing abstraction, UI kit) but do not share domain logic. Adding or removing a product does not break others.
 - **Deferred complexity.** Live payment processing, advanced analytics, and global compliance are explicitly deferred to post-MVP. The architecture supports them without implementing them.
@@ -15,26 +15,41 @@
 
 ## 2. User Types and Roles
 
-### Platform-Level Roles (managed in Clerk)
+### Platform-Level Roles (managed in Clerk `publicMetadata`)
 
-| Role                   | Description                                                                                                                             |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `platform:super_admin` | Internal staff. Full access to admin panel, can impersonate orgs, manage all plans and subscriptions. Stored in Clerk `publicMetadata`. |
-| `platform:support`     | Internal read-only staff. Can view org and subscription state. Cannot modify.                                                           |
+Canonical name | Clerk value | Description
+--- | --- | ---
+`platform_super_admin` | `"super_admin"` | Internal staff. Full access to admin panel, can manage all orgs, plans, subscriptions, and access grants.
+`platform_support` | `"support"` | Internal read-only staff. Can view org and subscription state. Cannot modify.
 
 ### Organization-Level Roles (Clerk Organizations)
 
-| Role          | Description                                                                                             |
-| ------------- | ------------------------------------------------------------------------------------------------------- |
-| `org:admin`   | Full control over the organization: invite members, manage subscriptions, access all licensed products. |
-| `org:billing` | Can manage billing and subscriptions, but not org members or product settings.                          |
-| `org:member`  | Can use licensed products. Cannot manage org settings or billing.                                       |
+Canonical name | Clerk value | Description
+--- | --- | ---
+`customer_owner` | `"org:admin"` | Can manage org settings, invite/remove members, manage billing and subscriptions, and manage org-level account settings.
+`customer_billing_manager` | `"org:billing_manager"` | Can manage billing and subscriptions only. Cannot manage org members or product settings.
+`customer_member` | `"org:member"` | Standard org member. No admin or billing capabilities.
+
+> **Critical distinction:** Organization roles govern *account management permissions* (who can invite members, who can change billing). They do **not** grant product access. A `customer_owner` does not automatically see or use all products on the platform — they can only access products the organization has an active **Subscription** or **AccessGrant** for.
+
+### Product Access Model
+
+Product access is entirely **subscription- and grant-driven**, not role-driven:
+
+| Access path | Description |
+| ----------- | ----------- |
+| **Subscription** | The organization has an active (or trialing) subscription to a plan for a given product. Standard commercial path. |
+| **AccessGrant** | Staff has explicitly granted the organization direct access to a product, outside the subscription flow. Used for trials, complimentary access, onboarding, or legacy migration. |
+
+`checkEntitlement({ orgId, productSlug })` checks both paths. An active `AccessGrant` takes precedence if present.
+
+The customer portal (`apps/dashboard`) must **only** surface products the organization has access to via one of these two paths. It must **never** enumerate all platform products and show them as locked/unavailable based on the user's role.
 
 ### Role Design Rationale
 
-- Clerk's built-in `org:admin` / `org:member` system is used as the base. A custom `org:billing` role covers the common B2B pattern where a finance contact manages billing but is not a technical admin.
-- Platform-level roles are stored in Clerk `publicMetadata` (server-side, tamper-proof) rather than as Clerk organization roles, because they apply across all organizations and are not scoped to a single org.
-- There is no "product admin" role at v1. Product-specific permissions are derived from org membership and the organization's active subscription for that product.
+- Clerk's built-in `org:admin` / `org:member` system is the implementation layer. The canonical platform names (`customer_owner`, `customer_member`, `customer_billing_manager`) are used in documentation and ADRs to avoid tight coupling to Clerk's naming.
+- Platform-level roles are stored in Clerk `publicMetadata` (server-side, tamper-proof) rather than as Clerk org roles, because they apply across all organizations and are held by internal staff, not customers.
+- There is no product-level role. Product access is derived exclusively from the organization's active subscriptions and access grants.
 
 ---
 
@@ -102,7 +117,7 @@ The platform is structured as a **modular monolith**. All domains live in one de
 /onboarding                → Org creation + first product selection
 
 /dashboard                 → Overview: active products, org summary
-/dashboard/products        → All licensed products + quick-launch
+/dashboard/products        → Products the org has an active subscription or access grant for
 /dashboard/products/[slug] → Per-product interface (embedded or iframe-out)
 
 /settings/profile          → Personal profile (name, email, avatar)
