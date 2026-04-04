@@ -17,10 +17,10 @@ export function DashboardNav() {
   const pathname = usePathname()
 
   return (
-    <aside className="flex h-full w-56 flex-col border-r border-slate-200 bg-white">
+    <aside className="flex h-full w-56 flex-col border-r border-zinc-800 bg-zinc-900">
       {/* Logo */}
-      <div className="flex h-14 items-center border-b border-slate-100 px-4">
-        <Link href="/home" className="text-sm font-semibold text-slate-900 hover:text-indigo-600">
+      <div className="flex h-14 items-center border-b border-zinc-800 px-4">
+        <Link href="/home" className="text-sm font-semibold text-zinc-100 hover:text-indigo-400">
           CollectiveMind
         </Link>
       </div>
@@ -37,11 +37,11 @@ export function DashboardNav() {
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-indigo-50 text-indigo-700"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                      ? "bg-indigo-600 text-white"
+                      : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100",
                   )}
                 >
-                  <Icon size={16} className={cn(isActive ? "text-indigo-600" : "text-slate-400")} />
+                  <Icon size={16} className={cn(isActive ? "text-white" : "text-zinc-500")} />
                   {label}
                 </Link>
               </li>
@@ -51,14 +51,14 @@ export function DashboardNav() {
       </nav>
 
       {/* Org switcher + user */}
-      <div className="space-y-2 border-t border-slate-100 p-3">
+      <div className="space-y-2 border-t border-zinc-800 p-3">
         <OrganizationSwitcher
           hidePersonal
           appearance={{
             elements: {
               rootBox: "w-full",
               organizationSwitcherTrigger:
-                "w-full rounded-lg px-2 py-1.5 text-sm hover:bg-slate-100 justify-start",
+                "w-full rounded-lg px-2 py-1.5 text-sm hover:bg-zinc-800 justify-start text-zinc-300",
             },
           }}
         />
@@ -70,7 +70,7 @@ export function DashboardNav() {
               },
             }}
           />
-          <span className="text-xs text-slate-500">Account</span>
+          <span className="text-xs text-zinc-500">Account</span>
         </div>
       </div>
     </aside>

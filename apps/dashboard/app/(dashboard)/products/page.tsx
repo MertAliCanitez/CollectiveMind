@@ -26,8 +26,8 @@ export default async function ProductsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">My Products</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-100">My Products</h1>
+        <p className="mt-1 text-sm text-zinc-400">
           {accessibleCount > 0
             ? `You have access to ${accessibleCount} of ${activeProducts.length} available product${activeProducts.length !== 1 ? "s" : ""}.`
             : "Products your organization has subscribed to will appear here."}
@@ -55,21 +55,21 @@ export default async function ProductsPage() {
       {/* Coming soon */}
       {comingSoonProducts.length > 0 && (
         <div>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
             Coming Soon
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {comingSoonProducts.map((product) => (
               <div
                 key={product.id}
-                className="rounded-xl border border-dashed border-slate-200 bg-white p-5 opacity-60"
+                className="rounded-xl border border-dashed border-zinc-800 bg-zinc-900/50 p-5 opacity-60"
               >
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-slate-700">{product.name}</h3>
+                  <h3 className="text-sm font-semibold text-zinc-300">{product.name}</h3>
                   <Badge variant="secondary">Coming soon</Badge>
                 </div>
                 {product.content?.tagline && (
-                  <p className="mt-1 text-sm text-slate-400">{product.content.tagline}</p>
+                  <p className="mt-1 text-sm text-zinc-500">{product.content.tagline}</p>
                 )}
               </div>
             ))}
@@ -79,9 +79,9 @@ export default async function ProductsPage() {
 
       {/* Upgrade prompt if no access */}
       {accessibleCount === 0 && activeProducts.length > 0 && (
-        <div className="rounded-xl border border-indigo-100 bg-indigo-50 p-5">
-          <p className="text-sm font-medium text-indigo-900">Interested in getting started?</p>
-          <p className="mt-1 text-sm text-indigo-700">
+        <div className="rounded-xl border border-indigo-900/60 bg-indigo-950/40 p-5">
+          <p className="text-sm font-medium text-indigo-300">Interested in getting started?</p>
+          <p className="mt-1 text-sm text-indigo-400/80">
             Contact your account admin or reach out to our team to enable product access for your
             organization.
           </p>

@@ -37,29 +37,29 @@ export default async function AdminGrantsPage({ searchParams }: Props) {
           href="/admin/grants"
           className={
             filter !== "all"
-              ? "font-semibold text-indigo-600"
-              : "text-slate-500 hover:text-slate-700"
+              ? "font-semibold text-indigo-400"
+              : "text-zinc-500 hover:text-zinc-300"
           }
         >
           Active only
         </Link>
-        <span className="text-slate-300">|</span>
+        <span className="text-zinc-700">|</span>
         <Link
           href="/admin/grants?filter=all"
           className={
             filter === "all"
-              ? "font-semibold text-indigo-600"
-              : "text-slate-500 hover:text-slate-700"
+              ? "font-semibold text-indigo-400"
+              : "text-zinc-500 hover:text-zinc-300"
           }
         >
           All grants
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <tr className="border-b border-zinc-800 bg-zinc-800/50 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">
               <th className="px-4 py-3">Organization</th>
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Reason</th>
@@ -69,27 +69,27 @@ export default async function AdminGrantsPage({ searchParams }: Props) {
               <th className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-zinc-800">
             {grants.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
                   No grants found.
                 </td>
               </tr>
             ) : (
               grants.map((g) => (
-                <tr key={g.id} className="hover:bg-slate-50">
+                <tr key={g.id} className="hover:bg-zinc-800/50">
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/organizations/${g.organizationId}`}
-                      className="font-medium text-indigo-600 hover:underline"
+                      className="font-medium text-indigo-400 hover:underline"
                     >
                       {g.organizationName}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-600">{g.productSlug}</td>
-                  <td className="max-w-xs truncate px-4 py-3 text-slate-600">{g.reason ?? "—"}</td>
-                  <td className="px-4 py-3 text-xs text-slate-500">
+                  <td className="px-4 py-3 font-mono text-xs text-zinc-400">{g.productSlug}</td>
+                  <td className="max-w-xs truncate px-4 py-3 text-zinc-400">{g.reason ?? "—"}</td>
+                  <td className="px-4 py-3 text-xs text-zinc-500">
                     {g.expiresAt ? g.expiresAt.toLocaleDateString() : "Never"}
                   </td>
                   <td className="px-4 py-3">
@@ -97,7 +97,7 @@ export default async function AdminGrantsPage({ searchParams }: Props) {
                       {g.revokedAt ? "Revoked" : "Active"}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-500">{g.grantedBy ?? "system"}</td>
+                  <td className="px-4 py-3 text-xs text-zinc-500">{g.grantedBy ?? "system"}</td>
                   <td className="px-4 py-3 text-right">
                     {!g.revokedAt && <RevokeGrantButton grantId={g.id} />}
                   </td>

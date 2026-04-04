@@ -29,44 +29,44 @@ export default async function HomePage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Welcome back</h1>
-        <p className="mt-1 text-sm text-slate-500">{org.name} workspace</p>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-100">Welcome back</h1>
+        <p className="mt-1 text-sm text-zinc-400">{org.name} workspace</p>
       </div>
 
       {/* Quick stats row */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Products</p>
-          <p className="mt-1 text-2xl font-bold text-slate-900">{accessibleProducts.length}</p>
-          <p className="mt-0.5 text-xs text-slate-400">active</p>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Products</p>
+          <p className="mt-1 text-2xl font-bold text-zinc-100">{accessibleProducts.length}</p>
+          <p className="mt-0.5 text-xs text-zinc-600">active</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Plan</p>
-          <p className="mt-1 truncate text-sm font-semibold text-slate-900">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Plan</p>
+          <p className="mt-1 truncate text-sm font-semibold text-zinc-100">
             {accessibleProducts.length > 0
               ? (entitlements.find((e) => e?.hasAccess)?.plan?.name ?? "—")
               : "None"}
           </p>
-          <p className="mt-0.5 text-xs text-slate-400">current</p>
+          <p className="mt-0.5 text-xs text-zinc-600">current</p>
         </div>
-        <div className="col-span-2 rounded-xl border border-slate-200 bg-white p-4 sm:col-span-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Role</p>
+        <div className="col-span-2 rounded-xl border border-zinc-800 bg-zinc-900 p-4 sm:col-span-1">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Role</p>
           <div className="mt-1">
             <Badge variant={isAdmin ? "default" : "secondary"}>
               {isAdmin ? "Admin" : "Member"}
             </Badge>
           </div>
-          <p className="mt-0.5 text-xs text-slate-400">in this org</p>
+          <p className="mt-0.5 text-xs text-zinc-600">in this org</p>
         </div>
       </div>
 
       {/* Product access section */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">Your Products</h2>
+          <h2 className="text-sm font-semibold text-zinc-300">Your Products</h2>
           <Link
             href="/products"
-            className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+            className="flex items-center gap-1 text-xs font-medium text-indigo-400 hover:text-indigo-300"
           >
             View all <ArrowRight size={12} />
           </Link>
@@ -92,17 +92,17 @@ export default async function HomePage() {
 
       {/* Billing CTA for admins */}
       {isAdmin && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Billing &amp; Subscriptions</h3>
-              <p className="mt-1 text-sm text-slate-500">
+              <h3 className="text-sm font-semibold text-zinc-100">Billing &amp; Subscriptions</h3>
+              <p className="mt-1 text-sm text-zinc-400">
                 View your subscription status and manage billing settings.
               </p>
             </div>
             <Link
               href="/billing"
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100"
             >
               View billing <ArrowRight size={12} />
             </Link>

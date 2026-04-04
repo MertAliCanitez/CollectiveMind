@@ -44,8 +44,8 @@ export default async function EditProductPage({ params }: Props) {
       />
 
       {/* Edit form */}
-      <div className="max-w-xl rounded-xl border border-slate-200 bg-white p-6">
-        <h2 className="mb-5 text-sm font-semibold text-slate-700">Product details</h2>
+      <div className="max-w-xl rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+        <h2 className="mb-5 text-sm font-semibold text-zinc-300">Product details</h2>
         <form action={updateAction} className="space-y-5">
           <FormField label="Name" htmlFor="name" required>
             <Input id="name" name="name" defaultValue={product.name} />
@@ -93,7 +93,7 @@ export default async function EditProductPage({ params }: Props) {
       {/* Plans table */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">Plans ({plans.length})</h2>
+          <h2 className="text-sm font-semibold text-zinc-300">Plans ({plans.length})</h2>
           <Link href={`/admin/products/${id}/plans/new`}>
             <Button size="sm" variant="outline">
               + Add plan
@@ -102,20 +102,20 @@ export default async function EditProductPage({ params }: Props) {
         </div>
 
         {plans.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-500">
+          <div className="rounded-xl border border-dashed border-zinc-800 py-10 text-center text-sm text-zinc-500">
             No plans yet.{" "}
             <Link
               href={`/admin/products/${id}/plans/new`}
-              className="text-indigo-600 hover:underline"
+              className="text-indigo-400 hover:underline"
             >
               Create the first plan.
             </Link>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-zinc-800 bg-zinc-800/50 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">Slug</th>
                   <th className="px-4 py-3">Interval</th>
@@ -125,13 +125,13 @@ export default async function EditProductPage({ params }: Props) {
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-zinc-800">
                 {plans.map((plan) => (
-                  <tr key={plan.id} className="transition-colors hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-900">{plan.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-slate-500">{plan.slug}</td>
-                    <td className="px-4 py-3 text-slate-600">{plan.billingInterval}</td>
-                    <td className="px-4 py-3 text-slate-600">{plan.displayPrice}</td>
+                  <tr key={plan.id} className="transition-colors hover:bg-zinc-800/50">
+                    <td className="px-4 py-3 font-medium text-zinc-100">{plan.name}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-zinc-500">{plan.slug}</td>
+                    <td className="px-4 py-3 text-zinc-400">{plan.billingInterval}</td>
+                    <td className="px-4 py-3 text-zinc-400">{plan.displayPrice}</td>
                     <td className="px-4 py-3">
                       <Badge variant={statusVariant[plan.status] ?? "secondary"}>
                         {plan.status}
@@ -145,7 +145,7 @@ export default async function EditProductPage({ params }: Props) {
                     <td className="px-4 py-3 text-right">
                       <Link
                         href={`/admin/products/${id}/plans/${plan.id}`}
-                        className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                        className="text-xs font-medium text-indigo-400 hover:text-indigo-300"
                       >
                         Edit →
                       </Link>

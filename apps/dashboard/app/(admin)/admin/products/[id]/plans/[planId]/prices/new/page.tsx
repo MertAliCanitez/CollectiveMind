@@ -39,9 +39,9 @@ export default async function NewPricePage({ params, searchParams }: Props) {
         ]}
       />
 
-      <div className="max-w-xl rounded-xl border border-slate-200 bg-white p-6">
+      <div className="max-w-xl rounded-xl border border-zinc-800 bg-zinc-900 p-6">
         {error && (
-          <div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mb-5 rounded-lg border border-red-900/60 bg-red-950/40 px-4 py-3 text-sm text-red-400">
             {decodeURIComponent(error)}
           </div>
         )}
@@ -97,7 +97,7 @@ export default async function NewPricePage({ params, searchParams }: Props) {
             <Button type="submit">Create price</Button>
             <a
               href={`/admin/products/${id}/plans/${planId}`}
-              className="text-sm text-slate-500 hover:text-slate-700"
+              className="text-sm text-zinc-500 hover:text-zinc-300"
             >
               Cancel
             </a>

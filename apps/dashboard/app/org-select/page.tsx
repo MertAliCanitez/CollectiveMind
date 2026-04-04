@@ -23,12 +23,12 @@ export const metadata: Metadata = {
 
 const clerkAppearance = {
   variables: {
-    colorPrimary: "#4f46e5",
-    colorBackground: "#ffffff",
-    colorText: "#0f172a",
-    colorTextSecondary: "#64748b",
-    colorInputBackground: "#ffffff",
-    colorInputText: "#0f172a",
+    colorPrimary: "#6366f1",
+    colorBackground: "#18181b",
+    colorText: "#f4f4f5",
+    colorTextSecondary: "#a1a1aa",
+    colorInputBackground: "#27272a",
+    colorInputText: "#f4f4f5",
     borderRadius: "0.5rem",
     fontFamily: "inherit",
     fontSmoothing: "antialiased" as const,
@@ -40,32 +40,32 @@ const clerkAppearance = {
     headerTitle: "hidden",
     headerSubtitle: "hidden",
     organizationListCreateOrganizationActionButton:
-      "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-medium text-sm rounded-lg",
+      "border border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 font-medium text-sm rounded-lg",
     organizationListPreviewButton:
-      "border border-slate-200 bg-white hover:bg-slate-50 rounded-xl",
+      "border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 rounded-xl",
     organizationListPreviewItemBox: "rounded-xl",
   },
 }
 
 export default function OrgSelectPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 py-12">
       <div className="w-full max-w-sm">
         {/* Brand mark */}
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600">
             <span className="text-base font-bold text-white">C</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
             Select your workspace
           </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-zinc-400">
             Choose an organization to continue, or create a new one.
           </p>
         </div>
 
         {/* Org list card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl shadow-black/20">
           <OrganizationList
             hidePersonal
             afterSelectOrganizationUrl="/home"

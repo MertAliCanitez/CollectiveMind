@@ -29,14 +29,14 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
           name="q"
           defaultValue={q}
           placeholder="Search by name or slug…"
-          className="h-9 w-full max-w-sm rounded-lg border border-slate-300 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="h-9 w-full max-w-sm rounded-lg border border-zinc-700 bg-zinc-800 px-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
         />
       </form>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <tr className="border-b border-zinc-800 bg-zinc-800/50 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Slug</th>
               <th className="px-4 py-3">Members</th>
@@ -46,28 +46,28 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
               <th className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-zinc-800">
             {orgs.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
                   No organizations found.
                 </td>
               </tr>
             ) : (
               orgs.map((org) => (
-                <tr key={org.id} className="transition-colors hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-900">{org.name}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-500">{org.slug}</td>
-                  <td className="px-4 py-3 text-slate-600">{org.memberCount}</td>
-                  <td className="px-4 py-3 text-slate-600">{org.subscriptionCount}</td>
-                  <td className="px-4 py-3 text-slate-600">{org.grantCount}</td>
-                  <td className="px-4 py-3 text-xs text-slate-500">
+                <tr key={org.id} className="transition-colors hover:bg-zinc-800/50">
+                  <td className="px-4 py-3 font-medium text-zinc-100">{org.name}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-zinc-500">{org.slug}</td>
+                  <td className="px-4 py-3 text-zinc-400">{org.memberCount}</td>
+                  <td className="px-4 py-3 text-zinc-400">{org.subscriptionCount}</td>
+                  <td className="px-4 py-3 text-zinc-400">{org.grantCount}</td>
+                  <td className="px-4 py-3 text-xs text-zinc-500">
                     {org.createdAt.toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/admin/organizations/${org.id}`}
-                      className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                      className="text-xs font-medium text-indigo-400 hover:text-indigo-300"
                     >
                       View →
                     </Link>
@@ -81,7 +81,7 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
 
       {/* Pagination */}
       {total > 30 && (
-        <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+        <div className="mt-4 flex items-center justify-between text-xs text-zinc-500">
           <span>
             Showing {orgs.length} of {total}
           </span>

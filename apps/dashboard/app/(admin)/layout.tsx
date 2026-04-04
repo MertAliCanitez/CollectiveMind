@@ -2,7 +2,7 @@ import { AdminNav } from "../../components/admin/admin-nav"
 
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-zinc-950">
       <div className="hidden lg:flex lg:flex-shrink-0">
         <AdminNav />
       </div>

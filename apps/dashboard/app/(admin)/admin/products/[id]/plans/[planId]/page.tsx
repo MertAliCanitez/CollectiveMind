@@ -46,8 +46,8 @@ export default async function EditPlanPage({ params }: Props) {
       />
 
       {/* Edit form */}
-      <div className="max-w-xl rounded-xl border border-slate-200 bg-white p-6">
-        <h2 className="mb-5 text-sm font-semibold text-slate-700">Plan details</h2>
+      <div className="max-w-xl rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+        <h2 className="mb-5 text-sm font-semibold text-zinc-300">Plan details</h2>
         <form action={updateAction} className="space-y-5">
           <FormField label="Name" htmlFor="name" required>
             <Input id="name" name="name" defaultValue={plan.name} />
@@ -126,24 +126,24 @@ export default async function EditPlanPage({ params }: Props) {
 
       {/* Feature entitlements */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-slate-700">
+        <h2 className="mb-3 text-sm font-semibold text-zinc-300">
           Feature Entitlements ({plan.features.length})
         </h2>
         {plan.features.length === 0 ? (
-          <p className="text-sm text-slate-500">No features defined for this plan.</p>
+          <p className="text-sm text-zinc-500">No features defined for this plan.</p>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-zinc-800 bg-zinc-800/50 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">
                   <th className="px-4 py-3">Key</th>
                   <th className="px-4 py-3">Value</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-zinc-800">
                 {plan.features.map((f) => (
                   <tr key={f.id}>
-                    <td className="px-4 py-2.5 font-mono text-xs text-slate-600">{f.key}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs text-zinc-400">{f.key}</td>
                     <td className="px-4 py-2.5 text-slate-700">{f.value}</td>
                   </tr>
                 ))}
@@ -156,7 +156,7 @@ export default async function EditPlanPage({ params }: Props) {
       {/* Prices / billing intervals */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">Prices ({prices.length})</h2>
+          <h2 className="text-sm font-semibold text-zinc-300">Prices ({prices.length})</h2>
           <Link href={`/admin/products/${id}/plans/${planId}/prices/new`}>
             <Button size="sm" variant="outline">
               + Add price
@@ -165,7 +165,7 @@ export default async function EditPlanPage({ params }: Props) {
         </div>
 
         {prices.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-200 py-10 text-center text-sm text-slate-500">
+          <div className="rounded-xl border border-dashed border-slate-200 py-10 text-center text-sm text-zinc-500">
             No provider prices configured.{" "}
             <Link
               href={`/admin/products/${id}/plans/${planId}/prices/new`}
@@ -175,10 +175,10 @@ export default async function EditPlanPage({ params }: Props) {
             </Link>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-zinc-800 bg-zinc-800/50 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">
                   <th className="px-4 py-3">Nickname</th>
                   <th className="px-4 py-3">Amount (¢)</th>
                   <th className="px-4 py-3">Interval</th>
@@ -186,7 +186,7 @@ export default async function EditPlanPage({ params }: Props) {
                   <th className="px-4 py-3">Active</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-zinc-800">
                 {prices.map((price) => (
                   <tr key={price.id}>
                     <td className="px-4 py-2.5 text-slate-600">{price.nickname ?? "—"}</td>

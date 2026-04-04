@@ -18,25 +18,25 @@ export function ProductAccessCard({ product, entitlement }: ProductAccessCardPro
   return (
     <div
       className={cn(
-        "group relative rounded-xl border bg-white p-5 transition-shadow",
+        "group relative rounded-xl border bg-zinc-900 p-5 transition-shadow",
         hasAccess
-          ? "border-slate-200 hover:shadow-md hover:shadow-slate-100"
-          : "border-slate-100 opacity-75",
+          ? "border-zinc-700 hover:border-zinc-600 hover:shadow-lg hover:shadow-black/20"
+          : "border-zinc-800 opacity-70",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="truncate text-sm font-semibold text-slate-900">{product.name}</h3>
+            <h3 className="truncate text-sm font-semibold text-zinc-100">{product.name}</h3>
             {isComingSoon && <Badge variant="secondary">Coming soon</Badge>}
             {hasAccess && !isComingSoon && <Badge variant="success">Active</Badge>}
           </div>
-          <p className="mt-1 line-clamp-2 text-sm text-slate-500">{product.content?.tagline}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-zinc-400">{product.content?.tagline}</p>
         </div>
         {hasAccess && !isComingSoon && (
           <ChevronRight
             size={16}
-            className="mt-0.5 shrink-0 text-slate-400 transition-colors group-hover:text-slate-600"
+            className="mt-0.5 shrink-0 text-zinc-600 transition-colors group-hover:text-zinc-300"
           />
         )}
       </div>
@@ -45,19 +45,19 @@ export function ProductAccessCard({ product, entitlement }: ProductAccessCardPro
         {hasAccess && planName ? (
           <>
             <Check size={14} className="shrink-0 text-emerald-500" />
-            <span className="text-xs text-slate-600">
+            <span className="text-xs text-zinc-400">
               {planName} plan
               {entitlement?.source === "grant" && (
-                <span className="ml-1 text-slate-400">(complimentary)</span>
+                <span className="ml-1 text-zinc-500">(complimentary)</span>
               )}
             </span>
           </>
         ) : isComingSoon ? (
-          <span className="text-xs text-slate-500">Not yet available</span>
+          <span className="text-xs text-zinc-500">Not yet available</span>
         ) : (
           <>
-            <AlertCircle size={14} className="shrink-0 text-slate-400" />
-            <span className="text-xs text-slate-500">No active subscription</span>
+            <AlertCircle size={14} className="shrink-0 text-zinc-600" />
+            <span className="text-xs text-zinc-500">No active subscription</span>
           </>
         )}
       </div>
@@ -66,7 +66,7 @@ export function ProductAccessCard({ product, entitlement }: ProductAccessCardPro
       {hasAccess && !isComingSoon && (
         <Link
           href={`/products/${product.slug}`}
-          className="absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1"
+          className="absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 focus-visible:ring-offset-zinc-950"
           aria-label={`Open ${product.name}`}
         />
       )}

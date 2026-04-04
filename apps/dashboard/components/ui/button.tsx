@@ -9,12 +9,12 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<ButtonVariant, string> = {
-  default: "bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-500 shadow-sm",
+  default: "bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:ring-indigo-500 shadow-sm",
   outline:
-    "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400",
-  ghost: "text-slate-700 hover:bg-slate-100",
-  secondary: "bg-slate-100 text-slate-800 hover:bg-slate-200",
-  destructive: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 shadow-sm",
+    "border border-zinc-700 bg-transparent text-zinc-300 hover:bg-zinc-800 hover:border-zinc-600",
+  ghost: "text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100",
+  secondary: "bg-zinc-800 text-zinc-300 hover:bg-zinc-700",
+  destructive: "bg-red-600 text-white hover:bg-red-500 focus-visible:ring-red-500 shadow-sm",
 }
 
 const sizes: Record<ButtonSize, string> = {
@@ -34,7 +34,7 @@ export function Button({
     <button
       className={cn(
         "inline-flex items-center justify-center gap-2 font-medium transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-zinc-950",
         "disabled:pointer-events-none disabled:opacity-50",
         variants[variant],
         sizes[size],
