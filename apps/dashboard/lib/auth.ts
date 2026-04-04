@@ -9,7 +9,7 @@
  *   These helpers enforce that contract by returning the DB org from the
  *   Clerk org ID embedded in the session.
  */
-import { auth } from "@clerk/nextjs/server"
+import { auth, clerkClient } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { db, type Organization } from "@repo/database"
 import { isOrgAdmin, isOrgBillingManager, isPlatformAdmin, isPlatformStaff } from "@repo/auth"
@@ -39,12 +39,16 @@ export async function requireOrg() {
     redirect("/org-select")
   }
 
-  const org = await db.organization.findFirst({
+  let org = await db.organization.findFirst({
     where: { clerkId: orgId, deletedAt: null },
   })
 
-  // Org exists in Clerk session but hasn't been synced to DB yet
-  // (race condition: user logged in before webhook arrived)
+  // Org not yet synced via webhook (local dev without tunnel, or delivery delay).
+  // Attempt a live sync from the Clerk API before giving up.
+  if (!org) {
+    org = await syncOrgFromClerk(orgId)
+  }
+
   if (!org) {
     logger.warn("auth.org_not_in_db", { userId, orgId, action: "requireOrg" })
     redirect("/org-select")
@@ -168,5 +172,34 @@ export async function getAuthContext(): Promise<AuthContext | null> {
     org,
     orgRole: orgRole ?? null,
     sessionClaims: sessionClaims as ClerkSessionClaims,
+  }
+}
+
+/**
+ * Attempts to sync an organization from the Clerk API into the local DB.
+ *
+ * Used as a fallback in `requireOrg()` when the org exists in the Clerk JWT
+ * but hasn't arrived in the DB yet — most commonly in local development
+ * without a webhook tunnel, or during webhook delivery delays.
+ *
+ * Returns the upserted Organization on success, null on any failure.
+ */
+async function syncOrgFromClerk(clerkOrgId: string): Promise<Organization | null> {
+  try {
+    const client = await clerkClient()
+    const clerkOrg = await client.organizations.getOrganization({ organizationId: clerkOrgId })
+    const slug = clerkOrg.slug ?? `org-${clerkOrgId.slice(-8)}`
+
+    const org = await db.organization.upsert({
+      where: { clerkId: clerkOrgId },
+      create: { clerkId: clerkOrgId, name: clerkOrg.name, slug },
+      update: { name: clerkOrg.name },
+    })
+
+    logger.info("auth.org_synced_from_clerk", { clerkOrgId, name: clerkOrg.name })
+    return org
+  } catch (error) {
+    logger.warn("auth.org_sync_failed", { clerkOrgId, error: String(error) })
+    return null
   }
 }
