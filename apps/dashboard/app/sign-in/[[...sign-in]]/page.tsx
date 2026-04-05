@@ -33,6 +33,7 @@ const clerkAppearance = {
     header: "hidden",
     headerTitle: "hidden",
     headerSubtitle: "hidden",
+    identityPreview: "bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 mb-4",
     socialButtonsBlockButton:
       "border border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 font-medium text-sm shadow-none h-10 rounded-lg",
     socialButtonsBlockButtonText: "font-medium",
