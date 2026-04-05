@@ -8,9 +8,11 @@ import {
   getOrgBillingStatus,
   getProductCatalog,
   checkEntitlement,
+  getCatalogProduct,
   getOrgAccessibleProducts,
   type OrgBillingStatus,
   type ProductCatalog,
+  type CatalogProduct,
   type Entitlement,
   type OrgAccessibleProduct,
 } from "@repo/billing"
@@ -42,6 +44,14 @@ export async function getDashboardEntitlement(
   }
 }
 
+export async function getDashboardProduct(slug: string): Promise<CatalogProduct | null> {
+  try {
+    return await getCatalogProduct(slug)
+  } catch {
+    return null
+  }
+}
+
 export async function getDashboardAccessibleProducts(
   orgId: string,
 ): Promise<OrgAccessibleProduct[]> {
@@ -52,4 +62,4 @@ export async function getDashboardAccessibleProducts(
   }
 }
 
-export type { OrgBillingStatus, ProductCatalog, Entitlement, OrgAccessibleProduct }
+export type { OrgBillingStatus, ProductCatalog, CatalogProduct, Entitlement, OrgAccessibleProduct }
