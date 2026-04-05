@@ -14,6 +14,53 @@ const navItems = [
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
+const clerkDarkAppearance = {
+  variables: {
+    colorBackground: "#18181b",
+    colorText: "#f4f4f5",
+    colorTextSecondary: "#a1a1aa",
+    colorPrimary: "#6366f1",
+    borderRadius: "0.5rem",
+  },
+  elements: {
+    rootBox: "w-full",
+    organizationSwitcherTrigger:
+      "w-full rounded-lg px-2 py-1.5 text-sm hover:bg-zinc-800 justify-start text-zinc-300",
+    organizationSwitcherPopoverCard:
+      "bg-zinc-900 border border-zinc-700 shadow-xl shadow-black/40",
+    organizationSwitcherPopoverActions: "bg-zinc-900",
+    organizationPreviewMainIdentifier: "text-zinc-100 font-medium",
+    organizationPreviewSecondaryIdentifier: "text-zinc-400",
+    organizationSwitcherPopoverActionButton:
+      "text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 rounded-lg",
+    organizationSwitcherPopoverActionButtonText: "text-zinc-300",
+    organizationSwitcherPopoverActionButtonIcon: "text-zinc-500",
+    organizationSwitcherPopoverFooter: "border-t border-zinc-800 bg-zinc-900",
+  },
+}
+
+const userButtonDarkAppearance = {
+  variables: {
+    colorBackground: "#18181b",
+    colorText: "#f4f4f5",
+    colorTextSecondary: "#a1a1aa",
+    colorPrimary: "#6366f1",
+    borderRadius: "0.5rem",
+  },
+  elements: {
+    avatarBox: "h-7 w-7",
+    userButtonPopoverCard: "bg-zinc-900 border border-zinc-700 shadow-xl shadow-black/40",
+    userButtonPopoverActions: "bg-zinc-900",
+    userButtonPopoverActionButton:
+      "text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 rounded-lg",
+    userButtonPopoverActionButtonText: "text-zinc-300",
+    userButtonPopoverActionButtonIcon: "text-zinc-500",
+    userButtonPopoverFooter: "border-t border-zinc-800 bg-zinc-900",
+    userPreviewMainIdentifier: "text-zinc-100 font-medium",
+    userPreviewSecondaryIdentifier: "text-zinc-400",
+  },
+}
+
 export function DashboardHeader() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
@@ -25,7 +72,7 @@ export function DashboardHeader() {
           CollectiveMind
         </Link>
         <div className="flex items-center gap-3">
-          <UserButton appearance={{ elements: { avatarBox: "h-7 w-7" } }} />
+          <UserButton appearance={userButtonDarkAppearance} />
           <button
             onClick={() => setOpen(!open)}
             className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-800"
@@ -82,16 +129,7 @@ export function DashboardHeader() {
               </ul>
             </div>
             <div className="border-t border-zinc-800 p-3">
-              <OrganizationSwitcher
-                hidePersonal
-                appearance={{
-                  elements: {
-                    rootBox: "w-full",
-                    organizationSwitcherTrigger:
-                      "w-full rounded-lg px-2 py-1.5 text-sm hover:bg-zinc-800 justify-start text-zinc-300",
-                  },
-                }}
-              />
+              <OrganizationSwitcher hidePersonal appearance={clerkDarkAppearance} />
             </div>
           </nav>
         </div>
