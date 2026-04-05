@@ -2,21 +2,44 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { requirePlatformStaff } from "../../../../../lib/auth"
 import { getOrganization } from "../../../../../lib/admin/organizations"
+import { listAllPlans } from "../../../../../lib/admin/plans"
+import { createSubscriptionAction, cancelSubscriptionAction } from "./_subscription-actions"
 import { PageHeader } from "../../../../../components/admin/page-header"
+import { FormField } from "../../../../../components/admin/form-field"
 import { Badge } from "../../../../../components/ui/badge"
+import { Button } from "../../../../../components/ui/button"
+import { Input } from "../../../../../components/ui/input"
+import { Select } from "../../../../../components/ui/select"
+import { Textarea } from "../../../../../components/ui/textarea"
 
 export const metadata: Metadata = { title: "Organization — Admin" }
 
 interface Props {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ subError?: string }>
 }
 
-export default async function AdminOrgDetailPage({ params }: Props) {
+export default async function AdminOrgDetailPage({ params, searchParams }: Props) {
   await requirePlatformStaff()
   const { id } = await params
+  const { subError } = await searchParams
 
-  const org = await getOrganization(id)
+  const [org, allPlans] = await Promise.all([getOrganization(id), listAllPlans()])
   if (!org) notFound()
+
+  const createSubAction = createSubscriptionAction.bind(null, org.id)
+  const cancelSubAction = cancelSubscriptionAction.bind(null, org.id)
+
+  // Group plans by product for the optgroup selector
+  const plansByProduct = allPlans.reduce<
+    Record<string, { productName: string; plans: typeof allPlans }>
+  >((acc, plan) => {
+    if (!acc[plan.productId]) {
+      acc[plan.productId] = { productName: plan.productName, plans: [] }
+    }
+    acc[plan.productId]!.plans.push(plan)
+    return acc
+  }, {})
 
   return (
     <div className="space-y-8">
@@ -28,6 +51,13 @@ export default async function AdminOrgDetailPage({ params }: Props) {
           { label: org.name },
         ]}
       />
+
+      {/* Subscription error banner */}
+      {subError && (
+        <div className="flex items-start gap-3 rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-3 text-sm text-red-400">
+          {decodeURIComponent(subError)}
+        </div>
+      )}
 
       {/* Members */}
       <div>
@@ -81,6 +111,7 @@ export default async function AdminOrgDetailPage({ params }: Props) {
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Period end</th>
                   <th className="px-4 py-3">Managed</th>
+                  <th className="px-4 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
@@ -111,12 +142,89 @@ export default async function AdminOrgDetailPage({ params }: Props) {
                         {s.isManagedManually ? "Manual" : "Provider"}
                       </Badge>
                     </td>
+                    <td className="px-4 py-2.5 text-right">
+                      {(s.status === "ACTIVE" || s.status === "TRIALING") && (
+                        <form action={cancelSubAction.bind(null, s.id)}>
+                          <Button
+                            type="submit"
+                            size="sm"
+                            variant="outline"
+                            className="border-red-900/60 text-red-400 hover:bg-red-950/40 hover:text-red-300"
+                          >
+                            Cancel
+                          </Button>
+                        </form>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
+      </div>
+
+      {/* Add Subscription */}
+      <div>
+        <h2 className="mb-3 text-sm font-semibold text-zinc-300">Add Subscription</h2>
+        <div className="max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+          {allPlans.length === 0 ? (
+            <p className="text-sm text-zinc-500">
+              No active plans available. Create a product and plan first.
+            </p>
+          ) : (
+            <form action={createSubAction} className="space-y-4">
+              <FormField label="Plan" htmlFor="planId" required>
+                <Select id="planId" name="planId">
+                  <option value="">Select a plan…</option>
+                  {Object.values(plansByProduct).map(({ productName, plans }) => (
+                    <optgroup key={productName} label={productName}>
+                      {plans.map((plan) => (
+                        <option key={plan.id} value={plan.id}>
+                          {plan.name} — {plan.billingInterval.toLowerCase()}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </Select>
+              </FormField>
+
+              <FormField
+                label="Trial days"
+                htmlFor="trialDays"
+                description="Leave blank or set to 0 for immediate active status."
+              >
+                <Input
+                  id="trialDays"
+                  name="trialDays"
+                  type="number"
+                  min={0}
+                  max={90}
+                  placeholder="0"
+                />
+              </FormField>
+
+              <FormField
+                label="Notes"
+                htmlFor="notes"
+                description="Internal note. Optional, max 512 characters."
+              >
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  rows={2}
+                  placeholder="e.g. Onboarding pilot, Q2 trial"
+                />
+              </FormField>
+
+              <div className="pt-1">
+                <Button type="submit" size="sm">
+                  Create subscription
+                </Button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
 
       {/* Access Grants */}

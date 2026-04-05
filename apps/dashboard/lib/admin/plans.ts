@@ -23,6 +23,46 @@ export interface AdminPlan {
   createdAt: Date
 }
 
+export interface AdminPlanForSelector {
+  id: string
+  name: string
+  slug: string
+  billingInterval: BillingInterval
+  displayPrice: number
+  currency: string
+  productId: string
+  productName: string
+  productSlug: string
+}
+
+/**
+ * All ACTIVE plans across all products, ordered for use in a plan selector.
+ * Used by the admin subscription-create form.
+ */
+export async function listAllPlans(): Promise<AdminPlanForSelector[]> {
+  const plans = await db.plan.findMany({
+    where: { status: "ACTIVE" },
+    include: { product: { select: { id: true, name: true, slug: true } } },
+    orderBy: [
+      { product: { sortOrder: "asc" } },
+      { sortOrder: "asc" },
+      { createdAt: "asc" },
+    ],
+  })
+
+  return plans.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    billingInterval: p.billingInterval,
+    displayPrice: p.displayPrice,
+    currency: p.currency,
+    productId: p.product.id,
+    productName: p.product.name,
+    productSlug: p.product.slug,
+  }))
+}
+
 export async function listPlansForProduct(productId: string): Promise<AdminPlan[]> {
   const plans = await db.plan.findMany({
     where: { productId },
