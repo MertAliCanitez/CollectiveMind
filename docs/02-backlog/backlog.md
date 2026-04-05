@@ -27,54 +27,57 @@ This is the ordered list of work items for CollectiveMind. Items at the top are 
 - [x] **Claude Code skill system** — 12 skills under `.claude/skills/`
 - [x] **Monorepo scaffold** — Turborepo + pnpm, all apps and packages, CI workflow
 - [x] **Scaffold stabilization** — Prisma hoisting, ESLint binary, ESM config fixes
+- [x] **Clerk dev instance setup** — Organizations enabled, `platformRole` session claim, webhook endpoint, env vars in `.env.local`
+- [x] **Dashboard app: Clerk provider + middleware** — `ClerkProvider` in root layout, `middleware.ts` using `clerkMiddleware` from `@repo/auth`, redirects for unauthenticated and no-org states
+- [x] **Clerk webhook handler** — `POST /api/webhooks/clerk` with Svix signature verification, calls `handleClerkWebhook` from `@repo/auth`
+- [x] **Auth package: sync handler** — `handleClerkWebhook` in `packages/auth/src/sync.ts`: upserts User and Organization on Clerk events, soft-delete on `user.deleted`
+- [x] **Org onboarding / org-select flow** — `/org-select` route with Clerk `<OrganizationList>`, middleware redirects no-org sessions there
+- [x] **Dashboard layout with nav** — Sidebar nav (`DashboardNav`) with active-state highlighting, `OrganizationSwitcher`, `UserButton`, all dark-themed. Mobile header with drawer.
+- [x] **Dark theme redesign** — All dashboard and admin routes use zinc dark theme. Clerk appearance configured at `ClerkProvider` level for portal modal coverage.
+- [x] **Auth pages dark theme** — Sign-in, sign-up, org-select all use consistent dark Clerk appearance.
+- [x] **Settings page** — `OrganizationProfile` + `UserProfile` embedded with dark appearance. Fixed clipping bug.
+- [x] **Seed: products, plans, plan features** — `prisma/seed.ts` seeds `insights`, `connect`, `workspace` products with Free/Pro/Enterprise plans and PlanFeature records
+- [x] **Product catalog and billing package** — `getProductCatalog()`, `checkEntitlement()`, `getCatalogProduct()`, `getOrgAccessibleProducts()` in `@repo/billing`. `NullPaymentProvider` active.
+- [x] **Customer products page** — `/products` shows only org-accessible products via `getOrgAccessibleProducts()`. N+1 entitlement pattern replaced with 2-query batch.
+- [x] **Customer home page** — `/home` shows only accessible products and org stats. Access-driven, not catalog-driven.
+- [x] **Customer product detail route** — `/products/[slug]` with server-side entitlement gate. Unknown slug → `notFound()`. No access → `redirect("/products")`. Loading skeleton included.
+- [x] **Billing portal stub** — `/billing` shows active subscriptions and grants. Amber notice when payment provider is not live.
+- [x] **Internal operations panel** — `apps/dashboard/(admin)` with Organizations list+detail, Products/Plans CRUD, Access Grants (create/revoke), Audit Log. All routes gated by `requirePlatformStaff()` or `requirePlatformAdmin()`.
+- [x] **v1 admin boundary decision** — Confirmed: internal ops panel lives in `apps/dashboard/(admin)`. `apps/admin` is a deferred placeholder. Documented in `CLAUDE.md` and architecture docs.
 
 ---
 
-## Phase 1 — Auth & Organizations
+## Active — Internal Operations
 
-- [ ] **Clerk dev instance setup**
-      Configure Clerk dashboard: enable Organizations, add custom `platformRole` session claim, create webhook endpoint pointing to local tunnel, add env vars to `.env.local`. No code — ops task.
-
-- [ ] **Dashboard app: Clerk provider + middleware**
-      Add `@clerk/nextjs` to `apps/dashboard`. Wire `ClerkProvider` in root layout. Create `middleware.ts` using `clerkMiddleware` from `@repo/auth`: require auth, require active org, redirect to org selection if no org context.
-
-- [ ] **Clerk webhook handler**
-      Implement `POST /api/webhooks/clerk` in `apps/dashboard`. Verify Svix signature. Call `handleClerkWebhook(event)` from `packages/auth/src/sync.ts`. Return 200/400 appropriately.
-
-- [ ] **Auth package: sync handler implementation**
-      Implement `handleClerkWebhook` in `packages/auth/src/sync.ts`: upsert User on `user.created`/`user.updated`, soft-delete on `user.deleted`, upsert Organization + OrgMember on membership events.
-
-- [ ] **Org onboarding flow**
-      After a new org is created in Clerk and synced to DB, redirect ADMIN to `/onboarding`. Onboarding page: select which Product to access (renders from DB), creates a pending subscription record via admin staff action or placeholder.
-
-- [ ] **Dashboard layout with role-aware nav**
-      Sidebar nav in `apps/dashboard`: shows product links for all active entitlements, shows Settings for ADMIN, shows Billing tab for ADMIN and BILLING_MANAGER only.
-
-- [ ] **Admin panel: org list + org detail**
-      `apps/admin`: page listing all Organizations (name, member count, plan, created date). Org detail page: members table, subscription history, audit log entries.
-
-- [ ] **Admin panel: manual subscription create/update**
-      Form in org detail page to assign or change a subscription: select Product, select Plan, set status (ACTIVE/TRIALING/CANCELED). Writes to DB + AuditLog. Uses NullPaymentProvider.
+- [ ] **Admin: create subscription for org**
+      On the org detail page (`/admin/organizations/[id]`), add a form to create a subscription for the org.
+      Form fields: plan selection (required, renders all active plans grouped by product), `trialDays` (optional integer), `notes` (optional, max 512 chars).
+      Server Action calls `createSubscription()` from `@repo/billing/src/subscriptions.ts`.
+      Guard: check for existing ACTIVE/TRIALING subscription for the same product before creating — show an inline error if one exists.
+      Also add a Cancel button on existing ACTIVE/TRIALING subscriptions (calls `cancelSubscription()`).
+      Auth: `requirePlatformAdmin()` on all mutating actions, `requirePlatformStaff()` on reads.
+      Uses `frontend-designer` for form layout and cancel action UI.
 
 ---
 
-## Phase 2 — Product Catalog & Billing Foundation
+## Upcoming — Internal Operations
 
-- [ ] **Seed: products, plans, plan features**
-      Run and verify `prisma/seed.ts` against a local DB. Ensure `product-a` and `product-b` exist with Free/Pro/Enterprise plans and PlanFeature records.
-
-- [ ] **Entitlement gate on dashboard product routes**
-      Wrap product section routes with `checkEntitlement({ orgId, productSlug })`. If `!hasAccess`, redirect to upgrade page or show locked state.
-
-- [ ] **Pricing page on apps/web**
-      Static-rendered page reading Products + Plans from DB at build time. Displays plan comparison table. CTA links to `/sign-up` on Clerk.
-
-- [ ] **Billing portal stub in dashboard**
-      `/settings/billing` page: shows current plan name, renewal date (if applicable), and "Contact us to change plan" CTA. No Stripe at v1.
+- [ ] **Admin: analytics dashboard**
+      Internal KPI page at `/admin/analytics`.
+      Metrics: total active orgs, total active subscriptions, per-product subscription counts (product popularity), ARR/MRR estimate based on plan `displayPrice` × active subscription count.
+      Read-only. No chart libraries at v1 — stat cards only. `requirePlatformStaff()`.
 
 ---
 
-## Phase 3 — Marketing Site
+## Upcoming — Customer Portal
+
+- [ ] **Billing nav visibility**
+      Hide the Billing nav item from users who are not `customer_owner` or `customer_billing_manager`.
+      Currently the nav is a static Client Component. Solution: convert to a layout-level async RSC that passes role context down, or use Clerk's `useAuth` in the nav to conditionally render.
+
+---
+
+## Upcoming — Marketing Site
 
 - [ ] **apps/web homepage**
       Hero, features section, social proof placeholder, pricing CTA. Responsive. Uses `packages/ui` components.
@@ -87,36 +90,24 @@ This is the ordered list of work items for CollectiveMind. Items at the top are 
 
 ---
 
-## Phase 4 — Production Hardening
+## Phase 4 — Production Hardening (deferred)
 
-- [ ] **Sentry setup**
-      Add Sentry to `apps/dashboard` and `apps/admin`. Wire `NEXT_PUBLIC_SENTRY_DSN`. Add `withSentryConfig` to next.config. Verify errors appear in Sentry on 500.
-
-- [ ] **Structured logging audit**
-      Verify every server action and API route calls `logger.info/error` with appropriate fields. No `console.log` in production paths.
-
-- [ ] **Security headers**
-      Configure `next.config` with `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` in both apps.
-
-- [ ] **Staging environment**
-      Separate Vercel env for staging. Separate Clerk instance. Separate DB (Neon branch or separate project). `.env.staging` values documented in `docs/04-runbooks/deploy.md`.
-
-- [ ] **Health check endpoints**
-      `GET /api/health` in dashboard and admin: checks DB connection, returns `{ ok: true, db: "connected" }`. Used by Vercel health checks.
-
-- [ ] **Load test**
-      k6 or similar: 100 concurrent sessions hitting dashboard. Baseline p99 < 500ms on product listing page. Document results.
+- [ ] **Sentry setup** — Add Sentry to `apps/dashboard`. Wire `NEXT_PUBLIC_SENTRY_DSN`. Verify errors appear in Sentry on 500.
+- [ ] **Security headers** — `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` in `next.config.ts`.
+- [ ] **Staging environment** — Separate Vercel env, separate Clerk instance, separate DB (Neon branch or separate project).
+- [ ] **Load test** — k6 or similar: 100 concurrent sessions on product listing page, p99 < 500ms baseline.
 
 ---
 
 ## Post-MVP (not scheduled)
 
-- [ ] Stripe integration — replace NullPaymentProvider with StripePaymentProvider
-- [ ] Transactional email (Resend or similar) — welcome, subscription change, invoice
+- [ ] Live payment integration — replace `NullPaymentProvider` with a real provider (Stripe, Paddle, iyzico, or other — TBD on legal/business setup)
+- [ ] Transactional email (Resend or similar) — welcome, subscription change, trial expiry
 - [ ] Customer-facing developer API with API key auth
-- [ ] SAML SSO via Clerk (per-org toggle)
+- [ ] SAML SSO via Clerk (per-org toggle, enterprise tier)
 - [ ] Usage-based billing metering
 - [ ] i18n
+- [ ] `apps/admin` as dedicated deployment — extract internal ops panel to `apps/admin` if deployment separation is needed
 
 ---
 
@@ -128,4 +119,4 @@ This is the ordered list of work items for CollectiveMind. Items at the top are 
 - **Scope changes:** Update `docs/00-product/mvp-scope.md` first, then add here.
 - **After each Claude session:** Review the Done section and verify it matches reality.
 
-**Last updated:** 2026-03-28
+**Last updated:** 2026-04-05

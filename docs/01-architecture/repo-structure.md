@@ -35,34 +35,43 @@ collectivemind/
 │   │   ├── package.json
 │   │   └── tsconfig.json
 │   │
-│   ├── dashboard/              # Customer-facing dashboard
+│   ├── dashboard/              # Customer portal + internal ops panel (v1 admin home)
 │   │   ├── app/
-│   │   │   ├── (auth)/         # sign-in, sign-up, onboarding
-│   │   │   ├── (protected)/    # dashboard routes (require auth + org)
-│   │   │   │   ├── dashboard/
+│   │   │   ├── (auth)/         # sign-in, sign-up, org-select
+│   │   │   ├── (dashboard)/    # customer portal routes (require auth + org)
+│   │   │   │   ├── home/
+│   │   │   │   ├── products/
+│   │   │   │   │   └── [slug]/
+│   │   │   │   ├── billing/
 │   │   │   │   └── settings/
+│   │   │   ├── (admin)/        # internal company-only ops (requirePlatformStaff/Admin)
+│   │   │   │   └── admin/
+│   │   │   │       ├── products/
+│   │   │   │       ├── organizations/
+│   │   │   │       ├── grants/
+│   │   │   │       └── audit/
 │   │   │   └── api/
-│   │   │       ├── webhooks/clerk/
-│   │   │       └── webhooks/payments/
+│   │   │       └── webhooks/clerk/
 │   │   ├── components/
+│   │   │   ├── admin/          # admin-only components (AdminNav, PageHeader, FormField)
+│   │   │   └── layout/         # customer layout components (DashboardNav, DashboardHeader)
+│   │   ├── lib/
+│   │   │   ├── auth.ts         # requireOrg, requirePlatformStaff, requirePlatformAdmin
+│   │   │   ├── billing.ts      # safe billing wrappers for dashboard
+│   │   │   └── admin/          # admin data layer (organizations, grants, products, audit)
 │   │   ├── middleware.ts
 │   │   ├── next.config.ts
 │   │   ├── package.json
 │   │   └── tsconfig.json
 │   │
-│   └── admin/                  # Internal admin panel
+│   └── admin/                  # DEFERRED PLACEHOLDER — not the v1 admin target
+│       │                       # Reserved for future dedicated deployment if needed.
+│       │                       # Do not build admin features here.
 │       ├── app/
-│       │   ├── (admin)/        # All admin routes
-│       │   │   ├── organizations/
-│       │   │   ├── users/
-│       │   │   ├── products/
-│       │   │   ├── plans/
-│       │   │   ├── subscriptions/
-│       │   │   ├── billing/
-│       │   │   └── audit/
-│       │   └── api/
-│       ├── components/
-│       ├── middleware.ts
+│       │   ├── api/health/     # Health check endpoint only
+│       │   ├── sign-in/        # Clerk sign-in stub
+│       │   ├── page.tsx        # Stub page (no auth enforcement, no content)
+│       │   └── layout.tsx
 │       ├── next.config.ts
 │       ├── package.json
 │       └── tsconfig.json

@@ -8,6 +8,10 @@ Project-level guidance for Claude Code. Rules here override default behaviour.
 
 CollectiveMind is a multi-product B2B SaaS platform. Three Next.js apps share a set of internal packages in a Turborepo + pnpm monorepo. The platform is at v1 — billing infrastructure exists but uses a `NullPaymentProvider` (no real payment processor yet). Clerk handles all authentication. PostgreSQL + Prisma handle data persistence.
 
+`apps/dashboard` serves two distinct audiences behind separate route groups:
+- `(dashboard)` — customer-facing product portal (entitlement-gated)
+- `(admin)` — internal company-only operations panel (platform-role-gated)
+
 ---
 
 ## Repository layout
@@ -15,8 +19,11 @@ CollectiveMind is a multi-product B2B SaaS platform. Three Next.js apps share a 
 ```
 apps/
   web/          # Marketing site — public, no auth (port 3000)
-  dashboard/    # Customer-facing app — Clerk + org-gating (port 3001)
-  admin/        # Internal ops panel — Clerk (port 3002)
+  dashboard/    # Customer portal + internal ops panel — Clerk + org-gating (port 3001)
+                #   ├── (dashboard)/  customer-facing portal routes
+                #   └── (admin)/      internal company-only operations routes
+  admin/        # DEFERRED PLACEHOLDER — not the v1 admin implementation target.
+                #   Exists for future deployment separation if needed. Do not build here.
 packages/
   auth/         # @repo/auth — Clerk middleware, webhook sync, role helpers
   billing/      # @repo/billing — subscription state machine, PaymentProvider abstraction
@@ -187,20 +194,25 @@ When implementing any customer-facing product list, product launcher, or entitle
 - `apps/dashboard/middleware.ts` enforces: public routes → pass, unauthenticated → /sign-in, authenticated + no org → /org-select.
 - `apps/web` is fully public — its middleware is a no-op passthrough.
 - Clerk webhooks sync User and Organization records to Postgres via `@repo/auth`. These DB records exist for relational integrity only — never for auth decisions.
-- **Do not assume Clerk keys exist locally.** `apps/dashboard` and `apps/admin` cannot run meaningful auth flows without valid keys. If keys are missing, stop and ask — see the request protocol below.
+- **Do not assume Clerk keys exist locally.** `apps/dashboard` cannot run meaningful auth flows without valid Clerk keys. `apps/admin` is a deferred placeholder and does not need Clerk keys to be configured. If keys are missing for `apps/dashboard`, stop and ask — see the request protocol below.
 - Do not bypass Clerk middleware with fake or placeholder secrets. CI uses placeholder values only because no auth flows execute during build/type-check.
 
-### Admin access policy
+### Internal operations panel access policy
 
-**TODO: Admin authorization policy must be finalized before production use.**
+**v1 decision (confirmed):** The internal operations panel lives at `/admin/*` inside `apps/dashboard`, not in `apps/admin`.
 
-The current `apps/admin` implementation authenticates via Clerk but does not enforce a role, email allowlist, or org restriction beyond being signed in. This is unfinished. Before implementing or relying on any admin access control, ask the user to confirm:
+Access is enforced by two helpers in `apps/dashboard/lib/auth.ts`:
 
-- Who should be able to access `apps/admin` (specific users, a Clerk role, an email domain, or environment-gating)
-- Whether access is role-based, org-based, allowlist-based, or IP/environment-restricted
-- Whether the restriction should live in middleware, Server Components, or both
+| Helper | Permitted roles | Used for |
+|--------|----------------|----------|
+| `requirePlatformStaff()` | `platform_super_admin`, `platform_support` | Read-only admin pages (org list, audit log, product catalog views) |
+| `requirePlatformAdmin()` | `platform_super_admin` only | Mutating actions (create subscription, create grant, revoke grant, create product/plan) |
 
-Do not make access-control assumptions for the admin panel. If role checks are absent, treat this area as controlled/unfinished.
+These roles are stored in Clerk `publicMetadata` (`"super_admin"` / `"support"`), not in org roles. Role checks happen via `isPlatformAdmin()` / `isPlatformStaff()` from `@repo/auth`, which read from the session JWT.
+
+**Every admin page and Server Action must call the appropriate helper before doing anything else.**
+
+`apps/admin` has no enforced role check and no content — it is a stub placeholder. Do not add admin features there.
 
 ---
 
@@ -214,6 +226,49 @@ Do not make access-control assumptions for the admin panel. If role checks are a
 - Prisma schema lives at `prisma/schema.prisma`. Managed exclusively by `packages/database`.
 - **Never edit a migration file after it has been committed.**
 - After adding a new model, add it to the `TRUNCATE` statement in `packages/testing/src/helpers/database.ts` (`cleanDatabase()`).
+
+---
+
+## Internal operations panel conventions
+
+The internal company-only operations panel lives at `/admin/*` inside `apps/dashboard`, under the `(admin)` route group.
+
+### Route and file layout
+
+```
+apps/dashboard/
+  app/(admin)/
+    layout.tsx                      # AdminNav sidebar — requirePlatformStaff in root page only
+    admin/
+      page.tsx                      # Redirects to /admin/products (requirePlatformStaff)
+      products/                     # Product + plan catalog management
+      organizations/                # Org list + org detail
+      grants/                       # Access grant management
+      audit/                        # Audit log
+  components/admin/                 # Admin-only components (AdminNav, PageHeader, FormField)
+  lib/admin/                        # Admin data layer (pure DB queries, no business logic)
+```
+
+### Auth enforcement rules
+
+- Every page and Server Action in `(admin)` must call `requirePlatformStaff()` or `requirePlatformAdmin()` as its first statement.
+- Read-only pages use `requirePlatformStaff()`.
+- All mutating Server Actions use `requirePlatformAdmin()`.
+- Never use org-level role checks (`isOrgAdmin`, etc.) inside admin routes — those are customer roles.
+
+### Admin subscription creation form (confirmed)
+
+When implementing subscription creation in the admin panel:
+
+- **Required:** plan selection (renders all active plans across products)
+- **Optional:** `trialDays` (integer ≥ 0; if > 0, status becomes TRIALING, else ACTIVE)
+- **Optional:** `notes` (free-text internal note, max 512 chars)
+
+All subscription mutations go through `createSubscription()` / `cancelSubscription()` / `updateSubscription()` in `@repo/billing/src/subscriptions.ts`. Never write subscription records directly via Prisma from admin routes.
+
+### Analytics and KPIs (planned)
+
+The internal panel will include company-only analytics: ARR/MRR metrics, customer count, product popularity, and other operational summaries. These are not yet implemented. Do not add them without explicit instruction.
 
 ---
 
@@ -274,15 +329,17 @@ Required for local development (copy `.env.example` → `.env.local`):
 |-------------------------------------|--------------------------------|
 | `DATABASE_URL`                      | Prisma dev database            |
 | `TEST_DATABASE_URL`                 | Vitest test database           |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | apps/dashboard, apps/admin     |
-| `CLERK_SECRET_KEY`                  | apps/dashboard, apps/admin     |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | apps/dashboard (apps/admin is a deferred placeholder — no Clerk needed there) |
+| `CLERK_SECRET_KEY`                  | apps/dashboard                 |
 | `CLERK_WEBHOOK_SECRET`              | apps/dashboard webhook handler |
 | `NEXT_PUBLIC_APP_URL`               | apps/web                       |
 | `NEXT_PUBLIC_DASHBOARD_URL`         | apps/web (CTA links)           |
 
 `apps/web` has no Clerk dependency — it requires no auth secrets and is the easiest app to run locally.
 
-`apps/dashboard` and `apps/admin` require both a running database and valid Clerk keys before auth-dependent flows work correctly.
+`apps/dashboard` requires both a running database and valid Clerk keys before auth-dependent flows work correctly.
+
+`apps/admin` is a deferred placeholder and can be ignored for local development.
 
 **Never hardcode secrets in source files. Never commit real secrets.** Use `.env.local`, platform environment management, or a secrets manager. If blocked by missing secrets, follow the request protocol below.
 

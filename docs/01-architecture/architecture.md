@@ -110,37 +110,40 @@ The platform is structured as a **modular monolith**. All domains live in one de
 /about, /contact, /legal   → Company pages
 ```
 
-### Customer Dashboard (`apps/dashboard`)
+### Customer Portal (`apps/dashboard` — `(dashboard)` route group)
 
 ```
 /sign-in, /sign-up         → Clerk-hosted or embedded auth
-/onboarding                → Org creation + first product selection
+/org-select                → Org selector (Clerk Organizations)
 
-/dashboard                 → Overview: active products, org summary
-/dashboard/products        → Products the org has an active subscription or access grant for
-/dashboard/products/[slug] → Per-product interface (embedded or iframe-out)
+/home                      → Overview: active products, org summary
+/products                  → Products the org has an active subscription or access grant for
+/products/[slug]           → Per-product workspace (entitlement-gated)
 
-/settings/profile          → Personal profile (name, email, avatar)
-/settings/organization     → Org name, slug, logo
-/settings/members          → Invite / remove org members, assign roles
-/settings/billing          → Active plans, invoices, upgrade/downgrade
-/settings/billing/[product]→ Per-product subscription management
-/settings/security         → Sessions, connected accounts
+/billing                   → Active subscriptions and grant status
+/settings                  → Org profile, members, personal account (Clerk)
 ```
 
-### Admin Panel (`apps/admin`)
+### Internal Operations Panel (`apps/dashboard` — `(admin)` route group)
+
+> **v1 decision:** The internal admin panel lives inside `apps/dashboard`, not in `apps/admin`.
+> Access is enforced by `requirePlatformStaff()` / `requirePlatformAdmin()` in `apps/dashboard/lib/auth.ts`.
+> `apps/admin` is a deferred placeholder for a future dedicated deployment.
 
 ```
-/                          → Dashboard: key metrics
-/organizations             → All orgs: search, filter, view
-/organizations/[id]        → Org detail: members, subscriptions, audit log
-/users                     → All users across platform
-/products                  → Product catalog management
-/plans                     → Plan management (create, deprecate, migrate)
-/subscriptions             → All subscriptions, bulk actions
-/billing                   → Revenue overview, invoice management
-/audit                     → Platform-wide audit log
-/settings                  → Feature flags, platform config
+/admin                     → Redirects to /admin/products
+/admin/products            → Product catalog management (create, edit, status, sort)
+/admin/products/[id]       → Edit product + manage plans
+/admin/products/[id]/plans/[planId] → Edit plan + features
+/admin/organizations       → All orgs: search, filter, member/subscription/grant counts
+/admin/organizations/[id]  → Org detail: members, subscriptions, access grants
+/admin/grants              → All access grants: create, revoke, filter
+/admin/grants/new          → Create access grant for an org
+/admin/audit               → Platform-wide audit log with filters
+
+Planned (not yet implemented):
+/admin/organizations/[id]/subscriptions/new → Create subscription for org
+/admin/analytics           → Internal KPIs: ARR/MRR, customer count, product popularity
 ```
 
 ---
@@ -176,11 +179,17 @@ The platform is structured as a **modular monolith**. All domains live in one de
 
 ### Applications
 
-| App              | Purpose                           | Port |
-| ---------------- | --------------------------------- | ---- |
-| `apps/web`       | Public marketing site             | 3000 |
-| `apps/dashboard` | Customer-facing product dashboard | 3001 |
-| `apps/admin`     | Internal admin panel              | 3002 |
+| App              | Purpose                                                      | Port |
+| ---------------- | ------------------------------------------------------------ | ---- |
+| `apps/web`       | Public marketing site                                        | 3000 |
+| `apps/dashboard` | Customer portal (`(dashboard)`) + internal ops panel (`(admin)`) | 3001 |
+| `apps/admin`     | **Deferred placeholder.** Not the v1 admin implementation target. Reserved for future deployment separation if needed. | 3002 |
+
+`apps/dashboard` serves two distinct audiences separated by Next.js route groups:
+- `(dashboard)` — customer-facing portal, access gated by `requireOrg()` + `checkEntitlement()`
+- `(admin)` — internal company-only operations, gated by `requirePlatformStaff()` / `requirePlatformAdmin()`
+
+These route groups share the same Next.js process and database connection but have separate layouts, nav components, and auth helpers. They do not share components or data-fetching logic.
 
 All apps are **Next.js 14+ with App Router**. This enables:
 
