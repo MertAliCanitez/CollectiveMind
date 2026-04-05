@@ -30,6 +30,7 @@ const clerkAppearance = {
   elements: {
     rootBox: "w-full",
     card: "shadow-none p-0 bg-transparent border-0",
+    header: "hidden",
     headerTitle: "hidden",
     headerSubtitle: "hidden",
     socialButtonsBlockButton:

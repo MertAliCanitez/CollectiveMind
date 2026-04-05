@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { OrganizationSwitcher, UserButton, useAuth } from "@clerk/nextjs"
 import { cn } from "@repo/ui"
-import { isOrgBillingManager } from "@repo/auth"
+import { isOrgBillingManager } from "@repo/auth/roles"
 import { Home, Layers, CreditCard, Settings } from "../ui/icons"
 
 type NavItem = {
