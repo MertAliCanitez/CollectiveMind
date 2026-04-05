@@ -85,6 +85,28 @@ export interface ProductCatalog {
   billing: BillingConfiguration
 }
 
+/**
+ * A product the org actually has access to, with the access source and active plan
+ * included so the customer portal doesn't need a second entitlement lookup.
+ *
+ * Returned by getOrgAccessibleProducts(). Use this instead of the full catalog
+ * in all customer-facing product lists.
+ */
+export interface OrgAccessibleProduct extends CatalogProduct {
+  /** How this org was granted access to this product */
+  accessSource: "subscription" | "grant"
+  /**
+   * The specific plan the org is subscribed to.
+   * Null when access comes from an AccessGrant (no plan associated).
+   */
+  activePlan: {
+    id: string
+    slug: string
+    name: string
+    billingInterval: string
+  } | null
+}
+
 // ─── Query + merge helpers ────────────────────────────────────────────────────
 
 function buildCatalogPlan(
@@ -158,6 +180,15 @@ function buildCatalogProduct(product: {
   }
 }
 
+// Prisma include shape for a product with its public active plans, reused below
+const productWithPlansInclude = {
+  plans: {
+    where: { status: "ACTIVE" as const, isPublic: true },
+    include: { features: { orderBy: { key: "asc" as const } } },
+    orderBy: { sortOrder: "asc" as const },
+  },
+} as const
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -174,15 +205,7 @@ export async function getProductCatalog(): Promise<ProductCatalog> {
 
   const products = await db.product.findMany({
     where: { status: "ACTIVE" },
-    include: {
-      plans: {
-        where: { isPublic: true, status: "ACTIVE" },
-        include: {
-          features: { orderBy: { key: "asc" } },
-        },
-        orderBy: { sortOrder: "asc" },
-      },
-    },
+    include: productWithPlansInclude,
     orderBy: { sortOrder: "asc" },
   })
 
@@ -190,6 +213,84 @@ export async function getProductCatalog(): Promise<ProductCatalog> {
     products: products.map(buildCatalogProduct),
     billing,
   }
+}
+
+/**
+ * Returns only the products that the given organization has active access to,
+ * via either a Subscription (ACTIVE/TRIALING) or an AccessGrant (non-revoked,
+ * non-expired).
+ *
+ * Uses exactly 2 DB queries regardless of how many products exist.
+ * Subscription takes precedence when both a subscription and a grant exist for
+ * the same product.
+ *
+ * Use this in all customer-facing product lists. The full catalog is intended
+ * only for the public marketing site and admin views.
+ */
+export async function getOrgAccessibleProducts(orgId: string): Promise<OrgAccessibleProduct[]> {
+  // Query 1 — all active/trialing subscriptions for this org
+  const subscriptions = await db.subscription.findMany({
+    where: {
+      organizationId: orgId,
+      status: { in: ["ACTIVE", "TRIALING"] },
+    },
+    include: {
+      plan: {
+        include: {
+          product: { include: productWithPlansInclude },
+          features: { orderBy: { key: "asc" } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
+  // Query 2 — all active (non-revoked, non-expired) grants for this org
+  const now = new Date()
+  const grants = await db.accessGrant.findMany({
+    where: {
+      organizationId: orgId,
+      revokedAt: null,
+      OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+    },
+    include: {
+      product: { include: productWithPlansInclude },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
+  // Merge: subscription takes precedence over grant for the same product
+  const result = new Map<string, OrgAccessibleProduct>()
+
+  for (const sub of subscriptions) {
+    const product = sub.plan.product
+    if (!result.has(product.id)) {
+      result.set(product.id, {
+        ...buildCatalogProduct(product),
+        accessSource: "subscription",
+        activePlan: {
+          id: sub.plan.id,
+          slug: sub.plan.slug,
+          name: sub.plan.name,
+          billingInterval: sub.plan.billingInterval,
+        },
+      })
+    }
+  }
+
+  for (const grant of grants) {
+    const product = grant.product
+    // Only add if there is no subscription-based entry for this product
+    if (!result.has(product.id)) {
+      result.set(product.id, {
+        ...buildCatalogProduct(product),
+        accessSource: "grant",
+        activePlan: null,
+      })
+    }
+  }
+
+  return Array.from(result.values()).sort((a, b) => a.sortOrder - b.sortOrder)
 }
 
 /**

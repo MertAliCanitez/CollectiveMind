@@ -14,11 +14,18 @@ export { processWebhookEvent } from "./webhooks.js"
 // Product catalog — enriched product/plan data with marketing content
 export {
   getProductCatalog,
+  getOrgAccessibleProducts,
   getCatalogProduct,
   getAllProductsAdmin,
   getComingSoonProducts,
 } from "./catalog.js"
-export type { CatalogPlan, CatalogProduct, CatalogFeature, ProductCatalog } from "./catalog.js"
+export type {
+  CatalogPlan,
+  CatalogProduct,
+  CatalogFeature,
+  ProductCatalog,
+  OrgAccessibleProduct,
+} from "./catalog.js"
 
 // Product marketing content
 export { getProductContent, getPlanContent, getFeatureDisplayConfig } from "./product-content.js"

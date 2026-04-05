@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { requireOrg } from "../../../lib/auth"
-import { getDashboardCatalog, getDashboardEntitlement } from "../../../lib/billing"
+import { getDashboardAccessibleProducts } from "../../../lib/billing"
 import { ProductAccessCard } from "../../../components/product-access-card"
 import { EmptyState } from "../../../components/empty-state"
 import { Badge } from "../../../components/ui/badge"
@@ -14,16 +14,11 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const { org, orgRole } = await requireOrg()
 
-  const catalog = await getDashboardCatalog()
-  const activeProducts = catalog?.products.filter((p) => p.status === "ACTIVE") ?? []
-
-  // Check entitlement for each active product
-  const entitlements = await Promise.all(
-    activeProducts.map((p) => getDashboardEntitlement(org.id, p.slug)),
-  )
-
-  const accessibleProducts = activeProducts.filter((_, i) => entitlements[i]?.hasAccess)
+  const products = await getDashboardAccessibleProducts(org.id)
   const isAdmin = orgRole === "org:admin"
+
+  // First accessible product's plan for the stats row (subscription path only)
+  const firstPlanName = products.find((p) => p.activePlan)?.activePlan?.name ?? null
 
   return (
     <div className="space-y-8">
@@ -37,15 +32,13 @@ export default async function HomePage() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Products</p>
-          <p className="mt-1 text-2xl font-bold text-zinc-100">{accessibleProducts.length}</p>
+          <p className="mt-1 text-2xl font-bold text-zinc-100">{products.length}</p>
           <p className="mt-0.5 text-xs text-zinc-600">active</p>
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Plan</p>
           <p className="mt-1 truncate text-sm font-semibold text-zinc-100">
-            {accessibleProducts.length > 0
-              ? (entitlements.find((e) => e?.hasAccess)?.plan?.name ?? "—")
-              : "None"}
+            {firstPlanName ?? "None"}
           </p>
           <p className="mt-0.5 text-xs text-zinc-600">current</p>
         </div>
@@ -72,18 +65,23 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        {activeProducts.length === 0 ? (
+        {products.length === 0 ? (
           <EmptyState
-            title="No products available"
-            description="Check back soon — products are being configured."
+            title="No products yet"
+            description="Products your organization has subscribed to will appear here."
           />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {activeProducts.map((product, i) => (
+            {products.map((product) => (
               <ProductAccessCard
                 key={product.id}
                 product={product}
-                entitlement={entitlements[i] ?? null}
+                entitlement={{
+                  hasAccess: true,
+                  source: product.accessSource,
+                  plan: product.activePlan ?? null,
+                  featureValue: () => null,
+                }}
               />
             ))}
           </div>

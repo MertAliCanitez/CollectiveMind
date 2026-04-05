@@ -8,9 +8,11 @@ import {
   getOrgBillingStatus,
   getProductCatalog,
   checkEntitlement,
+  getOrgAccessibleProducts,
   type OrgBillingStatus,
   type ProductCatalog,
   type Entitlement,
+  type OrgAccessibleProduct,
 } from "@repo/billing"
 
 export async function getDashboardBillingStatus(orgId: string): Promise<OrgBillingStatus | null> {
@@ -40,4 +42,14 @@ export async function getDashboardEntitlement(
   }
 }
 
-export type { OrgBillingStatus, ProductCatalog, Entitlement }
+export async function getDashboardAccessibleProducts(
+  orgId: string,
+): Promise<OrgAccessibleProduct[]> {
+  try {
+    return await getOrgAccessibleProducts(orgId)
+  } catch {
+    return []
+  }
+}
+
+export type { OrgBillingStatus, ProductCatalog, Entitlement, OrgAccessibleProduct }
