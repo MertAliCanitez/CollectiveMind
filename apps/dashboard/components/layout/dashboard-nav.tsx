@@ -2,14 +2,22 @@
 
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs"
+import { OrganizationSwitcher, UserButton, useAuth } from "@clerk/nextjs"
 import { cn } from "@repo/ui"
+import { isOrgBillingManager } from "@repo/auth"
 import { Home, Layers, CreditCard, Settings } from "../ui/icons"
 
-const navItems = [
+type NavItem = {
+  href: string
+  label: string
+  icon: React.ComponentType<{ size?: number; className?: string }>
+  billingOnly?: true
+}
+
+const navItems: NavItem[] = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/products", label: "My Products", icon: Layers },
-  { href: "/billing", label: "Billing", icon: CreditCard },
+  { href: "/billing", label: "Billing", icon: CreditCard, billingOnly: true },
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
@@ -67,6 +75,9 @@ const userButtonDarkAppearance = {
 
 export function DashboardNav() {
   const pathname = usePathname()
+  const { orgRole } = useAuth()
+  const canSeeBilling = isOrgBillingManager(orgRole)
+  const visibleNavItems = navItems.filter((item) => !item.billingOnly || canSeeBilling)
 
   return (
     <aside className="flex h-full w-56 flex-col border-r border-zinc-800 bg-zinc-900">
@@ -80,7 +91,7 @@ export function DashboardNav() {
       {/* Nav items */}
       <nav className="flex-1 overflow-y-auto px-2 py-3">
         <ul className="space-y-0.5">
-          {navItems.map(({ href, label, icon: Icon }) => {
+          {visibleNavItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || (href !== "/home" && pathname.startsWith(href))
             return (
               <li key={href}>
