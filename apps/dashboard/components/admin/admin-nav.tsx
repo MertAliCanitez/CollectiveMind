@@ -18,7 +18,10 @@ const navSections = [
   },
   {
     label: "Observability",
-    items: [{ href: "/admin/audit", label: "Audit Log" }],
+    items: [
+      { href: "/admin/analytics", label: "Analytics" },
+      { href: "/admin/audit", label: "Audit Log" },
+    ],
   },
 ]
 
