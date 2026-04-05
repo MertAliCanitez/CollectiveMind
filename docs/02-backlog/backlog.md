@@ -44,69 +44,34 @@ This is the ordered list of work items for CollectiveMind. Items at the top are 
 - [x] **Billing portal stub** — `/billing` shows active subscriptions and grants. Amber notice when payment provider is not live.
 - [x] **Internal operations panel** — `apps/dashboard/(admin)` with Organizations list+detail, Products/Plans CRUD, Access Grants (create/revoke), Audit Log. All routes gated by `requirePlatformStaff()` or `requirePlatformAdmin()`.
 - [x] **v1 admin boundary decision** — Confirmed: internal ops panel lives in `apps/dashboard/(admin)`. `apps/admin` is a deferred placeholder. Documented in `CLAUDE.md` and architecture docs.
+- [x] **Admin: create subscription for org** — Org detail page has create-subscription form (plan selector grouped by product, optional trialDays, optional notes) and cancel button on ACTIVE/TRIALING subscriptions. Duplicate guard prevents double-subscribing to the same product. All mutations go through `@repo/billing`.
+- [x] **Admin: analytics dashboard** — `/admin/analytics` with stat cards (active orgs, active/trialing subscriptions, active grants, est. MRR, est. ARR) and per-product subscription breakdown table. MRR/ARR explicitly labeled as estimates with NullPaymentProvider disclaimer.
+- [x] **Billing nav visibility** — Billing nav link hidden from `org:member` users who cannot access the billing page. Shown only to `org:admin` and `org:billing_manager` via `useAuth()` + `isOrgBillingManager()`.
+- [x] **apps/web homepage** — Hero, TrustBar, FeatureHighlights, product grid from catalog, CtaBand. Dark theme, responsive.
+- [x] **apps/web product pages** — `/products` (grid with coming-soon section) and `/products/[slug]` (product detail with plan cards and comparison table). Catalog-driven.
+- [x] **apps/web legal pages** — `/legal/privacy`, `/legal/terms`, `/legal/cookies`, `/legal` index. Placeholder prose, styled consistently.
+- [x] **Billing page cleanup** — `/billing` N+1 entitlement pattern replaced with `getDashboardAccessibleProducts()` batch query. Three parallel queries instead of 2 + N sequential. No UI change.
 
 ---
 
-## Active — Internal Operations
+## Upcoming — Phase 4: Production Hardening
 
-- [ ] **Admin: create subscription for org**
-      On the org detail page (`/admin/organizations/[id]`), add a form to create a subscription for the org.
-      Form fields: plan selection (required, renders all active plans grouped by product), `trialDays` (optional integer), `notes` (optional, max 512 chars).
-      Server Action calls `createSubscription()` from `@repo/billing/src/subscriptions.ts`.
-      Guard: check for existing ACTIVE/TRIALING subscription for the same product before creating — show an inline error if one exists.
-      Also add a Cancel button on existing ACTIVE/TRIALING subscriptions (calls `cancelSubscription()`).
-      Auth: `requirePlatformAdmin()` on all mutating actions, `requirePlatformStaff()` on reads.
-      Uses `frontend-designer` for form layout and cancel action UI.
-
----
-
-## Upcoming — Internal Operations
-
-- [ ] **Admin: analytics dashboard**
-      Internal KPI page at `/admin/analytics`.
-      Metrics: total active orgs, total active subscriptions, per-product subscription counts (product popularity), ARR/MRR estimate based on plan `displayPrice` × active subscription count.
-      Read-only. No chart libraries at v1 — stat cards only. `requirePlatformStaff()`.
-
----
-
-## Upcoming — Customer Portal
-
-- [ ] **Billing nav visibility**
-      Hide the Billing nav item from users who are not `customer_owner` or `customer_billing_manager`.
-      Currently the nav is a static Client Component. Solution: convert to a layout-level async RSC that passes role context down, or use Clerk's `useAuth` in the nav to conditionally render.
-
----
-
-## Upcoming — Marketing Site
-
-- [ ] **apps/web homepage**
-      Hero, features section, social proof placeholder, pricing CTA. Responsive. Uses `packages/ui` components.
-
-- [ ] **apps/web product pages**
-      One page per Product (from DB or content layer). Describes features, links to pricing.
-
-- [ ] **apps/web legal pages**
-      `/privacy` and `/terms` — placeholder prose, easily replaced with legal copy.
-
----
-
-## Phase 4 — Production Hardening (deferred)
-
-- [ ] **Sentry setup** — Add Sentry to `apps/dashboard`. Wire `NEXT_PUBLIC_SENTRY_DSN`. Verify errors appear in Sentry on 500.
-- [ ] **Security headers** — `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` in `next.config.ts`.
-- [ ] **Staging environment** — Separate Vercel env, separate Clerk instance, separate DB (Neon branch or separate project).
+- [ ] **Security headers** — `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` in `next.config.ts`. No external dependencies — can be done any time.
+- [ ] **Sentry setup** — Add Sentry to `apps/dashboard`. Wire `NEXT_PUBLIC_SENTRY_DSN`. Verify errors appear in Sentry on 500. Requires Sentry project and DSN from you.
+- [ ] **Staging environment** — Separate Vercel env, separate Clerk instance, separate DB (Neon branch or separate project). Requires deployment target decision from you.
 - [ ] **Load test** — k6 or similar: 100 concurrent sessions on product listing page, p99 < 500ms baseline.
 
 ---
 
 ## Post-MVP (not scheduled)
 
-- [ ] Live payment integration — replace `NullPaymentProvider` with a real provider (Stripe, Paddle, iyzico, or other — TBD on legal/business setup)
+- [ ] Live payment integration — replace `NullPaymentProvider` with a real provider (Stripe, Paddle, iyzico, or other — TBD on legal/business setup). Requires provider selection from you.
 - [ ] Transactional email (Resend or similar) — welcome, subscription change, trial expiry
 - [ ] Customer-facing developer API with API key auth
 - [ ] SAML SSO via Clerk (per-org toggle, enterprise tier)
 - [ ] Usage-based billing metering
 - [ ] i18n
+- [ ] Product workspace content — actual feature pages for Insights, Connect, Workspace products. Requires product spec from you.
 - [ ] `apps/admin` as dedicated deployment — extract internal ops panel to `apps/admin` if deployment separation is needed
 
 ---

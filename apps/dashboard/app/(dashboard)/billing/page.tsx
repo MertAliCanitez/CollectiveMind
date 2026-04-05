@@ -3,7 +3,7 @@ import { requireBillingAccess } from "../../../lib/auth"
 import {
   getDashboardBillingStatus,
   getDashboardCatalog,
-  getDashboardEntitlement,
+  getDashboardAccessibleProducts,
 } from "../../../lib/billing"
 import { Badge } from "../../../components/ui/badge"
 import { EmptyState } from "../../../components/empty-state"
@@ -16,25 +16,19 @@ export const metadata: Metadata = {
 export default async function BillingPage() {
   const { org } = await requireBillingAccess()
 
-  const [billingStatus, catalog] = await Promise.all([
+  // Three parallel queries — no sequential waterfall.
+  // billingStatus: subscription detail (status, plan name, period end, etc.)
+  // catalog: needed only for the billing.isLive flag (NullPaymentProvider = false at v1)
+  // accessibleProducts: batch access list replacing the old per-product entitlement loop
+  const [billingStatus, catalog, accessibleProducts] = await Promise.all([
     getDashboardBillingStatus(org.id),
     getDashboardCatalog(),
+    getDashboardAccessibleProducts(org.id),
   ])
 
-  const activeProducts = catalog?.products.filter((p) => p.status === "ACTIVE") ?? []
-  const entitlements = await Promise.all(
-    activeProducts.map((p) => getDashboardEntitlement(org.id, p.slug)),
-  )
-
   const billingIsLive = catalog?.billing?.isLive ?? false
-
-  const activeSubscriptions = entitlements
-    .map((ent, i) => ({ ent, product: activeProducts[i]! }))
-    .filter(({ ent }) => ent?.hasAccess && ent.source === "subscription")
-
-  const grantedAccess = entitlements
-    .map((ent, i) => ({ ent, product: activeProducts[i]! }))
-    .filter(({ ent }) => ent?.hasAccess && ent.source === "grant")
+  const activeSubscriptions = accessibleProducts.filter((p) => p.accessSource === "subscription")
+  const grantedAccess = accessibleProducts.filter((p) => p.accessSource === "grant")
 
   return (
     <div className="space-y-8">
@@ -72,11 +66,11 @@ export default async function BillingPage() {
           />
         ) : (
           <div className="divide-y divide-zinc-800 rounded-xl border border-zinc-800 bg-zinc-900">
-            {activeSubscriptions.map(({ ent, product }) => (
+            {activeSubscriptions.map((product) => (
               <div key={product.id} className="flex items-center justify-between px-5 py-4">
                 <div>
                   <p className="text-sm font-medium text-zinc-100">{product.name}</p>
-                  <p className="text-xs text-zinc-500">{ent?.plan?.name} plan</p>
+                  <p className="text-xs text-zinc-500">{product.activePlan?.name} plan</p>
                 </div>
                 <Badge variant="success">Active</Badge>
               </div>
@@ -90,12 +84,12 @@ export default async function BillingPage() {
         <div>
           <h2 className="mb-3 text-sm font-semibold text-zinc-300">Complimentary Access</h2>
           <div className="divide-y divide-zinc-800 rounded-xl border border-zinc-800 bg-zinc-900">
-            {grantedAccess.map(({ ent, product }) => (
+            {grantedAccess.map((product) => (
               <div key={product.id} className="flex items-center justify-between px-5 py-4">
                 <div>
                   <p className="text-sm font-medium text-zinc-100">{product.name}</p>
                   <p className="text-xs text-zinc-500">
-                    Granted access — {ent?.plan?.name ?? "all features"}
+                    Granted access — {product.activePlan?.name ?? "all features"}
                   </p>
                 </div>
                 <Badge variant="secondary">Granted</Badge>

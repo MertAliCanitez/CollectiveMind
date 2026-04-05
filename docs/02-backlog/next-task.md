@@ -6,63 +6,35 @@
 
 ## Current Task
 
-**Status:** `[ ]` Not started
+**Status:** `[~]` No active MVP task
 
-**Task:** Admin: create subscription for org
+**Task:** —
 
-**From backlog:** Active — Internal Operations, item 1
+**From backlog:** All MVP items are complete. Remaining work is Phase 4 hardening and post-MVP features, both of which require external input or explicit decisions before proceeding.
 
 ### What to do
 
-Add subscription create + cancel capability to the org detail page at `apps/dashboard/app/(admin)/admin/organizations/[id]/page.tsx`.
+No implementation work is in flight.
 
-**Create subscription:**
+**Phase 4 options (can be started without external input):**
+- Security headers (`Content-Security-Policy`, `X-Frame-Options`, etc.) in `next.config.ts` — self-contained, no external deps
+- Load test baseline — requires k6 or similar tooling decision
 
-1. Add a Server Action `createSubscriptionAction` in `apps/dashboard/app/(admin)/admin/organizations/[id]/_subscription-actions.ts`
-   - Auth: `requirePlatformAdmin()`
-   - Zod schema: `{ planId: string (required), trialDays: number optional ≥ 0, notes: string optional max 512 }`
-   - Guard: before calling `createSubscription()`, check if the org already has an ACTIVE or TRIALING subscription for the same product — reject with an inline error if so
-   - On success: call `createSubscription()` from `@repo/billing/src/subscriptions.ts`, then redirect to the same org detail page
-   - On validation/conflict error: redirect back with `?error=...` in the query string
+**Phase 4 options requiring your input first:**
+- Sentry setup — requires Sentry project + `NEXT_PUBLIC_SENTRY_DSN`
+- Staging environment — requires deployment target decision (Vercel project, DB branch, Clerk instance)
 
-2. Add `getDashboardSubscriptionPlans()` or reuse `listPlansForProduct` from `apps/dashboard/lib/admin/plans.ts` to fetch all active plans grouped by product for the plan selector
-
-3. Add the form to the org detail page:
-   - Section header: "Add Subscription"
-   - Plan selector: `<select>` grouped by product name using `<optgroup>`, showing plan name + billing interval
-   - Optional `trialDays` number input (label: "Trial days", placeholder: "0 = active immediately")
-   - Optional `notes` textarea (label: "Notes", max 512 chars)
-   - Submit button: "Create subscription"
-   - Show inline error if `?error` is in the query string
-
-**Cancel subscription:**
-
-4. Add a Server Action `cancelSubscriptionAction(subscriptionId)` in the same actions file
-   - Auth: `requirePlatformAdmin()`
-   - Calls `cancelSubscription({ subscriptionId, atPeriodEnd: false })` from `@repo/billing`
-   - Redirects to the same org detail page
-
-5. Add a "Cancel" button next to each ACTIVE or TRIALING subscription row in the existing subscriptions table on the org detail page
-
-**Data layer:**
-
-6. Add `listAllPlans()` to `apps/dashboard/lib/admin/plans.ts` — returns all ACTIVE plans with their product name and slug, for the plan selector dropdown
-
-**Use `frontend-designer` for all UI work** (form layout, cancel button, error display, section structure on the org detail page).
+**Post-MVP options requiring your input first:**
+- Live payment integration — requires provider selection (Stripe / Paddle / iyzico / other) and credentials
+- Product workspace content — requires product spec (what do Insights, Connect, Workspace actually do?)
 
 ### Done when
 
-- [ ] Server Action `createSubscriptionAction` validates, guards against duplicates, and calls `@repo/billing`
-- [ ] Server Action `cancelSubscriptionAction` cancels immediately
-- [ ] Plan selector shows all active plans grouped by product
-- [ ] Form shows inline error on duplicate subscription attempt
-- [ ] Cancel button appears on ACTIVE/TRIALING subscriptions in the org detail table
-- [ ] `requirePlatformAdmin()` is the first call in both actions
-- [ ] Type-check and lint pass
+N/A — no task in flight.
 
 ### Next task after this
 
-Admin: analytics dashboard (`/admin/analytics` — stat cards for active orgs, subscriptions, per-product counts, ARR/MRR estimate)
+Whichever Phase 4 or post-MVP item you greenlight next.
 
 ---
 
