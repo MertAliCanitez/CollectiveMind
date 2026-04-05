@@ -70,8 +70,12 @@ export default clerkMiddleware(async (auth, req) => {
   // Public routes — no auth check
   if (isPublicRoute(req)) return
 
-  // Require authentication — redirects to /sign-in if not signed in
-  const { userId, orgId } = await auth.protect()
+  // Require authentication — always redirects to the local /sign-in page.
+  // We pass unauthenticatedUrl explicitly so auth.protect() never falls back
+  // to the Clerk-hosted sign-in page (accounts.dev) when
+  // NEXT_PUBLIC_CLERK_SIGN_IN_URL is not set in the environment.
+  const signInUrl = new URL("/sign-in", req.nextUrl.origin).toString()
+  const { userId, orgId } = await auth.protect({ unauthenticatedUrl: signInUrl })
 
   // Require an active org for all non-onboarding protected routes
   if (!orgId && !isOrgOptionalRoute(req)) {
