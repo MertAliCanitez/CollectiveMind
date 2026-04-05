@@ -29,7 +29,7 @@ const clerkAppearance = {
   },
   elements: {
     rootBox: "w-full",
-    card: "shadow-none p-0 bg-transparent border-0",
+    card: "rounded-2xl border border-zinc-800 shadow-xl shadow-black/20",
     header: "hidden",
     headerTitle: "hidden",
     headerSubtitle: "hidden",
@@ -69,10 +69,7 @@ export default function SignInPage() {
           <p className="mt-2 text-sm text-zinc-400">Access your organization&apos;s workspace</p>
         </div>
 
-        {/* Form card */}
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl shadow-black/20">
-          <SignIn appearance={clerkAppearance} />
-        </div>
+        <SignIn appearance={clerkAppearance} />
       </div>
     </div>
   )
